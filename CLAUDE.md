@@ -19,7 +19,7 @@ Leer **antes** de escribir código que toque el área correspondiente:
 - HTTP: `dio` (multipart nativo para audio).
 - Persistencia: `flutter_secure_storage` (solo JWT del backend).
 - Modelado: `freezed` + `json_serializable`.
-- Lints: `very_good_analysis` + `riverpod_lint` + `custom_lint`.
+- Lints: `very_good_analysis`. `riverpod_lint` + `custom_lint` pausados hasta que `custom_lint` soporte `analyzer ^9.0.0` (bloquea a `riverpod_generator 4.x`). Mientras tanto, las reglas de Riverpod 3 se enforzan vía `.claude/rules/arquitectura-explicada.md`.
 - Tests: `mocktail`.
 - Flavors: STG / PROD vía `--dart-define-from-file`.
 - Calidad local: `lefthook` (sin CI remoto por ahora).
