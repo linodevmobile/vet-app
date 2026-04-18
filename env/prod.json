@@ -1,0 +1,5 @@
+{
+  "FLAVOR": "prod",
+  "BASE_URL": "https://api.vetapp.com",
+  "ENABLE_LOGS": false
+}

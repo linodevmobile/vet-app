@@ -39,14 +39,19 @@ Leer **antes** de escribir código que toque el área correspondiente:
 
 ## Estructura
 
-Feature-first:
+Feature-first. Las tres capas de cada feature son `domain/`, `infrastructure/`, `presentation/` (el término "infrastructure" respeta el vocabulario de `arquitectura-explicada.md`).
 
 ```
 lib/
-  app/            # bootstrap, router, entrypoints por flavor
-  core/           # env, network, storage, errors, providers transversales
-  design_system/  # tokens, atoms, molecules, organisms (funcional, no abstracto)
-  features/<x>/   # domain/, data/, presentation/ por feature
+  main_stg.dart     # entrypoint flavor STG (por convención Flutter, mains en lib/ root)
+  main_prod.dart    # entrypoint flavor PROD
+  app/              # bootstrap, App widget, router
+  core/             # env, network, storage, errors, providers transversales
+  design_system/    # tokens, atoms, molecules, organisms (funcional, no abstracto)
+  features/<x>/
+    domain/
+    infrastructure/
+    presentation/
   l10n/
 ```
 
