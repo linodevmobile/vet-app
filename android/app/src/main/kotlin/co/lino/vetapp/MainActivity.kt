@@ -1,4 +1,4 @@
-package co.lino.vetapp.vet_app
+package co.lino.vetapp
 
 import io.flutter.embedding.android.FlutterActivity
 
