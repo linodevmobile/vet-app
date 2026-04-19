@@ -4,6 +4,8 @@ import 'package:vet_app/core/validations/core_validation_service.dart';
 import 'package:vet_app/design_system/atoms/ds_password_input.dart';
 import 'package:vet_app/design_system/atoms/ds_primary_button.dart';
 import 'package:vet_app/design_system/atoms/ds_text_input.dart';
+import 'package:vet_app/design_system/molecules/ds_field_label.dart';
+import 'package:vet_app/design_system/tokens/ds_spacing.dart';
 import 'package:vet_app/features/auth/presentation/controllers/login_action.dart';
 
 class LoginView extends ConsumerStatefulWidget {
@@ -48,32 +50,36 @@ class _LoginViewState extends ConsumerState<LoginView> {
     return Scaffold(
       appBar: AppBar(title: const Text('Ingresar')),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(DsSpacing.xxl),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              DsTextInput(
-                controller: _emailController,
+              DsFieldLabel(
                 label: 'Email',
-                keyboardType: TextInputType.emailAddress,
-                autofillHints: const [AutofillHints.email],
-                validator: CoreValidationService.validateEmail,
-                enabled: !isLoading,
-              ),
-              const SizedBox(height: 16),
-              DsPasswordInput(
-                controller: _passwordController,
-                label: 'Contraseña',
-                validator: (v) => CoreValidationService.validateMinLength(
-                  v,
-                  6,
-                  fieldName: 'Contraseña',
+                child: DsTextInput(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                  validator: CoreValidationService.validateEmail,
+                  enabled: !isLoading,
                 ),
-                enabled: !isLoading,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: DsSpacing.lg),
+              DsFieldLabel(
+                label: 'Contraseña',
+                child: DsPasswordInput(
+                  controller: _passwordController,
+                  validator: (v) => CoreValidationService.validateMinLength(
+                    v,
+                    6,
+                    fieldName: 'Contraseña',
+                  ),
+                  enabled: !isLoading,
+                ),
+              ),
+              const SizedBox(height: DsSpacing.section),
               DsPrimaryButton(
                 label: 'Ingresar',
                 isLoading: isLoading,
