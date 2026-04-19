@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:vet_app/core/errors/failures.dart';
 
@@ -31,9 +33,20 @@ abstract final class ApiExceptionHandler {
           cause: e,
         );
 
-      case DioExceptionType.cancel:
       case DioExceptionType.badCertificate:
+        return ServerFailure(
+          message: 'Certificado SSL inválido.',
+          statusCode: 0,
+          cause: e,
+        );
+
+      case DioExceptionType.cancel:
+        return UnknownFailure(message: 'Solicitud cancelada.', cause: e);
+
       case DioExceptionType.unknown:
+        if (e.error is IOException) {
+          return NetworkFailure(cause: e);
+        }
         return UnknownFailure(cause: e);
     }
   }
