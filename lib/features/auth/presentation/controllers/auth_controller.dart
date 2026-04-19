@@ -14,26 +14,8 @@ class AuthController extends _$AuthController {
   Future<bool> build() =>
       ref.read(authRepositoryProvider).hasValidSession();
 
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
-    state = const AsyncLoading();
-    final result = await AsyncValue.guard(() async {
-      await ref.read(loginUseCaseProvider)(email: email, password: password);
-      return true;
-    });
-    if (!ref.mounted) return;
-    state = result;
-  }
-
   Future<void> logout() async {
-    state = const AsyncLoading();
-    final result = await AsyncValue.guard(() async {
-      await ref.read(authRepositoryProvider).logout();
-      return false;
-    });
-    if (!ref.mounted) return;
-    state = result;
+    await ref.read(authRepositoryProvider).logout();
+    ref.invalidateSelf();
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vet_app/core/validations/core_validation_service.dart';
-import 'package:vet_app/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:vet_app/features/auth/presentation/controllers/login_action.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -24,7 +24,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    ref.read(authControllerProvider.notifier).login(
+    ref.read(loginActionProvider.notifier).submit(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
@@ -32,7 +32,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<bool>>(authControllerProvider, (prev, next) {
+    ref.listen<AsyncValue<void>>(loginActionProvider, (prev, next) {
       next.whenOrNull(
         error: (e, _) => ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$e')),
@@ -40,7 +40,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
       );
     });
 
-    final isLoading = ref.watch(authControllerProvider).isLoading;
+    final isLoading = ref.watch(loginActionProvider).isLoading;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Ingresar')),

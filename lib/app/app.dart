@@ -22,13 +22,15 @@ class _AuthGate extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authControllerProvider);
-    return auth.when(
-      loading: () => const Scaffold(
+
+    if (!auth.hasValue && !auth.hasError) {
+      return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (_, __) => const LoginView(),
-      data: (authed) => authed ? const _HomePlaceholder() : const LoginView(),
-    );
+      );
+    }
+
+    final authed = auth.value ?? false;
+    return authed ? const _HomePlaceholder() : const LoginView();
   }
 }
 
