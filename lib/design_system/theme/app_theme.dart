@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:vet_app/design_system/tokens/ds_colors.dart';
-import 'package:vet_app/design_system/tokens/ds_radii.dart';
-import 'package:vet_app/design_system/tokens/ds_spacing.dart';
-import 'package:vet_app/design_system/tokens/ds_typography.dart';
+import 'package:vet_app/design_system/tokens/tokens.dart';
 
 abstract final class AppTheme {
   static ThemeData light() {

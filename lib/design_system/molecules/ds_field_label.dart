@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vet_app/design_system/tokens/ds_spacing.dart';
-import 'package:vet_app/design_system/tokens/ds_typography.dart';
+import 'package:vet_app/design_system/tokens/tokens.dart';
 
 class DsFieldLabel extends StatelessWidget {
   const DsFieldLabel({

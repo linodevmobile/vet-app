@@ -5,7 +5,7 @@ import 'package:vet_app/design_system/atoms/ds_password_input.dart';
 import 'package:vet_app/design_system/atoms/ds_primary_button.dart';
 import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/molecules/ds_field_label.dart';
-import 'package:vet_app/design_system/tokens/ds_spacing.dart';
+import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/auth/presentation/controllers/login_action.dart';
 
 class LoginView extends ConsumerStatefulWidget {
