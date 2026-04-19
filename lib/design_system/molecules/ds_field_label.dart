@@ -16,7 +16,7 @@ class DsFieldLabel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: DsTypography.label),
+        Text(label.toUpperCase(), style: DsTypography.kicker),
         const SizedBox(height: DsSpacing.sm),
         child,
       ],

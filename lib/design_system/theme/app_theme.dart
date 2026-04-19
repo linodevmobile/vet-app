@@ -36,7 +36,7 @@ abstract final class AppTheme {
       // Inputs
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: DsColors.surfaceAlt,
+        fillColor: DsColors.surface,
         hintStyle: DsTypography.bodyMd.copyWith(color: DsColors.ink40),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: DsSpacing.md,
@@ -66,6 +66,19 @@ abstract final class AppTheme {
           backgroundColor: DsColors.primary,
           foregroundColor: Colors.white,
           elevation: 0,
+          minimumSize: const Size.fromHeight(DsSpacing.buttonLg),
+          textStyle: DsTypography.button,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DsRadii.r2),
+          ),
+        ),
+      ),
+
+      // FilledButton usa su propio theme (default Material = StadiumBorder / píldora).
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: DsColors.primary,
+          foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(DsSpacing.buttonLg),
           textStyle: DsTypography.button,
           shape: RoundedRectangleBorder(

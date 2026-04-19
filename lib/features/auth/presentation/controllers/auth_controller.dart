@@ -15,11 +15,12 @@ LoginUseCase loginUseCase(Ref ref) =>
 class AuthController extends _$AuthController {
   @override
   Future<bool> build() async {
-    final results = await Future.wait([
-      ref.read(authRepositoryProvider).hasValidSession(),
+    final session = ref.read(authRepositoryProvider).hasValidSession();
+    await Future.wait([
+      session,
       Future<void>.delayed(_minSplashDuration),
     ]);
-    return results[0] as bool? ?? false;
+    return session;
   }
 
   Future<void> logout() async {

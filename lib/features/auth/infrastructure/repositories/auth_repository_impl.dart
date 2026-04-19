@@ -3,6 +3,7 @@ import 'package:vet_app/core/errors/api_exception_handler.dart';
 import 'package:vet_app/core/storage/secure_storage_service.dart';
 import 'package:vet_app/features/auth/domain/datasources/auth_datasource.dart';
 import 'package:vet_app/features/auth/domain/entities/auth_session.dart';
+import 'package:vet_app/features/auth/domain/entities/veterinarian.dart';
 import 'package:vet_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:vet_app/features/auth/infrastructure/datasources/auth_datasource_impl.dart';
 
@@ -23,8 +24,17 @@ class AuthRepositoryImpl implements IAuthRepository {
     required String email,
     required String password,
   }) async {
+    // TODO(api): API en construcción — restaurar llamada real cuando el endpoint esté listo.
     try {
-      final session = await _datasource.login(email: email, password: password);
+      // final session = await _datasource.login(email: email, password: password);
+      const session = AuthSession(
+        veterinarian: Veterinarian(
+          id: 'mock-id',
+          email: 'mock@dev.local',
+          fullName: 'Mock Dev',
+        ),
+        accessToken: 'mock-token-dev',
+      );
       await _storage.saveAccessToken(session.accessToken);
       return session;
     } catch (e) {

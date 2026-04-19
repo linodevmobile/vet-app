@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vet_app/app/router/app_routes.dart';
+import 'package:vet_app/app/shell/home_shell.dart';
 import 'package:vet_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:vet_app/features/auth/presentation/views/login_view.dart';
 import 'package:vet_app/features/home/presentation/views/home_view.dart';
+import 'package:vet_app/features/hospitalization/presentation/views/hospital_view.dart';
+import 'package:vet_app/features/patients/presentation/views/patients_view.dart';
+import 'package:vet_app/features/profile/presentation/views/profile_view.dart';
 import 'package:vet_app/features/splash/presentation/views/splash_view.dart';
 
 part 'app_router.g.dart';
@@ -31,7 +35,7 @@ GoRouter appRouter(Ref ref) {
       final loggedIn = auth.value ?? false;
 
       if (loggedIn) {
-        return (onLogin || onSplash) ? AppRoutes.home : null;
+        return (onLogin || onSplash) ? AppRoutes.today : null;
       }
       return onLogin ? null : AppRoutes.login;
     },
@@ -44,9 +48,43 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.login,
         builder: (context, state) => const LoginView(),
       ),
-      GoRoute(
-        path: AppRoutes.home,
-        builder: (context, state) => const HomeView(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            HomeShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.today,
+                builder: (context, state) => const HomeView(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.patients,
+                builder: (context, state) => const PatientsView(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.hospital,
+                builder: (context, state) => const HospitalView(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.profile,
+                builder: (context, state) => const ProfileView(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
