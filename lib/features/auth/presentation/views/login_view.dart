@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vet_app/core/validations/core_validation_service.dart';
+import 'package:vet_app/design_system/atoms/ds_password_input.dart';
+import 'package:vet_app/design_system/atoms/ds_primary_button.dart';
+import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/features/auth/presentation/controllers/login_action.dart';
 
 class LoginView extends ConsumerStatefulWidget {
@@ -51,20 +54,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
+              DsTextInput(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                label: 'Email',
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email],
                 validator: CoreValidationService.validateEmail,
                 enabled: !isLoading,
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              DsPasswordInput(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Contraseña'),
-                obscureText: true,
-                autofillHints: const [AutofillHints.password],
+                label: 'Contraseña',
                 validator: (v) => CoreValidationService.validateMinLength(
                   v,
                   6,
@@ -73,15 +74,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 enabled: !isLoading,
               ),
               const SizedBox(height: 32),
-              FilledButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Ingresar'),
+              DsPrimaryButton(
+                label: 'Ingresar',
+                isLoading: isLoading,
+                onPressed: _submit,
               ),
             ],
           ),
