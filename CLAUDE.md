@@ -22,7 +22,7 @@ Leer **antes** de escribir código que toque el área correspondiente:
 - Lints: `very_good_analysis`. `riverpod_lint` + `custom_lint` pausados hasta que `custom_lint` soporte `analyzer ^9.0.0` (bloquea a `riverpod_generator 4.x`). Mientras tanto, las reglas de Riverpod 3 se enforzan vía `.claude/rules/arquitectura-explicada.md`.
 - Tests: `mocktail`.
 - Flavors: STG / PROD vía `--dart-define-from-file`.
-- Calidad local: `lefthook` (sin CI remoto por ahora).
+- Calidad local: `lefthook` (sin CI remoto por ahora). Tras clonar el repo: `lefthook install` (una vez) para registrar los hooks de git. Requiere tener el binario `lefthook` en PATH.
 
 ## Fuera del stack — no introducir sin acordar antes
 
