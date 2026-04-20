@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
-import 'package:vet_app/features/appointments/domain/entities/appointment.dart';
-import 'package:vet_app/features/home/presentation/sections/appointment_row_tile.dart';
+import 'package:vet_app/features/consultations/domain/entities/consultation_record.dart';
+import 'package:vet_app/features/home/presentation/sections/consultation_record_row.dart';
 import 'package:vet_app/features/home/presentation/sections/dashboard_section_header.dart';
 
-class DashboardAgendaSection extends StatelessWidget {
-  const DashboardAgendaSection({
+class DashboardRecordsSection extends StatelessWidget {
+  const DashboardRecordsSection({
     required this.rows,
-    required this.onSeeAll,
     super.key,
   });
 
-  final List<AppointmentRow> rows;
-  final VoidCallback onSeeAll;
+  final List<RecordRow> rows;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        DashboardSectionHeader(
-          kicker: 'AGENDA',
-          title: 'Hoy',
-          meta: '${rows.length} consultas',
-          onSeeAll: onSeeAll,
+        const DashboardSectionHeader(
+          kicker: 'REGISTROS',
+          title: 'Recientes',
         ),
         const SizedBox(height: DsSpacing.md),
         Card(
@@ -31,9 +27,9 @@ class DashboardAgendaSection extends StatelessWidget {
           child: Column(
             children: List.generate(rows.length, (i) {
               final row = rows[i];
-              return AppointmentRowTile(
-                time: row.time,
-                appointment: row.appointment,
+              return ConsultationRecordRow(
+                record: row.record,
+                whenLabel: row.whenLabel,
                 onTap: row.onTap,
                 showDivider: i < rows.length - 1,
               );
@@ -45,14 +41,14 @@ class DashboardAgendaSection extends StatelessWidget {
   }
 }
 
-class AppointmentRow {
-  const AppointmentRow({
-    required this.time,
-    required this.appointment,
+class RecordRow {
+  const RecordRow({
+    required this.record,
+    required this.whenLabel,
     required this.onTap,
   });
 
-  final String time;
-  final Appointment appointment;
+  final ConsultationRecord record;
+  final String whenLabel;
   final VoidCallback onTap;
 }
