@@ -53,39 +53,58 @@ class HomeView extends ConsumerWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(DsSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DashboardHeaderSection(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                DsSpacing.lg,
+                DsSpacing.lg,
+                DsSpacing.lg,
+                DsSpacing.md,
+              ),
+              child: DashboardHeaderSection(
                 dateLabel: header.dateLabel,
                 greeting: header.greeting,
                 initials: header.initials,
               ),
-              const SizedBox(height: DsSpacing.xxl),
-              DashboardSearchTile(
-                suggestions: suggestions,
-                onTap: () => context.go(AppRoutes.patients),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  DsSpacing.lg,
+                  DsSpacing.md,
+                  DsSpacing.lg,
+                  DsSpacing.lg,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    DashboardSearchTile(
+                      suggestions: suggestions,
+                      onTap: () => context.go(AppRoutes.patients),
+                    ),
+                    const SizedBox(height: DsSpacing.xl),
+                    DashboardAgendaSection(
+                      rows: agendaRows,
+                      onSeeAll: () {
+                        // TODO(agenda): pantalla de agenda completa.
+                      },
+                    ),
+                    const SizedBox(height: DsSpacing.xl),
+                    DashboardHospitalizationSection(
+                      patients: hospitalized,
+                      onPatientTap: (_) {
+                        // TODO(hospitalization): abrir ficha del paciente hospitalizado.
+                      },
+                    ),
+                    const SizedBox(height: DsSpacing.xl),
+                    DashboardRecordsSection(rows: recordRows),
+                  ],
+                ),
               ),
-              const SizedBox(height: DsSpacing.xl),
-              DashboardAgendaSection(
-                rows: agendaRows,
-                onSeeAll: () {
-                  // TODO(agenda): pantalla de agenda completa.
-                },
-              ),
-              const SizedBox(height: DsSpacing.xl),
-              DashboardHospitalizationSection(
-                patients: hospitalized,
-                onPatientTap: (_) {
-                  // TODO(hospitalization): abrir ficha del paciente hospitalizado.
-                },
-              ),
-              const SizedBox(height: DsSpacing.xl),
-              DashboardRecordsSection(rows: recordRows),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

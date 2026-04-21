@@ -7,6 +7,7 @@ import 'package:vet_app/features/auth/presentation/controllers/auth_controller.d
 import 'package:vet_app/features/auth/presentation/views/login_view.dart';
 import 'package:vet_app/features/home/presentation/views/home_view.dart';
 import 'package:vet_app/features/hospitalization/presentation/views/hospital_view.dart';
+import 'package:vet_app/features/patients/presentation/views/add_patient_view.dart';
 import 'package:vet_app/features/patients/presentation/views/patients_view.dart';
 import 'package:vet_app/features/profile/presentation/views/profile_view.dart';
 import 'package:vet_app/features/splash/presentation/views/splash_view.dart';
@@ -65,6 +66,12 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: AppRoutes.patients,
                 builder: (context, state) => const PatientsView(),
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    builder: (context, state) => const AddPatientView(),
+                  ),
+                ],
               ),
             ],
           ),

@@ -22,9 +22,7 @@ class PatientsView extends ConsumerWidget {
     final results = ref.watch(filteredPatientsProvider);
     final query = ref.watch(patientSearchQueryProvider);
 
-    void openRegister() {
-      // TODO(patients): pantalla de registro de paciente nuevo.
-    }
+    void openRegister() => context.push(AppRoutes.newPatient);
 
     final tiles = results
         .map(
@@ -40,17 +38,17 @@ class PatientsView extends ConsumerWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            DsSpacing.lg,
-            DsSpacing.md,
-            DsSpacing.lg,
-            DsSpacing.xxl,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DsScreenHeader(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                DsSpacing.lg,
+                DsSpacing.md,
+                DsSpacing.lg,
+                DsSpacing.md,
+              ),
+              child: DsScreenHeader(
                 title: 'Nueva consulta',
                 onBack: () => _pop(context),
                 trailing: DsIconButton(
@@ -58,17 +56,31 @@ class PatientsView extends ConsumerWidget {
                   onTap: openRegister,
                 ),
               ),
-              const SizedBox(height: DsSpacing.lg),
-              const PatientSearchInput(),
-              const SizedBox(height: DsSpacing.md),
-              const PatientFilterChips(),
-              const SizedBox(height: DsSpacing.lg),
-              if (tiles.isEmpty && query.isNotEmpty)
-                PatientEmptyState(query: query, onCreate: openRegister)
-              else
-                PatientResultsSection(tiles: tiles),
-            ],
-          ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  DsSpacing.lg,
+                  0,
+                  DsSpacing.lg,
+                  DsSpacing.xxl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const PatientSearchInput(),
+                    const SizedBox(height: DsSpacing.md),
+                    const PatientFilterChips(),
+                    const SizedBox(height: DsSpacing.lg),
+                    if (tiles.isEmpty && query.isNotEmpty)
+                      PatientEmptyState(query: query, onCreate: openRegister)
+                    else
+                      PatientResultsSection(tiles: tiles),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

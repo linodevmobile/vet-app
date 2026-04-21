@@ -1,0 +1,208 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:vet_app/app/router/app_routes.dart';
+import 'package:vet_app/core/validations/core_validation_service.dart';
+import 'package:vet_app/design_system/atoms/ds_primary_button.dart';
+import 'package:vet_app/design_system/atoms/ds_text_input.dart';
+import 'package:vet_app/design_system/molecules/ds_field_label.dart';
+import 'package:vet_app/design_system/molecules/ds_screen_header.dart';
+import 'package:vet_app/design_system/tokens/tokens.dart';
+import 'package:vet_app/features/patients/domain/validation/patient_validation_service.dart';
+import 'package:vet_app/features/patients/presentation/sections/add_patient_species_selector.dart';
+
+class AddPatientView extends ConsumerStatefulWidget {
+  const AddPatientView({super.key});
+
+  @override
+  ConsumerState<AddPatientView> createState() => _AddPatientViewState();
+}
+
+class _AddPatientViewState extends ConsumerState<AddPatientView> {
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _age = TextEditingController();
+  final _weight = TextEditingController();
+  final _owner = TextEditingController();
+  final _phone = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _age.dispose();
+    _weight.dispose();
+    _owner.dispose();
+    _phone.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    // TODO(patients): conectar AddPatientController cuando exista infra.
+  }
+
+  void _pop() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.patients);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                DsSpacing.lg,
+                DsSpacing.md,
+                DsSpacing.lg,
+                DsSpacing.md,
+              ),
+              child: DsScreenHeader(title: 'Paciente nuevo', onBack: _pop),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  DsSpacing.lg,
+                  0,
+                  DsSpacing.lg,
+                  DsSpacing.xxl,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Solo lo mínimo para empezar. Podrás completar el '
+                        'resto durante o después de la consulta.',
+                        style: DsTypography.bodyMd
+                            .copyWith(color: DsColors.ink60),
+                      ),
+                      const SizedBox(height: DsSpacing.lg),
+                      _Card(
+                        child: DsFieldLabel(
+                          label: 'Nombre del paciente',
+                          child: DsTextInput(
+                            controller: _name,
+                            hint: 'Ej. Luna',
+                            validator: (v) =>
+                                CoreValidationService.validateRequired(
+                              v,
+                              fieldName: 'Nombre',
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: DsSpacing.md),
+                      _Card(
+                        child: DsFieldLabel(
+                          label: 'Especie',
+                          child: const AddPatientSpeciesSelector(),
+                        ),
+                      ),
+                      const SizedBox(height: DsSpacing.md),
+                      _Card(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: DsFieldLabel(
+                                label: 'Edad',
+                                child: DsTextInput(
+                                  controller: _age,
+                                  hint: '4 años',
+                                  keyboardType: TextInputType.number,
+                                  validator:
+                                      PatientValidationService.validateAge,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: DsSpacing.md),
+                            Expanded(
+                              child: DsFieldLabel(
+                                label: 'Peso',
+                                child: DsTextInput(
+                                  controller: _weight,
+                                  hint: '12.5 kg',
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                                  validator:
+                                      PatientValidationService.validateWeight,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: DsSpacing.md),
+                      _Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            DsFieldLabel(
+                              label: 'Dueño',
+                              child: DsTextInput(
+                                controller: _owner,
+                                hint: 'Nombre y apellido',
+                                validator: (v) =>
+                                    CoreValidationService.validateRequired(
+                                  v,
+                                  fieldName: 'Dueño',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: DsSpacing.md),
+                            DsFieldLabel(
+                              label: 'Teléfono',
+                              child: DsTextInput(
+                                controller: _phone,
+                                hint: '+34 600 000 000',
+                                keyboardType: TextInputType.phone,
+                                validator:
+                                    PatientValidationService.validatePhone,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: DsSpacing.xl),
+                      DsPrimaryButton(
+                        label: 'Guardar y empezar consulta',
+                        onPressed: _submit,
+                        icon: const Icon(Icons.arrow_forward, size: 18),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Card extends StatelessWidget {
+  const _Card({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(DsSpacing.md),
+        child: child,
+      ),
+    );
+  }
+}

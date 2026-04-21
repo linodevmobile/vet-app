@@ -37,7 +37,9 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: DsColors.surface,
-        hintStyle: DsTypography.bodyMd.copyWith(color: DsColors.ink40),
+        hintStyle: DsTypography.bodyMd.copyWith(
+          color: DsColors.ink40.withValues(alpha: 0.6),
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: DsSpacing.md,
           vertical: DsSpacing.md,
