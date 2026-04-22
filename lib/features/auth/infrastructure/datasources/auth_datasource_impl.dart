@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:vet_app/core/network/api_envelope.dart';
 import 'package:vet_app/core/network/api_service.dart';
 import 'package:vet_app/features/auth/domain/datasources/auth_datasource.dart';
 import 'package:vet_app/features/auth/domain/entities/auth_session.dart';
@@ -18,11 +19,12 @@ class AuthDatasourceImpl implements IAuthDatasource {
     required String email,
     required String password,
   }) async {
-    final data = await _api.post(
+    final raw = await _api.post(
       AuthApi.login,
       body: {'email': email, 'password': password},
     );
-    final dto = AuthResponseDto.fromJson(data as Map<String, dynamic>);
+    final data = ApiEnvelope.unwrapMap(raw);
+    final dto = AuthResponseDto.fromJson(data);
     return _toEntity(dto);
   }
 

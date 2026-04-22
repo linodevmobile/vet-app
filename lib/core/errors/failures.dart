@@ -39,6 +39,18 @@ final class ServerFailure extends Failure {
   final int statusCode;
 }
 
+/// Error lógico reportado por el backend en el envelope (`error.code` / `error.message`)
+/// con HTTP 2xx. Distinto de `ServerFailure`, que representa fallo de transporte/5xx.
+final class ApiFailure extends Failure {
+  const ApiFailure({
+    required super.message,
+    this.code,
+    super.cause,
+  });
+
+  final String? code;
+}
+
 final class UnknownFailure extends Failure {
   const UnknownFailure({
     super.message = 'Ocurrió un error inesperado.',
