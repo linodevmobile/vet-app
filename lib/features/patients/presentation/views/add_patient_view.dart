@@ -8,7 +8,9 @@ import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/molecules/ds_field_label.dart';
 import 'package:vet_app/design_system/molecules/ds_screen_header.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
+import 'package:vet_app/features/patients/domain/entities/patient.dart';
 import 'package:vet_app/features/patients/domain/validation/patient_validation_service.dart';
+import 'package:vet_app/features/patients/presentation/controllers/species_selection_controller.dart';
 import 'package:vet_app/features/patients/presentation/sections/add_patient_species_selector.dart';
 
 class AddPatientView extends ConsumerStatefulWidget {
@@ -38,7 +40,19 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
 
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    // TODO(patients): conectar AddPatientController cuando exista infra.
+    // TODO(patients): reemplazar construcción transiente por respuesta del
+    // AddPatientController cuando exista la infra + backend.
+    final species = ref.read(speciesSelectionControllerProvider);
+    final patient = Patient(
+      id: 'temp-${DateTime.now().millisecondsSinceEpoch}',
+      name: _name.text.trim(),
+      species: species,
+      breed: 'Sin especificar',
+      ageYears: int.tryParse(_age.text.trim()) ?? 0,
+      ownerName: _owner.text.trim(),
+      lastVisit: DateTime.now(),
+    );
+    context.push(AppRoutes.consultationNew, extra: patient);
   }
 
   void _pop() {

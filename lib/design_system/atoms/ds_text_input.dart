@@ -8,6 +8,8 @@ class DsTextInput extends StatelessWidget {
     this.keyboardType,
     this.autofillHints,
     this.enabled = true,
+    this.minLines,
+    this.maxLines = 1,
     super.key,
   });
 
@@ -17,6 +19,8 @@ class DsTextInput extends StatelessWidget {
   final TextInputType? keyboardType;
   final Iterable<String>? autofillHints;
   final bool enabled;
+  final int? minLines;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +31,8 @@ class DsTextInput extends StatelessWidget {
       autofillHints: autofillHints,
       enabled: enabled,
       validator: validator,
+      minLines: minLines,
+      maxLines: maxLines,
     );
   }
 }

@@ -5,8 +5,10 @@ import 'package:vet_app/app/router/app_routes.dart';
 import 'package:vet_app/app/shell/home_shell.dart';
 import 'package:vet_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:vet_app/features/auth/presentation/views/login_view.dart';
+import 'package:vet_app/features/consultation/presentation/views/consultation_view.dart';
 import 'package:vet_app/features/home/presentation/views/home_view.dart';
 import 'package:vet_app/features/hospitalization/presentation/views/hospital_view.dart';
+import 'package:vet_app/features/patients/domain/entities/patient.dart';
 import 'package:vet_app/features/patients/presentation/views/add_patient_view.dart';
 import 'package:vet_app/features/patients/presentation/views/patients_view.dart';
 import 'package:vet_app/features/profile/presentation/views/profile_view.dart';
@@ -48,6 +50,16 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginView(),
+      ),
+      GoRoute(
+        path: AppRoutes.consultationNew,
+        builder: (context, state) {
+          final patient = state.extra;
+          if (patient is! Patient) {
+            return const _MissingPatientFallback();
+          }
+          return ConsultationView(patient: patient);
+        },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -99,4 +111,35 @@ GoRouter appRouter(Ref ref) {
 
 class _AuthRefreshListenable extends ChangeNotifier {
   void refresh() => notifyListeners();
+}
+
+class _MissingPatientFallback extends StatelessWidget {
+  const _MissingPatientFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.patients);
+            }
+          },
+        ),
+      ),
+      body: const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'No se especificó un paciente para la consulta.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
 }
