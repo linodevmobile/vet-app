@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vet_app/app/router/app_routes.dart';
+import 'package:vet_app/app/shared/utils/veterinarian_formatters.dart';
 import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/molecules/ds_field_label.dart';
 import 'package:vet_app/design_system/organisms/ds_toast.dart';
@@ -317,11 +318,15 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
   }
 
   Widget _signatureBody(TextEditingController controller) {
-    final user = ref.watch(currentUserProvider);
+    final user = ref.watch(currentUserProvider).value;
+    final doctorName =
+        user == null ? '' : VeterinarianFormatters.salutation(user);
+    final doctorRegistry =
+        user == null ? '' : VeterinarianFormatters.registry(user);
     return SignatureBody(
       controller: controller,
-      doctorName: user.salutation,
-      doctorRegistry: user.registry,
+      doctorName: doctorName,
+      doctorRegistry: doctorRegistry,
     );
   }
 }

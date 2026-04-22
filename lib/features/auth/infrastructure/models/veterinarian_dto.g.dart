@@ -13,6 +13,7 @@ _VeterinarianDto _$VeterinarianDtoFromJson(Map<String, dynamic> json) =>
       fullName: json['full_name'] as String,
       licenseNumber: json['license_number'] as String?,
       phone: json['phone'] as String?,
+      salutation: json['salutation'] as String?,
     );
 
 Map<String, dynamic> _$VeterinarianDtoToJson(_VeterinarianDto instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$VeterinarianDtoToJson(_VeterinarianDto instance) =>
       'full_name': instance.fullName,
       'license_number': instance.licenseNumber,
       'phone': instance.phone,
+      'salutation': instance.salutation,
     };

@@ -9,12 +9,11 @@ part of 'current_user.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(currentUser)
+@ProviderFor(CurrentUser)
 final currentUserProvider = CurrentUserProvider._();
 
 final class CurrentUserProvider
-    extends $FunctionalProvider<CurrentUser, CurrentUser, CurrentUser>
-    with $Provider<CurrentUser> {
+    extends $AsyncNotifierProvider<CurrentUser, Veterinarian> {
   CurrentUserProvider._()
     : super(
         from: null,
@@ -31,21 +30,25 @@ final class CurrentUserProvider
 
   @$internal
   @override
-  $ProviderElement<CurrentUser> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  CurrentUser create(Ref ref) {
-    return currentUser(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(CurrentUser value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<CurrentUser>(value),
-    );
-  }
+  CurrentUser create() => CurrentUser();
 }
 
-String _$currentUserHash() => r'8af589ec7581d0702da852cb94cdd2a5dafb9713';
+String _$currentUserHash() => r'c42c23acd59a9713f271f0841fb264e2ce086572';
+
+abstract class _$CurrentUser extends $AsyncNotifier<Veterinarian> {
+  FutureOr<Veterinarian> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<Veterinarian>, Veterinarian>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<Veterinarian>, Veterinarian>,
+              AsyncValue<Veterinarian>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

@@ -3,6 +3,7 @@ import 'package:vet_app/core/errors/api_exception_handler.dart';
 import 'package:vet_app/core/storage/secure_storage_service.dart';
 import 'package:vet_app/features/auth/domain/datasources/auth_datasource.dart';
 import 'package:vet_app/features/auth/domain/entities/auth_session.dart';
+import 'package:vet_app/features/auth/domain/entities/veterinarian.dart';
 import 'package:vet_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:vet_app/features/auth/infrastructure/datasources/auth_datasource_impl.dart';
 
@@ -46,6 +47,15 @@ class AuthRepositoryImpl implements IAuthRepository {
     try {
       final token = await _storage.readAccessToken();
       return token != null && token.isNotEmpty;
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<Veterinarian> getCurrentVeterinarian() async {
+    try {
+      return await _datasource.fetchMe();
     } catch (e) {
       throw ApiExceptionHandler.handle(e);
     }

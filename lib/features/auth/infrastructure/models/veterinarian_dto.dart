@@ -11,6 +11,7 @@ abstract class VeterinarianDto with _$VeterinarianDto {
     required String fullName,
     String? licenseNumber,
     String? phone,
+    String? salutation,
   }) = _VeterinarianDto;
 
   factory VeterinarianDto.fromJson(Map<String, dynamic> json) =>

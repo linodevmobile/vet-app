@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VeterinarianDto {
 
- String get id; String get email; String get fullName; String? get licenseNumber; String? get phone;
+ String get id; String get email; String get fullName; String? get licenseNumber; String? get phone; String? get salutation;
 /// Create a copy of VeterinarianDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $VeterinarianDtoCopyWith<VeterinarianDto> get copyWith => _$VeterinarianDtoCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VeterinarianDto&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.licenseNumber, licenseNumber) || other.licenseNumber == licenseNumber)&&(identical(other.phone, phone) || other.phone == phone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VeterinarianDto&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.licenseNumber, licenseNumber) || other.licenseNumber == licenseNumber)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.salutation, salutation) || other.salutation == salutation));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,fullName,licenseNumber,phone);
+int get hashCode => Object.hash(runtimeType,id,email,fullName,licenseNumber,phone,salutation);
 
 @override
 String toString() {
-  return 'VeterinarianDto(id: $id, email: $email, fullName: $fullName, licenseNumber: $licenseNumber, phone: $phone)';
+  return 'VeterinarianDto(id: $id, email: $email, fullName: $fullName, licenseNumber: $licenseNumber, phone: $phone, salutation: $salutation)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $VeterinarianDtoCopyWith<$Res>  {
   factory $VeterinarianDtoCopyWith(VeterinarianDto value, $Res Function(VeterinarianDto) _then) = _$VeterinarianDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String fullName, String? licenseNumber, String? phone
+ String id, String email, String fullName, String? licenseNumber, String? phone, String? salutation
 });
 
 
@@ -65,13 +65,14 @@ class _$VeterinarianDtoCopyWithImpl<$Res>
 
 /// Create a copy of VeterinarianDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? licenseNumber = freezed,Object? phone = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? licenseNumber = freezed,Object? phone = freezed,Object? salutation = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,licenseNumber: freezed == licenseNumber ? _self.licenseNumber : licenseNumber // ignore: cast_nullable_to_non_nullable
 as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,salutation: freezed == salutation ? _self.salutation : salutation // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String fullName,  String? licenseNumber,  String? phone)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String fullName,  String? licenseNumber,  String? phone,  String? salutation)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VeterinarianDto() when $default != null:
-return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.phone);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.phone,_that.salutation);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String fullName,  String? licenseNumber,  String? phone)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String fullName,  String? licenseNumber,  String? phone,  String? salutation)  $default,) {final _that = this;
 switch (_that) {
 case _VeterinarianDto():
-return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.phone);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.phone,_that.salutation);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String fullName,  String? licenseNumber,  String? phone)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String fullName,  String? licenseNumber,  String? phone,  String? salutation)?  $default,) {final _that = this;
 switch (_that) {
 case _VeterinarianDto() when $default != null:
-return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.phone);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.phone,_that.salutation);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.id,_that.email,_that.fullName,_that.licenseNumber,_that.ph
 @JsonSerializable()
 
 class _VeterinarianDto implements VeterinarianDto {
-  const _VeterinarianDto({required this.id, required this.email, required this.fullName, this.licenseNumber, this.phone});
+  const _VeterinarianDto({required this.id, required this.email, required this.fullName, this.licenseNumber, this.phone, this.salutation});
   factory _VeterinarianDto.fromJson(Map<String, dynamic> json) => _$VeterinarianDtoFromJson(json);
 
 @override final  String id;
@@ -221,6 +222,7 @@ class _VeterinarianDto implements VeterinarianDto {
 @override final  String fullName;
 @override final  String? licenseNumber;
 @override final  String? phone;
+@override final  String? salutation;
 
 /// Create a copy of VeterinarianDto
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VeterinarianDto&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.licenseNumber, licenseNumber) || other.licenseNumber == licenseNumber)&&(identical(other.phone, phone) || other.phone == phone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VeterinarianDto&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.licenseNumber, licenseNumber) || other.licenseNumber == licenseNumber)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.salutation, salutation) || other.salutation == salutation));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,fullName,licenseNumber,phone);
+int get hashCode => Object.hash(runtimeType,id,email,fullName,licenseNumber,phone,salutation);
 
 @override
 String toString() {
-  return 'VeterinarianDto(id: $id, email: $email, fullName: $fullName, licenseNumber: $licenseNumber, phone: $phone)';
+  return 'VeterinarianDto(id: $id, email: $email, fullName: $fullName, licenseNumber: $licenseNumber, phone: $phone, salutation: $salutation)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$VeterinarianDtoCopyWith<$Res> implements $VeterinarianDto
   factory _$VeterinarianDtoCopyWith(_VeterinarianDto value, $Res Function(_VeterinarianDto) _then) = __$VeterinarianDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String fullName, String? licenseNumber, String? phone
+ String id, String email, String fullName, String? licenseNumber, String? phone, String? salutation
 });
 
 
@@ -272,13 +274,14 @@ class __$VeterinarianDtoCopyWithImpl<$Res>
 
 /// Create a copy of VeterinarianDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? licenseNumber = freezed,Object? phone = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? licenseNumber = freezed,Object? phone = freezed,Object? salutation = freezed,}) {
   return _then(_VeterinarianDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,licenseNumber: freezed == licenseNumber ? _self.licenseNumber : licenseNumber // ignore: cast_nullable_to_non_nullable
 as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,salutation: freezed == salutation ? _self.salutation : salutation // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

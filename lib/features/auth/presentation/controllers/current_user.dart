@@ -1,19 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:vet_app/features/auth/domain/entities/veterinarian.dart';
+import 'package:vet_app/features/auth/infrastructure/repositories/auth_repository_impl.dart';
 
 part 'current_user.g.dart';
 
-typedef CurrentUser = ({
-  String fullName,
-  String salutation,
-  String registry,
-});
-
 @riverpod
-CurrentUser currentUser(Ref ref) {
-  // TODO(auth): leer del AuthSession cuando el API de login esté listo.
-  return (
-    fullName: 'Andres Mena',
-    salutation: 'Dr. Mena',
-    registry: 'MV · Reg. 12.845',
-  );
+class CurrentUser extends _$CurrentUser {
+  @override
+  Future<Veterinarian> build() =>
+      ref.watch(authRepositoryProvider).getCurrentVeterinarian();
 }
