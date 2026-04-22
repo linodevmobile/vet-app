@@ -58,3 +58,11 @@ lib/
 ## Modo de trabajo
 
 El owner está aprendiendo `freezed`, `json_serializable`, code-gen con `build_runner`, interceptores de Dio, y `lefthook`. Al crear un archivo nuevo, explicar **qué hace, por qué está en esa ruta, y cómo encaja** — no volcar código sin contexto. Ir archivo por archivo, confirmar, seguir.
+  
+## API Backend                                                                                                                                            
+  - Postman collection: `docs/api/BackendVetApp.postman_collection.json`
+  - Contiene todos los endpoints, schemas de request/response, enums válidos
+  - Backend repo: https://github.com/linodevmobile/BackendVetApp
+  - Base URL prod: https://backendvetapp.onrender.com
+
+  Caveat: copia estática → queda desactualizada cuando backend cambia.
