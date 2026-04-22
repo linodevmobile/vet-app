@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:vet_app/app/router/app_routes.dart';
 import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/molecules/ds_field_label.dart';
+import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/auth/presentation/controllers/current_user.dart';
+import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/default_text_body.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/exam_body.dart';
@@ -18,6 +20,7 @@ import 'package:vet_app/features/consultation/presentation/sections/consultation
 import 'package:vet_app/features/consultation/presentation/sections/consultation_compliance_sheet.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_header_section.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_sign_bar.dart';
+import 'package:vet_app/features/consultation/presentation/sections/pause_consultation_sheet.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 
 class ConsultationView extends ConsumerStatefulWidget {
@@ -138,6 +141,37 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
     });
   }
 
+  Future<void> _openPauseSheet() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => PauseConsultationSheet(
+        patientName: widget.patient.name,
+        sectionsCompleted: _completedCount,
+        sectionsTotal: ConsultationSection.values.length,
+        onCancel: () => Navigator.of(sheetContext).pop(),
+        onConfirm: (reason, note) =>
+            _confirmPause(sheetContext, reason, note),
+      ),
+    );
+  }
+
+  void _confirmPause(
+    BuildContext sheetContext,
+    ConsultationPauseReason reason,
+    String? note,
+  ) {
+    Navigator.of(sheetContext).pop();
+    DsToast.show(
+      context,
+      message: 'Consulta pausada · ${reason.label}',
+      variant: DsToastVariant.success,
+    );
+    context.go(AppRoutes.today);
+  }
+
   void _onSign() {
     context.go(AppRoutes.today);
   }
@@ -171,6 +205,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
                   total: ConsultationSection.values.length,
                   onBack: _back,
                   onOpenChecklist: _openCompliance,
+                  onPause: _openPauseSheet,
                   isUrgent: widget.patient.isAlert,
                 ),
                 Expanded(

@@ -15,6 +15,7 @@ class ConsultationHeaderSection extends StatelessWidget {
     this.savedLabel,
     this.isUrgent = false,
     this.onOpenChecklist,
+    this.onPause,
     super.key,
   });
 
@@ -27,6 +28,7 @@ class ConsultationHeaderSection extends StatelessWidget {
   final String? savedLabel;
   final bool isUrgent;
   final VoidCallback? onOpenChecklist;
+  final VoidCallback? onPause;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,10 @@ class ConsultationHeaderSection extends StatelessWidget {
                   total: total,
                   onTap: onOpenChecklist,
                 ),
+                if (onPause != null) ...[
+                  const SizedBox(width: DsSpacing.sm),
+                  _PauseButton(onTap: onPause!),
+                ],
               ],
             ),
             const SizedBox(height: 10),
@@ -187,6 +193,40 @@ class _CompletedChip extends StatelessWidget {
                 color: DsColors.ink40,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PauseButton extends StatelessWidget {
+  const _PauseButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderColor = DsColors.warn.withValues(alpha: 0.33);
+    final bgColor = DsColors.warn.withValues(alpha: 0.06);
+
+    return Tooltip(
+      message: 'Pausar consulta',
+      child: Material(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(DsRadii.r2),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(DsRadii.r2),
+          child: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(DsRadii.r2),
+              border: Border.all(color: borderColor),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.pause, size: 14, color: DsColors.warn),
           ),
         ),
       ),

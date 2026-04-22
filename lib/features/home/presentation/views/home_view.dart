@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vet_app/app/router/app_routes.dart';
+import 'package:vet_app/app/shared/utils/consultation_pause_formatters.dart';
 import 'package:vet_app/app/shared/utils/date_formatters.dart';
+import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/appointments/presentation/controllers/today_appointments.dart';
+import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/recent_consultations.dart';
 import 'package:vet_app/features/home/presentation/controllers/dashboard_header_controller.dart';
 import 'package:vet_app/features/home/presentation/controllers/recent_patient_names.dart';
 import 'package:vet_app/features/home/presentation/sections/dashboard_agenda_section.dart';
 import 'package:vet_app/features/home/presentation/sections/dashboard_header_section.dart';
 import 'package:vet_app/features/home/presentation/sections/dashboard_hospitalization_section.dart';
+import 'package:vet_app/features/home/presentation/sections/dashboard_in_progress_section.dart';
 import 'package:vet_app/features/home/presentation/sections/dashboard_records_section.dart';
 import 'package:vet_app/features/home/presentation/sections/dashboard_search_tile.dart';
 import 'package:vet_app/features/hospitalization/presentation/controllers/active_hospitalizations.dart';
@@ -24,6 +28,7 @@ class HomeView extends ConsumerWidget {
     final suggestions = ref.watch(recentPatientNamesProvider);
     final appointments = ref.watch(todayAppointmentsProvider);
     final hospitalized = ref.watch(activeHospitalizationsProvider);
+    final paused = ref.watch(pausedConsultationsProvider);
     final records = ref.watch(recentConsultationsProvider);
 
     final agendaRows = appointments
@@ -46,6 +51,30 @@ class HomeView extends ConsumerWidget {
             whenLabel: DateFormatters.relativeShort(r.performedAt),
             onTap: () {
               // TODO(consultations): abrir detalle del registro.
+            },
+          ),
+        )
+        .toList();
+
+    final pausedRows = paused
+        .map(
+          (p) => PausedRow(
+            species: p.patient.species,
+            patientName: p.patient.name,
+            waitingLabel: ConsultationPauseFormatters.waitingLabel(p.pausedAt),
+            status: p.note == null
+                ? p.reason.label
+                : '${p.reason.label} — ${p.note}',
+            sectionsCompleted: p.sectionsCompleted,
+            sectionsTotal: p.sectionsTotal,
+            isStale: ConsultationPauseFormatters.isStale(p.pausedAt),
+            onTap: () {
+              // TODO(consultation): resume real — necesita endpoint /consultations/:id y route consultation/:id.
+              DsToast.show(
+                context,
+                message: 'Abrir consulta de ${p.patient.name} (pendiente)',
+                variant: DsToastVariant.success,
+              );
             },
           ),
         )
@@ -98,6 +127,10 @@ class HomeView extends ConsumerWidget {
                         // TODO(hospitalization): abrir ficha del paciente hospitalizado.
                       },
                     ),
+                    if (pausedRows.isNotEmpty) ...[
+                      const SizedBox(height: DsSpacing.xl),
+                      DashboardInProgressSection(rows: pausedRows),
+                    ],
                     const SizedBox(height: DsSpacing.xl),
                     DashboardRecordsSection(rows: recordRows),
                   ],
