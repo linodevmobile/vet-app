@@ -14,7 +14,10 @@ import 'package:vet_app/features/consultation/presentation/sections/bodies/ident
 import 'package:vet_app/features/consultation/presentation/sections/bodies/labs_body.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/signature_body.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_accordion_section.dart';
+import 'package:vet_app/features/consultation/presentation/sections/consultation_ai_bar.dart';
+import 'package:vet_app/features/consultation/presentation/sections/consultation_compliance_sheet.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_header_section.dart';
+import 'package:vet_app/features/consultation/presentation/sections/consultation_sign_bar.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 
 class ConsultationView extends ConsumerStatefulWidget {
@@ -44,6 +47,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
   final TextEditingController _weightCtrl = TextEditingController();
   final Map<ConsultationSection, TextEditingController> _values = {};
   ConsultationSection _active = ConsultationSection.anamnesis;
+  bool _recording = false;
 
   @override
   void initState() {
@@ -108,6 +112,36 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
     setState(() => _active = s);
   }
 
+  void _toggleRecording() {
+    setState(() => _recording = !_recording);
+  }
+
+  Future<void> _openCompliance() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ConsultationComplianceSheet(
+        sections: ConsultationSection.values,
+        isFilled: _isFilled,
+        onJump: _jumpToSection,
+      ),
+    );
+  }
+
+  void _jumpToSection(ConsultationSection section) {
+    Navigator.of(context).pop();
+    setState(() {
+      _collapsed.remove(section);
+      _active = section;
+    });
+  }
+
+  void _onSign() {
+    context.go(AppRoutes.today);
+  }
+
   void _back() {
     if (context.canPop()) {
       context.pop();
@@ -120,45 +154,79 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
   Widget build(BuildContext context) {
     final subtitle =
         '${widget.patient.breed} · ${widget.patient.ageYears} años';
+    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
       backgroundColor: DsColors.bg,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            ConsultationHeaderSection(
-              species: widget.patient.species,
-              patientName: widget.patient.name,
-              patientSubtitle: subtitle,
-              completed: _completedCount,
-              total: ConsultationSection.values.length,
-              onBack: _back,
-              isUrgent: widget.patient.isAlert,
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  DsSpacing.lg,
-                  DsSpacing.md,
-                  DsSpacing.lg,
-                  DsSpacing.xxl,
+            Column(
+              children: [
+                ConsultationHeaderSection(
+                  species: widget.patient.species,
+                  patientName: widget.patient.name,
+                  patientSubtitle: subtitle,
+                  completed: _completedCount,
+                  total: ConsultationSection.values.length,
+                  onBack: _back,
+                  onOpenChecklist: _openCompliance,
+                  isUrgent: widget.patient.isAlert,
                 ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(
+                      DsSpacing.lg,
+                      DsSpacing.md,
+                      DsSpacing.lg,
+                      220,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        DsFieldLabel(
+                          label: 'Motivo de consulta',
+                          child: DsTextInput(
+                            controller: _motivoCtrl,
+                            hint: 'Motivo principal de la consulta',
+                          ),
+                        ),
+                        const SizedBox(height: DsSpacing.lg),
+                        ..._buildAccordionList(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (!keyboardOpen)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    DsFieldLabel(
-                      label: 'Motivo de consulta',
-                      child: DsTextInput(
-                        controller: _motivoCtrl,
-                        hint: 'Motivo principal de la consulta',
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: DsSpacing.lg,
+                      ),
+                      child: ConsultationAiBar(
+                        recording: _recording,
+                        sectionLabel: _active.title,
+                        onToggle: _toggleRecording,
                       ),
                     ),
-                    const SizedBox(height: DsSpacing.lg),
-                    ..._buildAccordionList(),
+                    const SizedBox(height: DsSpacing.md),
+                    ConsultationSignBar(
+                      completed: _completedCount,
+                      total: ConsultationSection.values.length,
+                      onOpenCompliance: _openCompliance,
+                      onSign: _onSign,
+                    ),
                   ],
                 ),
               ),
-            ),
           ],
         ),
       ),
