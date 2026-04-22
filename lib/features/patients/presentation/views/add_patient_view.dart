@@ -7,10 +7,14 @@ import 'package:vet_app/design_system/atoms/ds_primary_button.dart';
 import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/molecules/ds_field_label.dart';
 import 'package:vet_app/design_system/molecules/ds_screen_header.dart';
+import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 import 'package:vet_app/features/patients/domain/validation/patient_validation_service.dart';
+import 'package:vet_app/features/patients/presentation/controllers/add_patient_controller.dart';
+import 'package:vet_app/features/patients/presentation/controllers/sex_selection_controller.dart';
 import 'package:vet_app/features/patients/presentation/controllers/species_selection_controller.dart';
+import 'package:vet_app/features/patients/presentation/sections/add_patient_sex_selector.dart';
 import 'package:vet_app/features/patients/presentation/sections/add_patient_species_selector.dart';
 
 class AddPatientView extends ConsumerStatefulWidget {
@@ -40,19 +44,19 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
 
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    // TODO(patients): reemplazar construcción transiente por respuesta del
-    // AddPatientController cuando exista la infra + backend.
-    final species = ref.read(speciesSelectionControllerProvider);
-    final patient = Patient(
-      id: 'temp-${DateTime.now().millisecondsSinceEpoch}',
+    final draft = Patient(
+      id: '',
       name: _name.text.trim(),
-      species: species,
-      breed: 'Sin especificar',
+      species: ref.read(speciesSelectionControllerProvider),
+      sex: ref.read(sexSelectionControllerProvider),
+      breed: '',
       ageYears: int.tryParse(_age.text.trim()) ?? 0,
       ownerName: _owner.text.trim(),
       lastVisit: DateTime.now(),
+      weightKg: double.tryParse(_weight.text.trim().replaceAll(',', '.')),
+      ownerPhone: _phone.text.trim().isEmpty ? null : _phone.text.trim(),
     );
-    context.push(AppRoutes.consultationNew, extra: patient);
+    ref.read(addPatientControllerProvider.notifier).submit(draft);
   }
 
   void _pop() {
@@ -65,6 +69,27 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<Patient?>>(addPatientControllerProvider, (prev, next) {
+      next.whenOrNull(
+        error: (e, _) => DsToast.show(
+          context,
+          message: '$e',
+          variant: DsToastVariant.error,
+        ),
+        data: (patient) {
+          if (patient == null) return;
+          DsToast.show(
+            context,
+            message: '${patient.name} creado',
+            variant: DsToastVariant.success,
+          );
+          _pop();
+        },
+      );
+    });
+
+    final isSaving = ref.watch(addPatientControllerProvider).isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -105,6 +130,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                           child: DsTextInput(
                             controller: _name,
                             hint: 'Ej. Luna',
+                            enabled: !isSaving,
                             validator: (v) =>
                                 CoreValidationService.validateRequired(
                               v,
@@ -114,10 +140,17 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                         ),
                       ),
                       const SizedBox(height: DsSpacing.md),
-                      _Card(
+                      const _Card(
                         child: DsFieldLabel(
                           label: 'Especie',
-                          child: const AddPatientSpeciesSelector(),
+                          child: AddPatientSpeciesSelector(),
+                        ),
+                      ),
+                      const SizedBox(height: DsSpacing.md),
+                      const _Card(
+                        child: DsFieldLabel(
+                          label: 'Sexo',
+                          child: AddPatientSexSelector(),
                         ),
                       ),
                       const SizedBox(height: DsSpacing.md),
@@ -131,6 +164,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                                 child: DsTextInput(
                                   controller: _age,
                                   hint: '4 años',
+                                  enabled: !isSaving,
                                   keyboardType: TextInputType.number,
                                   validator:
                                       PatientValidationService.validateAge,
@@ -144,6 +178,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                                 child: DsTextInput(
                                   controller: _weight,
                                   hint: '12.5 kg',
+                                  enabled: !isSaving,
                                   keyboardType:
                                       const TextInputType.numberWithOptions(
                                     decimal: true,
@@ -166,6 +201,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                               child: DsTextInput(
                                 controller: _owner,
                                 hint: 'Nombre y apellido',
+                                enabled: !isSaving,
                                 validator: (v) =>
                                     CoreValidationService.validateRequired(
                                   v,
@@ -179,6 +215,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                               child: DsTextInput(
                                 controller: _phone,
                                 hint: '+34 600 000 000',
+                                enabled: !isSaving,
                                 keyboardType: TextInputType.phone,
                                 validator:
                                     PatientValidationService.validatePhone,
@@ -189,7 +226,8 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                       ),
                       const SizedBox(height: DsSpacing.xl),
                       DsPrimaryButton(
-                        label: 'Guardar y empezar consulta',
+                        label: 'Guardar paciente',
+                        isLoading: isSaving,
                         onPressed: _submit,
                         icon: const Icon(Icons.arrow_forward, size: 18),
                       ),

@@ -14,7 +14,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Patient {
 
- String get id; String get name; Species get species; String get breed; int get ageYears; String get ownerName; DateTime get lastVisit; bool get isAlert; bool get isHospitalized;
+ String get id; String get name; Species get species; Sex get sex; String get breed; int get ageYears; String get ownerName;// Mientras el backend no exponga `last_visit_at`, los datasources lo
+// alimentan con `created_at` para que la UI siga funcionando.
+ DateTime get lastVisit; double? get weightKg; String? get ownerPhone; String? get ownerEmail; bool get isAlert; bool get isHospitalized;
 /// Create a copy of Patient
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +27,16 @@ $PatientCopyWith<Patient> get copyWith => _$PatientCopyWithImpl<Patient>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Patient&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.species, species) || other.species == species)&&(identical(other.breed, breed) || other.breed == breed)&&(identical(other.ageYears, ageYears) || other.ageYears == ageYears)&&(identical(other.ownerName, ownerName) || other.ownerName == ownerName)&&(identical(other.lastVisit, lastVisit) || other.lastVisit == lastVisit)&&(identical(other.isAlert, isAlert) || other.isAlert == isAlert)&&(identical(other.isHospitalized, isHospitalized) || other.isHospitalized == isHospitalized));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Patient&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.species, species) || other.species == species)&&(identical(other.sex, sex) || other.sex == sex)&&(identical(other.breed, breed) || other.breed == breed)&&(identical(other.ageYears, ageYears) || other.ageYears == ageYears)&&(identical(other.ownerName, ownerName) || other.ownerName == ownerName)&&(identical(other.lastVisit, lastVisit) || other.lastVisit == lastVisit)&&(identical(other.weightKg, weightKg) || other.weightKg == weightKg)&&(identical(other.ownerPhone, ownerPhone) || other.ownerPhone == ownerPhone)&&(identical(other.ownerEmail, ownerEmail) || other.ownerEmail == ownerEmail)&&(identical(other.isAlert, isAlert) || other.isAlert == isAlert)&&(identical(other.isHospitalized, isHospitalized) || other.isHospitalized == isHospitalized));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,species,breed,ageYears,ownerName,lastVisit,isAlert,isHospitalized);
+int get hashCode => Object.hash(runtimeType,id,name,species,sex,breed,ageYears,ownerName,lastVisit,weightKg,ownerPhone,ownerEmail,isAlert,isHospitalized);
 
 @override
 String toString() {
-  return 'Patient(id: $id, name: $name, species: $species, breed: $breed, ageYears: $ageYears, ownerName: $ownerName, lastVisit: $lastVisit, isAlert: $isAlert, isHospitalized: $isHospitalized)';
+  return 'Patient(id: $id, name: $name, species: $species, sex: $sex, breed: $breed, ageYears: $ageYears, ownerName: $ownerName, lastVisit: $lastVisit, weightKg: $weightKg, ownerPhone: $ownerPhone, ownerEmail: $ownerEmail, isAlert: $isAlert, isHospitalized: $isHospitalized)';
 }
 
 
@@ -45,7 +47,7 @@ abstract mixin class $PatientCopyWith<$Res>  {
   factory $PatientCopyWith(Patient value, $Res Function(Patient) _then) = _$PatientCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, Species species, String breed, int ageYears, String ownerName, DateTime lastVisit, bool isAlert, bool isHospitalized
+ String id, String name, Species species, Sex sex, String breed, int ageYears, String ownerName, DateTime lastVisit, double? weightKg, String? ownerPhone, String? ownerEmail, bool isAlert, bool isHospitalized
 });
 
 
@@ -62,16 +64,20 @@ class _$PatientCopyWithImpl<$Res>
 
 /// Create a copy of Patient
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? species = null,Object? breed = null,Object? ageYears = null,Object? ownerName = null,Object? lastVisit = null,Object? isAlert = null,Object? isHospitalized = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? species = null,Object? sex = null,Object? breed = null,Object? ageYears = null,Object? ownerName = null,Object? lastVisit = null,Object? weightKg = freezed,Object? ownerPhone = freezed,Object? ownerEmail = freezed,Object? isAlert = null,Object? isHospitalized = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,species: null == species ? _self.species : species // ignore: cast_nullable_to_non_nullable
-as Species,breed: null == breed ? _self.breed : breed // ignore: cast_nullable_to_non_nullable
+as Species,sex: null == sex ? _self.sex : sex // ignore: cast_nullable_to_non_nullable
+as Sex,breed: null == breed ? _self.breed : breed // ignore: cast_nullable_to_non_nullable
 as String,ageYears: null == ageYears ? _self.ageYears : ageYears // ignore: cast_nullable_to_non_nullable
 as int,ownerName: null == ownerName ? _self.ownerName : ownerName // ignore: cast_nullable_to_non_nullable
 as String,lastVisit: null == lastVisit ? _self.lastVisit : lastVisit // ignore: cast_nullable_to_non_nullable
-as DateTime,isAlert: null == isAlert ? _self.isAlert : isAlert // ignore: cast_nullable_to_non_nullable
+as DateTime,weightKg: freezed == weightKg ? _self.weightKg : weightKg // ignore: cast_nullable_to_non_nullable
+as double?,ownerPhone: freezed == ownerPhone ? _self.ownerPhone : ownerPhone // ignore: cast_nullable_to_non_nullable
+as String?,ownerEmail: freezed == ownerEmail ? _self.ownerEmail : ownerEmail // ignore: cast_nullable_to_non_nullable
+as String?,isAlert: null == isAlert ? _self.isAlert : isAlert // ignore: cast_nullable_to_non_nullable
 as bool,isHospitalized: null == isHospitalized ? _self.isHospitalized : isHospitalized // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -158,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  Species species,  String breed,  int ageYears,  String ownerName,  DateTime lastVisit,  bool isAlert,  bool isHospitalized)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  Species species,  Sex sex,  String breed,  int ageYears,  String ownerName,  DateTime lastVisit,  double? weightKg,  String? ownerPhone,  String? ownerEmail,  bool isAlert,  bool isHospitalized)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Patient() when $default != null:
-return $default(_that.id,_that.name,_that.species,_that.breed,_that.ageYears,_that.ownerName,_that.lastVisit,_that.isAlert,_that.isHospitalized);case _:
+return $default(_that.id,_that.name,_that.species,_that.sex,_that.breed,_that.ageYears,_that.ownerName,_that.lastVisit,_that.weightKg,_that.ownerPhone,_that.ownerEmail,_that.isAlert,_that.isHospitalized);case _:
   return orElse();
 
 }
@@ -179,10 +185,10 @@ return $default(_that.id,_that.name,_that.species,_that.breed,_that.ageYears,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  Species species,  String breed,  int ageYears,  String ownerName,  DateTime lastVisit,  bool isAlert,  bool isHospitalized)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  Species species,  Sex sex,  String breed,  int ageYears,  String ownerName,  DateTime lastVisit,  double? weightKg,  String? ownerPhone,  String? ownerEmail,  bool isAlert,  bool isHospitalized)  $default,) {final _that = this;
 switch (_that) {
 case _Patient():
-return $default(_that.id,_that.name,_that.species,_that.breed,_that.ageYears,_that.ownerName,_that.lastVisit,_that.isAlert,_that.isHospitalized);case _:
+return $default(_that.id,_that.name,_that.species,_that.sex,_that.breed,_that.ageYears,_that.ownerName,_that.lastVisit,_that.weightKg,_that.ownerPhone,_that.ownerEmail,_that.isAlert,_that.isHospitalized);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +205,10 @@ return $default(_that.id,_that.name,_that.species,_that.breed,_that.ageYears,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  Species species,  String breed,  int ageYears,  String ownerName,  DateTime lastVisit,  bool isAlert,  bool isHospitalized)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  Species species,  Sex sex,  String breed,  int ageYears,  String ownerName,  DateTime lastVisit,  double? weightKg,  String? ownerPhone,  String? ownerEmail,  bool isAlert,  bool isHospitalized)?  $default,) {final _that = this;
 switch (_that) {
 case _Patient() when $default != null:
-return $default(_that.id,_that.name,_that.species,_that.breed,_that.ageYears,_that.ownerName,_that.lastVisit,_that.isAlert,_that.isHospitalized);case _:
+return $default(_that.id,_that.name,_that.species,_that.sex,_that.breed,_that.ageYears,_that.ownerName,_that.lastVisit,_that.weightKg,_that.ownerPhone,_that.ownerEmail,_that.isAlert,_that.isHospitalized);case _:
   return null;
 
 }
@@ -214,16 +220,22 @@ return $default(_that.id,_that.name,_that.species,_that.breed,_that.ageYears,_th
 
 
 class _Patient implements Patient {
-  const _Patient({required this.id, required this.name, required this.species, required this.breed, required this.ageYears, required this.ownerName, required this.lastVisit, this.isAlert = false, this.isHospitalized = false});
+  const _Patient({required this.id, required this.name, required this.species, required this.sex, required this.breed, required this.ageYears, required this.ownerName, required this.lastVisit, this.weightKg, this.ownerPhone, this.ownerEmail, this.isAlert = false, this.isHospitalized = false});
   
 
 @override final  String id;
 @override final  String name;
 @override final  Species species;
+@override final  Sex sex;
 @override final  String breed;
 @override final  int ageYears;
 @override final  String ownerName;
+// Mientras el backend no exponga `last_visit_at`, los datasources lo
+// alimentan con `created_at` para que la UI siga funcionando.
 @override final  DateTime lastVisit;
+@override final  double? weightKg;
+@override final  String? ownerPhone;
+@override final  String? ownerEmail;
 @override@JsonKey() final  bool isAlert;
 @override@JsonKey() final  bool isHospitalized;
 
@@ -237,16 +249,16 @@ _$PatientCopyWith<_Patient> get copyWith => __$PatientCopyWithImpl<_Patient>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Patient&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.species, species) || other.species == species)&&(identical(other.breed, breed) || other.breed == breed)&&(identical(other.ageYears, ageYears) || other.ageYears == ageYears)&&(identical(other.ownerName, ownerName) || other.ownerName == ownerName)&&(identical(other.lastVisit, lastVisit) || other.lastVisit == lastVisit)&&(identical(other.isAlert, isAlert) || other.isAlert == isAlert)&&(identical(other.isHospitalized, isHospitalized) || other.isHospitalized == isHospitalized));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Patient&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.species, species) || other.species == species)&&(identical(other.sex, sex) || other.sex == sex)&&(identical(other.breed, breed) || other.breed == breed)&&(identical(other.ageYears, ageYears) || other.ageYears == ageYears)&&(identical(other.ownerName, ownerName) || other.ownerName == ownerName)&&(identical(other.lastVisit, lastVisit) || other.lastVisit == lastVisit)&&(identical(other.weightKg, weightKg) || other.weightKg == weightKg)&&(identical(other.ownerPhone, ownerPhone) || other.ownerPhone == ownerPhone)&&(identical(other.ownerEmail, ownerEmail) || other.ownerEmail == ownerEmail)&&(identical(other.isAlert, isAlert) || other.isAlert == isAlert)&&(identical(other.isHospitalized, isHospitalized) || other.isHospitalized == isHospitalized));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,species,breed,ageYears,ownerName,lastVisit,isAlert,isHospitalized);
+int get hashCode => Object.hash(runtimeType,id,name,species,sex,breed,ageYears,ownerName,lastVisit,weightKg,ownerPhone,ownerEmail,isAlert,isHospitalized);
 
 @override
 String toString() {
-  return 'Patient(id: $id, name: $name, species: $species, breed: $breed, ageYears: $ageYears, ownerName: $ownerName, lastVisit: $lastVisit, isAlert: $isAlert, isHospitalized: $isHospitalized)';
+  return 'Patient(id: $id, name: $name, species: $species, sex: $sex, breed: $breed, ageYears: $ageYears, ownerName: $ownerName, lastVisit: $lastVisit, weightKg: $weightKg, ownerPhone: $ownerPhone, ownerEmail: $ownerEmail, isAlert: $isAlert, isHospitalized: $isHospitalized)';
 }
 
 
@@ -257,7 +269,7 @@ abstract mixin class _$PatientCopyWith<$Res> implements $PatientCopyWith<$Res> {
   factory _$PatientCopyWith(_Patient value, $Res Function(_Patient) _then) = __$PatientCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, Species species, String breed, int ageYears, String ownerName, DateTime lastVisit, bool isAlert, bool isHospitalized
+ String id, String name, Species species, Sex sex, String breed, int ageYears, String ownerName, DateTime lastVisit, double? weightKg, String? ownerPhone, String? ownerEmail, bool isAlert, bool isHospitalized
 });
 
 
@@ -274,16 +286,20 @@ class __$PatientCopyWithImpl<$Res>
 
 /// Create a copy of Patient
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? species = null,Object? breed = null,Object? ageYears = null,Object? ownerName = null,Object? lastVisit = null,Object? isAlert = null,Object? isHospitalized = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? species = null,Object? sex = null,Object? breed = null,Object? ageYears = null,Object? ownerName = null,Object? lastVisit = null,Object? weightKg = freezed,Object? ownerPhone = freezed,Object? ownerEmail = freezed,Object? isAlert = null,Object? isHospitalized = null,}) {
   return _then(_Patient(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,species: null == species ? _self.species : species // ignore: cast_nullable_to_non_nullable
-as Species,breed: null == breed ? _self.breed : breed // ignore: cast_nullable_to_non_nullable
+as Species,sex: null == sex ? _self.sex : sex // ignore: cast_nullable_to_non_nullable
+as Sex,breed: null == breed ? _self.breed : breed // ignore: cast_nullable_to_non_nullable
 as String,ageYears: null == ageYears ? _self.ageYears : ageYears // ignore: cast_nullable_to_non_nullable
 as int,ownerName: null == ownerName ? _self.ownerName : ownerName // ignore: cast_nullable_to_non_nullable
 as String,lastVisit: null == lastVisit ? _self.lastVisit : lastVisit // ignore: cast_nullable_to_non_nullable
-as DateTime,isAlert: null == isAlert ? _self.isAlert : isAlert // ignore: cast_nullable_to_non_nullable
+as DateTime,weightKg: freezed == weightKg ? _self.weightKg : weightKg // ignore: cast_nullable_to_non_nullable
+as double?,ownerPhone: freezed == ownerPhone ? _self.ownerPhone : ownerPhone // ignore: cast_nullable_to_non_nullable
+as String?,ownerEmail: freezed == ownerEmail ? _self.ownerEmail : ownerEmail // ignore: cast_nullable_to_non_nullable
+as String?,isAlert: null == isAlert ? _self.isAlert : isAlert // ignore: cast_nullable_to_non_nullable
 as bool,isHospitalized: null == isHospitalized ? _self.isHospitalized : isHospitalized // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
