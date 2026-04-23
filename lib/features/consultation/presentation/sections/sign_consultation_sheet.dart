@@ -4,6 +4,34 @@ import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_result.dart';
 
+Future<void> showSignConsultationSheet(
+  BuildContext context, {
+  required String patientName,
+  required String initialSummary,
+  required void Function(
+    ConsultationResult result,
+    String? summary,
+    String? primaryDiagnosis,
+  ) onConfirm,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: Colors.transparent,
+    isDismissible: false,
+    builder: (sheetContext) => SignConsultationSheet(
+      patientName: patientName,
+      initialSummary: initialSummary,
+      onCancel: () => Navigator.of(sheetContext).pop(),
+      onConfirm: (result, summary, diagnosis) {
+        Navigator.of(sheetContext).pop();
+        onConfirm(result, summary, diagnosis);
+      },
+    ),
+  );
+}
+
 class SignConsultationSheet extends StatefulWidget {
   const SignConsultationSheet({
     required this.patientName,

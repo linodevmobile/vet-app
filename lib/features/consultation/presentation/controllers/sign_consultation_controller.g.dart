@@ -83,7 +83,7 @@ final class SignConsultationControllerProvider
 }
 
 String _$signConsultationControllerHash() =>
-    r'36a04aea29421c6000024fdf35c90c13761be7de';
+    r'eb1ed59548eff68559a492a5841a23d207db1e3b';
 
 abstract class _$SignConsultationController extends $AsyncNotifier<void> {
   FutureOr<void> build();

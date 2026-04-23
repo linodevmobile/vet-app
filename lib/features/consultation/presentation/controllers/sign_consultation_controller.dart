@@ -11,8 +11,12 @@ SignConsultationUseCase signConsultationUseCase(Ref ref) =>
 
 @riverpod
 class SignConsultationController extends _$SignConsultationController {
+  // Sync return: arranca en AsyncData(null) sin pasar por AsyncLoading.
+  // Si fuera `Future<void> build() async {}`, la transición loading→data del
+  // ciclo de vida inicial dispararía los listeners como si el usuario acabara
+  // de firmar.
   @override
-  Future<void> build() async {}
+  FutureOr<void> build() {}
 
   Future<void> sign({
     required String consultationId,

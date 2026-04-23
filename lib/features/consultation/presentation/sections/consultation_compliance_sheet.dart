@@ -4,6 +4,28 @@ import 'package:vet_app/features/consultation/domain/entities/consultation_secti
 import 'package:vet_app/features/consultation/presentation/sections/consultation_compliance_header.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_compliance_row.dart';
 
+Future<void> showConsultationComplianceSheet(
+  BuildContext context, {
+  required List<ConsultationSection> sections,
+  required bool Function(ConsultationSection) isFilled,
+  required ValueChanged<ConsultationSection> onJump,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: Colors.transparent,
+    builder: (sheetContext) => ConsultationComplianceSheet(
+      sections: sections,
+      isFilled: isFilled,
+      onJump: (section) {
+        Navigator.of(sheetContext).pop();
+        onJump(section);
+      },
+    ),
+  );
+}
+
 class ConsultationComplianceSheet extends StatelessWidget {
   const ConsultationComplianceSheet({
     required this.sections,

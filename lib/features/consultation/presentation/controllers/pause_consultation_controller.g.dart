@@ -83,7 +83,7 @@ final class PauseConsultationControllerProvider
 }
 
 String _$pauseConsultationControllerHash() =>
-    r'f259476e58fd7b841bd1eb987018d7c99a943281';
+    r'dd07a3d297195af3cdbe1704ae5337e2c66af046';
 
 abstract class _$PauseConsultationController extends $AsyncNotifier<void> {
   FutureOr<void> build();

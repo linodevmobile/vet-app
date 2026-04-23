@@ -11,8 +11,12 @@ PauseConsultationUseCase pauseConsultationUseCase(Ref ref) =>
 
 @riverpod
 class PauseConsultationController extends _$PauseConsultationController {
+  // Sync return: arranca en AsyncData(null) sin pasar por AsyncLoading.
+  // Si fuera `Future<void> build() async {}`, la transición loading→data del
+  // ciclo de vida inicial dispararía los listeners como si el usuario acabara
+  // de pausar.
   @override
-  Future<void> build() async {}
+  FutureOr<void> build() {}
 
   Future<void> pause({
     required String consultationId,

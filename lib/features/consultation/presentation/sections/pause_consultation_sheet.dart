@@ -5,6 +5,32 @@ import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/presentation/sections/pause_reason_tile.dart';
 
+Future<void> showPauseConsultationSheet(
+  BuildContext context, {
+  required String patientName,
+  required int sectionsCompleted,
+  required int sectionsTotal,
+  required void Function(ConsultationPauseReason reason, String? note)
+      onConfirm,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: Colors.transparent,
+    builder: (sheetContext) => PauseConsultationSheet(
+      patientName: patientName,
+      sectionsCompleted: sectionsCompleted,
+      sectionsTotal: sectionsTotal,
+      onCancel: () => Navigator.of(sheetContext).pop(),
+      onConfirm: (reason, note) {
+        Navigator.of(sheetContext).pop();
+        onConfirm(reason, note);
+      },
+    ),
+  );
+}
+
 class PauseConsultationSheet extends StatefulWidget {
   const PauseConsultationSheet({
     required this.patientName,

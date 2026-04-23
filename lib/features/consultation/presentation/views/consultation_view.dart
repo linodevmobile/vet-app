@@ -19,12 +19,7 @@ import 'package:vet_app/features/consultation/presentation/controllers/consultat
 import 'package:vet_app/features/consultation/presentation/controllers/pause_consultation_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/recorder_error_message.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/sign_consultation_controller.dart';
-import 'package:vet_app/features/consultation/presentation/sections/bodies/default_text_body.dart';
-import 'package:vet_app/features/consultation/presentation/sections/bodies/exam_body.dart';
-import 'package:vet_app/features/consultation/presentation/sections/bodies/identification_body.dart';
-import 'package:vet_app/features/consultation/presentation/sections/bodies/labs_body.dart';
-import 'package:vet_app/features/consultation/presentation/sections/bodies/signature_body.dart';
-import 'package:vet_app/features/consultation/presentation/sections/consultation_accordion_section.dart';
+import 'package:vet_app/features/consultation/presentation/sections/consultation_accordion_list_section.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_ai_bar.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_compliance_sheet.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_header_section.dart';
@@ -150,51 +145,29 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     ref.read(consultationRecorderControllerProvider.notifier).discard();
   }
 
-  Future<void> _openCompliance() async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => ConsultationComplianceSheet(
+  Future<void> _openCompliance() => showConsultationComplianceSheet(
+        context,
         sections: ConsultationSection.values,
         isFilled: _isFilled,
         onJump: _jumpToSection,
-      ),
-    );
-  }
+      );
 
   void _jumpToSection(ConsultationSection section) {
-    Navigator.of(context).pop();
     setState(() {
       _collapsed.remove(section);
       _active = section;
     });
   }
 
-  Future<void> _openPauseSheet() async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) => PauseConsultationSheet(
+  Future<void> _openPauseSheet() => showPauseConsultationSheet(
+        context,
         patientName: widget.patient.name,
         sectionsCompleted: _completedCount,
         sectionsTotal: ConsultationSection.values.length,
-        onCancel: () => Navigator.of(sheetContext).pop(),
-        onConfirm: (reason, note) =>
-            _confirmPause(sheetContext, reason, note),
-      ),
-    );
-  }
+        onConfirm: _confirmPause,
+      );
 
-  void _confirmPause(
-    BuildContext sheetContext,
-    ConsultationPauseReason reason,
-    String? note,
-  ) {
-    Navigator.of(sheetContext).pop();
+  void _confirmPause(ConsultationPauseReason reason, String? note) {
     final consultationId = ref.read(activeConsultationProvider);
     if (consultationId == null) {
       DsToast.show(
@@ -221,28 +194,19 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       );
       return;
     }
-    final initialSummary =
-        _values[ConsultationSection.signature]?.text.trim() ?? '';
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      builder: (sheetContext) => SignConsultationSheet(
-        patientName: widget.patient.name,
-        initialSummary: initialSummary,
-        onCancel: () => Navigator.of(sheetContext).pop(),
-        onConfirm: (result, summary, diagnosis) {
-          Navigator.of(sheetContext).pop();
-          ref.read(signConsultationControllerProvider.notifier).sign(
-                consultationId: consultationId,
-                result: result,
-                summary: summary,
-                primaryDiagnosis: diagnosis,
-              );
-        },
-      ),
+    await showSignConsultationSheet(
+      context,
+      patientName: widget.patient.name,
+      initialSummary:
+          _values[ConsultationSection.signature]?.text.trim() ?? '',
+      onConfirm: (result, summary, diagnosis) {
+        ref.read(signConsultationControllerProvider.notifier).sign(
+              consultationId: consultationId,
+              result: result,
+              summary: summary,
+              primaryDiagnosis: diagnosis,
+            );
+      },
     );
   }
 
@@ -254,82 +218,105 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     }
   }
 
+  void _attachListeners() {
+    ref
+      ..listen<AsyncValue<ConsultationRecorderState>>(
+        consultationRecorderControllerProvider,
+        _onRecorderChange,
+      )
+      ..listen<ConsultationRecorderDelivery?>(
+        consultationRecorderResultProvider,
+        _onRecorderResult,
+      )
+      ..listen<AsyncValue<void>>(
+        pauseConsultationControllerProvider,
+        _onPauseChange,
+      )
+      ..listen<AsyncValue<void>>(
+        signConsultationControllerProvider,
+        _onSignChange,
+      );
+  }
+
+  void _onRecorderChange(
+    AsyncValue<ConsultationRecorderState>? prev,
+    AsyncValue<ConsultationRecorderState> next,
+  ) {
+    next.whenOrNull(
+      error: (error, _) => DsToast.show(
+        context,
+        message: recorderErrorMessage(error),
+        variant: DsToastVariant.error,
+      ),
+    );
+  }
+
+  void _onRecorderResult(
+    ConsultationRecorderDelivery? prev,
+    ConsultationRecorderDelivery? next,
+  ) {
+    if (next == null) return;
+    if (prev?.seq == next.seq) return;
+    final controller = _values[next.section];
+    if (controller == null) return;
+    controller.text = next.result.suggestedText;
+  }
+
+  void _onPauseChange(AsyncValue<void>? prev, AsyncValue<void> next) {
+    next.whenOrNull(
+      error: (error, _) => DsToast.show(
+        context,
+        message: 'No se pudo pausar: $error',
+        variant: DsToastVariant.error,
+      ),
+      data: (_) {
+        // El AsyncData(null) del build() inicial dispara sin este guard.
+        if (prev is AsyncLoading) {
+          DsToast.show(
+            context,
+            message: 'Consulta pausada',
+            variant: DsToastVariant.success,
+          );
+          context.go(AppRoutes.today);
+        }
+      },
+    );
+  }
+
+  void _onSignChange(AsyncValue<void>? prev, AsyncValue<void> next) {
+    next.whenOrNull(
+      error: (error, _) => DsToast.show(
+        context,
+        message: 'No se pudo firmar: $error',
+        variant: DsToastVariant.error,
+      ),
+      data: (_) {
+        if (prev is AsyncLoading) {
+          DsToast.show(
+            context,
+            message: 'Consulta firmada',
+            variant: DsToastVariant.success,
+          );
+          context.go(AppRoutes.today);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final subtitle =
         '${widget.patient.breed} · ${widget.patient.ageYears} años';
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    ref
-      ..listen<AsyncValue<ConsultationRecorderState>>(
-        consultationRecorderControllerProvider,
-        (prev, next) {
-          next.whenOrNull(
-            error: (error, _) {
-              DsToast.show(
-                context,
-                message: recorderErrorMessage(error),
-                variant: DsToastVariant.error,
-              );
-            },
-          );
-        },
-      )
-      ..listen<ConsultationRecorderDelivery?>(
-        consultationRecorderResultProvider,
-        (prev, next) {
-          if (next == null) return;
-          if (prev?.seq == next.seq) return;
-          final controller = _values[next.section];
-          if (controller == null) return;
-          controller.text = next.result.suggestedText;
-        },
-      )
-      ..listen<AsyncValue<void>>(
-        pauseConsultationControllerProvider,
-        (prev, next) {
-          next.whenOrNull(
-            error: (error, _) => DsToast.show(
-              context,
-              message: 'No se pudo pausar: $error',
-              variant: DsToastVariant.error,
-            ),
-            data: (_) {
-              // El AsyncData(null) del build() inicial dispara sin este guard.
-              if (prev is AsyncLoading) {
-                DsToast.show(
-                  context,
-                  message: 'Consulta pausada',
-                  variant: DsToastVariant.success,
-                );
-                context.go(AppRoutes.today);
-              }
-            },
-          );
-        },
-      )
-      ..listen<AsyncValue<void>>(
-        signConsultationControllerProvider,
-        (prev, next) {
-          next.whenOrNull(
-            error: (error, _) => DsToast.show(
-              context,
-              message: 'No se pudo firmar: $error',
-              variant: DsToastVariant.error,
-            ),
-            data: (_) {
-              if (prev is AsyncLoading) {
-                DsToast.show(
-                  context,
-                  message: 'Consulta firmada',
-                  variant: DsToastVariant.success,
-                );
-                context.go(AppRoutes.today);
-              }
-            },
-          );
-        },
-      );
+    _attachListeners();
+
+    // Watch mantiene vivo el provider durante la vida de la view (sin watch,
+    // auto-dispose descarta el state entre reads y perdemos el consultation_id
+    // guardado por el recorder). Al salir de la view se descarta y la próxima
+    // consulta arranca limpia.
+    final hasActiveConsultation =
+        ref.watch(activeConsultationProvider) != null;
 
     final busy = ref.watch(pauseConsultationControllerProvider).isLoading ||
         ref.watch(signConsultationControllerProvider).isLoading;
@@ -353,7 +340,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
                   total: ConsultationSection.values.length,
                   onBack: _back,
                   onOpenChecklist: _openCompliance,
-                  onPause: _openPauseSheet,
+                  // Sin consultation_id aún (ninguna sección grabada),
+                  // pausar no tiene sentido → botón oculto.
+                  onPause: hasActiveConsultation ? _openPauseSheet : null,
                   isUrgent: widget.patient.isAlert,
                 ),
                 Expanded(
@@ -375,7 +364,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
                           ),
                         ),
                         const SizedBox(height: DsSpacing.lg),
-                        ..._buildAccordionList(),
+                        _accordionList(),
                       ],
                     ),
                   ),
@@ -424,86 +413,25 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     );
   }
 
-  List<Widget> _buildAccordionList() {
-    return ConsultationSectionGroup.values
-        .expand((group) => [
-              _GroupHeader(label: group.label),
-              ..._accordionsOf(group),
-            ])
-        .toList();
-  }
-
-  List<Widget> _accordionsOf(ConsultationSectionGroup group) {
-    return group.sections
-        .map(_accordionFor)
-        .expand((widget) => [const SizedBox(height: DsSpacing.sm), widget])
-        .skip(1)
-        .toList();
-  }
-
-  Widget _accordionFor(ConsultationSection section) {
-    return ConsultationAccordionSection(
-      section: section,
-      filled: _isFilled(section),
-      collapsed: _collapsed.contains(section),
-      active: _active == section,
-      onToggle: () => _toggle(section),
-      onFocus: () => _setActive(section),
-      child: _bodyFor(section),
-    );
-  }
-
-  Widget? _bodyFor(ConsultationSection section) {
-    final controller = _values[section];
-    if (controller == null) return null;
-    return switch (section) {
-      ConsultationSection.identification =>
-        IdentificationBody(controller: controller),
-      ConsultationSection.exam => ExamBody(
-          temperature: _tempCtrl,
-          heartRate: _heartRateCtrl,
-          respRate: _respRateCtrl,
-          weight: _weightCtrl,
-          notes: controller,
-        ),
-      ConsultationSection.labs => LabsBody(controller: controller),
-      ConsultationSection.signature => _signatureBody(controller),
-      _ => DefaultTextBody(section: section, controller: controller),
-    };
-  }
-
-  Widget _signatureBody(TextEditingController controller) {
+  Widget _accordionList() {
     final user = ref.watch(currentUserProvider).value;
-    final doctorName =
-        user == null ? '' : VeterinarianFormatters.salutation(user);
-    final doctorRegistry =
-        user == null ? '' : VeterinarianFormatters.registry(user);
-    return SignatureBody(
-      controller: controller,
-      doctorName: doctorName,
-      doctorRegistry: doctorRegistry,
-    );
-  }
-}
-
-class _GroupHeader extends StatelessWidget {
-  const _GroupHeader({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 4, 2),
-      child: Text(
-        label.toUpperCase(),
-        style: DsTypography.kicker.copyWith(
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
-          color: DsColors.ink40,
-          letterSpacing: 1.2,
-        ),
+    return ConsultationAccordionListSection(
+      values: _values,
+      exam: (
+        temperature: _tempCtrl,
+        heartRate: _heartRateCtrl,
+        respRate: _respRateCtrl,
+        weight: _weightCtrl,
       ),
+      doctor: (
+        name: user == null ? '' : VeterinarianFormatters.salutation(user),
+        registry: user == null ? '' : VeterinarianFormatters.registry(user),
+      ),
+      active: _active,
+      collapsed: _collapsed,
+      isFilled: _isFilled,
+      onToggle: _toggle,
+      onFocus: _setActive,
     );
   }
 }
