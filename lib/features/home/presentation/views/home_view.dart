@@ -26,10 +26,11 @@ class HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final header = ref.watch(dashboardHeaderProvider);
     final suggestions = ref.watch(recentPatientNamesProvider);
-    final appointments = ref.watch(todayAppointmentsProvider);
+    final appointments =
+        ref.watch(todayAppointmentsProvider).value ?? const [];
     final hospitalized = ref.watch(activeHospitalizationsProvider);
-    final paused = ref.watch(pausedConsultationsProvider);
-    final records = ref.watch(recentConsultationsProvider);
+    final paused = ref.watch(pausedConsultationsProvider).value ?? const [];
+    final records = ref.watch(recentConsultationsProvider).value ?? const [];
 
     final agendaRows = appointments
         .map(

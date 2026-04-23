@@ -3,7 +3,7 @@ import 'package:vet_app/features/patients/domain/entities/patient_summary.dart';
 
 part 'appointment.freezed.dart';
 
-enum AppointmentStatus { scheduled, now, completed }
+enum AppointmentStatus { scheduled, now, completed, cancelled }
 
 @freezed
 abstract class Appointment with _$Appointment {
@@ -14,5 +14,6 @@ abstract class Appointment with _$Appointment {
     required String reason,
     @Default(false) bool urgent,
     @Default(AppointmentStatus.scheduled) AppointmentStatus status,
+    String? consultationId,
   }) = _Appointment;
 }
