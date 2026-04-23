@@ -6,7 +6,9 @@ import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vet_app/core/env/env.dart';
 import 'package:vet_app/core/network/auth_interceptor.dart';
+import 'package:vet_app/core/network/unauthorized_interceptor.dart';
 import 'package:vet_app/core/storage/secure_storage_service.dart';
+import 'package:vet_app/features/auth/presentation/controllers/auth_controller.dart';
 
 part 'dio_client.g.dart';
 
@@ -28,6 +30,12 @@ Dio dio(Ref ref) {
   );
 
   dio.interceptors.add(AuthInterceptor(storage));
+  dio.interceptors.add(
+    UnauthorizedInterceptor(() async {
+      await storage.clearAccessToken();
+      ref.invalidate(authControllerProvider);
+    }),
+  );
 
   if (Env.enableLogs) {
     dio.interceptors.add(
