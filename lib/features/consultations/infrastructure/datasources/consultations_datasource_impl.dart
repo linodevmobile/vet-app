@@ -67,10 +67,10 @@ class ConsultationsDatasourceImpl implements IConsultationsDatasource {
       PausedConsultation(
         id: dto.id,
         patient: _summary(dto.patient),
-        reason: dto.pausedReason != null
-            ? ConsultationPauseReason.fromWire(dto.pausedReason!)
+        reason: dto.pauseReason != null
+            ? ConsultationPauseReason.fromWire(dto.pauseReason!)
             : ConsultationPauseReason.other,
-        note: dto.pausedNote,
+        note: dto.pauseNote,
         pausedAt: dto.pausedAt ?? dto.createdAt,
         sectionsCompleted: _countCompleted(dto.sections),
         sectionsTotal: _totalSections,

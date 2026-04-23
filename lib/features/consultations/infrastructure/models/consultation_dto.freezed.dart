@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ConsultationDto {
 
- String get id; String get status; DateTime get createdAt; ConsultationPatientDto get patient; String? get type; String? get chiefComplaint; String? get result; String? get summary; String? get primaryDiagnosis; String? get pausedReason; String? get pausedNote; DateTime? get pausedAt; DateTime? get signedAt; List<ConsultationSectionDto> get sections;
+ String get id; String get status; DateTime get createdAt; ConsultationPatientDto get patient; String? get type; String? get chiefComplaint; String? get result; String? get summary; String? get primaryDiagnosis; String? get pauseReason; String? get pauseNote; DateTime? get pausedAt; DateTime? get signedAt; List<ConsultationSectionDto> get sections;
 /// Create a copy of ConsultationDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ConsultationDtoCopyWith<ConsultationDto> get copyWith => _$ConsultationDtoCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.type, type) || other.type == type)&&(identical(other.chiefComplaint, chiefComplaint) || other.chiefComplaint == chiefComplaint)&&(identical(other.result, result) || other.result == result)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.primaryDiagnosis, primaryDiagnosis) || other.primaryDiagnosis == primaryDiagnosis)&&(identical(other.pausedReason, pausedReason) || other.pausedReason == pausedReason)&&(identical(other.pausedNote, pausedNote) || other.pausedNote == pausedNote)&&(identical(other.pausedAt, pausedAt) || other.pausedAt == pausedAt)&&(identical(other.signedAt, signedAt) || other.signedAt == signedAt)&&const DeepCollectionEquality().equals(other.sections, sections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.type, type) || other.type == type)&&(identical(other.chiefComplaint, chiefComplaint) || other.chiefComplaint == chiefComplaint)&&(identical(other.result, result) || other.result == result)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.primaryDiagnosis, primaryDiagnosis) || other.primaryDiagnosis == primaryDiagnosis)&&(identical(other.pauseReason, pauseReason) || other.pauseReason == pauseReason)&&(identical(other.pauseNote, pauseNote) || other.pauseNote == pauseNote)&&(identical(other.pausedAt, pausedAt) || other.pausedAt == pausedAt)&&(identical(other.signedAt, signedAt) || other.signedAt == signedAt)&&const DeepCollectionEquality().equals(other.sections, sections));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status,createdAt,patient,type,chiefComplaint,result,summary,primaryDiagnosis,pausedReason,pausedNote,pausedAt,signedAt,const DeepCollectionEquality().hash(sections));
+int get hashCode => Object.hash(runtimeType,id,status,createdAt,patient,type,chiefComplaint,result,summary,primaryDiagnosis,pauseReason,pauseNote,pausedAt,signedAt,const DeepCollectionEquality().hash(sections));
 
 @override
 String toString() {
-  return 'ConsultationDto(id: $id, status: $status, createdAt: $createdAt, patient: $patient, type: $type, chiefComplaint: $chiefComplaint, result: $result, summary: $summary, primaryDiagnosis: $primaryDiagnosis, pausedReason: $pausedReason, pausedNote: $pausedNote, pausedAt: $pausedAt, signedAt: $signedAt, sections: $sections)';
+  return 'ConsultationDto(id: $id, status: $status, createdAt: $createdAt, patient: $patient, type: $type, chiefComplaint: $chiefComplaint, result: $result, summary: $summary, primaryDiagnosis: $primaryDiagnosis, pauseReason: $pauseReason, pauseNote: $pauseNote, pausedAt: $pausedAt, signedAt: $signedAt, sections: $sections)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ConsultationDtoCopyWith<$Res>  {
   factory $ConsultationDtoCopyWith(ConsultationDto value, $Res Function(ConsultationDto) _then) = _$ConsultationDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String status, DateTime createdAt, ConsultationPatientDto patient, String? type, String? chiefComplaint, String? result, String? summary, String? primaryDiagnosis, String? pausedReason, String? pausedNote, DateTime? pausedAt, DateTime? signedAt, List<ConsultationSectionDto> sections
+ String id, String status, DateTime createdAt, ConsultationPatientDto patient, String? type, String? chiefComplaint, String? result, String? summary, String? primaryDiagnosis, String? pauseReason, String? pauseNote, DateTime? pausedAt, DateTime? signedAt, List<ConsultationSectionDto> sections
 });
 
 
@@ -65,7 +65,7 @@ class _$ConsultationDtoCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = null,Object? createdAt = null,Object? patient = null,Object? type = freezed,Object? chiefComplaint = freezed,Object? result = freezed,Object? summary = freezed,Object? primaryDiagnosis = freezed,Object? pausedReason = freezed,Object? pausedNote = freezed,Object? pausedAt = freezed,Object? signedAt = freezed,Object? sections = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = null,Object? createdAt = null,Object? patient = null,Object? type = freezed,Object? chiefComplaint = freezed,Object? result = freezed,Object? summary = freezed,Object? primaryDiagnosis = freezed,Object? pauseReason = freezed,Object? pauseNote = freezed,Object? pausedAt = freezed,Object? signedAt = freezed,Object? sections = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -76,8 +76,8 @@ as String?,chiefComplaint: freezed == chiefComplaint ? _self.chiefComplaint : ch
 as String?,result: freezed == result ? _self.result : result // ignore: cast_nullable_to_non_nullable
 as String?,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as String?,primaryDiagnosis: freezed == primaryDiagnosis ? _self.primaryDiagnosis : primaryDiagnosis // ignore: cast_nullable_to_non_nullable
-as String?,pausedReason: freezed == pausedReason ? _self.pausedReason : pausedReason // ignore: cast_nullable_to_non_nullable
-as String?,pausedNote: freezed == pausedNote ? _self.pausedNote : pausedNote // ignore: cast_nullable_to_non_nullable
+as String?,pauseReason: freezed == pauseReason ? _self.pauseReason : pauseReason // ignore: cast_nullable_to_non_nullable
+as String?,pauseNote: freezed == pauseNote ? _self.pauseNote : pauseNote // ignore: cast_nullable_to_non_nullable
 as String?,pausedAt: freezed == pausedAt ? _self.pausedAt : pausedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,signedAt: freezed == signedAt ? _self.signedAt : signedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,sections: null == sections ? _self.sections : sections // ignore: cast_nullable_to_non_nullable
@@ -175,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String status,  DateTime createdAt,  ConsultationPatientDto patient,  String? type,  String? chiefComplaint,  String? result,  String? summary,  String? primaryDiagnosis,  String? pausedReason,  String? pausedNote,  DateTime? pausedAt,  DateTime? signedAt,  List<ConsultationSectionDto> sections)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String status,  DateTime createdAt,  ConsultationPatientDto patient,  String? type,  String? chiefComplaint,  String? result,  String? summary,  String? primaryDiagnosis,  String? pauseReason,  String? pauseNote,  DateTime? pausedAt,  DateTime? signedAt,  List<ConsultationSectionDto> sections)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ConsultationDto() when $default != null:
-return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_that.chiefComplaint,_that.result,_that.summary,_that.primaryDiagnosis,_that.pausedReason,_that.pausedNote,_that.pausedAt,_that.signedAt,_that.sections);case _:
+return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_that.chiefComplaint,_that.result,_that.summary,_that.primaryDiagnosis,_that.pauseReason,_that.pauseNote,_that.pausedAt,_that.signedAt,_that.sections);case _:
   return orElse();
 
 }
@@ -196,10 +196,10 @@ return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String status,  DateTime createdAt,  ConsultationPatientDto patient,  String? type,  String? chiefComplaint,  String? result,  String? summary,  String? primaryDiagnosis,  String? pausedReason,  String? pausedNote,  DateTime? pausedAt,  DateTime? signedAt,  List<ConsultationSectionDto> sections)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String status,  DateTime createdAt,  ConsultationPatientDto patient,  String? type,  String? chiefComplaint,  String? result,  String? summary,  String? primaryDiagnosis,  String? pauseReason,  String? pauseNote,  DateTime? pausedAt,  DateTime? signedAt,  List<ConsultationSectionDto> sections)  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationDto():
-return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_that.chiefComplaint,_that.result,_that.summary,_that.primaryDiagnosis,_that.pausedReason,_that.pausedNote,_that.pausedAt,_that.signedAt,_that.sections);case _:
+return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_that.chiefComplaint,_that.result,_that.summary,_that.primaryDiagnosis,_that.pauseReason,_that.pauseNote,_that.pausedAt,_that.signedAt,_that.sections);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -216,10 +216,10 @@ return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String status,  DateTime createdAt,  ConsultationPatientDto patient,  String? type,  String? chiefComplaint,  String? result,  String? summary,  String? primaryDiagnosis,  String? pausedReason,  String? pausedNote,  DateTime? pausedAt,  DateTime? signedAt,  List<ConsultationSectionDto> sections)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String status,  DateTime createdAt,  ConsultationPatientDto patient,  String? type,  String? chiefComplaint,  String? result,  String? summary,  String? primaryDiagnosis,  String? pauseReason,  String? pauseNote,  DateTime? pausedAt,  DateTime? signedAt,  List<ConsultationSectionDto> sections)?  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationDto() when $default != null:
-return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_that.chiefComplaint,_that.result,_that.summary,_that.primaryDiagnosis,_that.pausedReason,_that.pausedNote,_that.pausedAt,_that.signedAt,_that.sections);case _:
+return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_that.chiefComplaint,_that.result,_that.summary,_that.primaryDiagnosis,_that.pauseReason,_that.pauseNote,_that.pausedAt,_that.signedAt,_that.sections);case _:
   return null;
 
 }
@@ -231,7 +231,7 @@ return $default(_that.id,_that.status,_that.createdAt,_that.patient,_that.type,_
 @JsonSerializable()
 
 class _ConsultationDto implements ConsultationDto {
-  const _ConsultationDto({required this.id, required this.status, required this.createdAt, required this.patient, this.type, this.chiefComplaint, this.result, this.summary, this.primaryDiagnosis, this.pausedReason, this.pausedNote, this.pausedAt, this.signedAt, final  List<ConsultationSectionDto> sections = const <ConsultationSectionDto>[]}): _sections = sections;
+  const _ConsultationDto({required this.id, required this.status, required this.createdAt, required this.patient, this.type, this.chiefComplaint, this.result, this.summary, this.primaryDiagnosis, this.pauseReason, this.pauseNote, this.pausedAt, this.signedAt, final  List<ConsultationSectionDto> sections = const <ConsultationSectionDto>[]}): _sections = sections;
   factory _ConsultationDto.fromJson(Map<String, dynamic> json) => _$ConsultationDtoFromJson(json);
 
 @override final  String id;
@@ -243,8 +243,8 @@ class _ConsultationDto implements ConsultationDto {
 @override final  String? result;
 @override final  String? summary;
 @override final  String? primaryDiagnosis;
-@override final  String? pausedReason;
-@override final  String? pausedNote;
+@override final  String? pauseReason;
+@override final  String? pauseNote;
 @override final  DateTime? pausedAt;
 @override final  DateTime? signedAt;
  final  List<ConsultationSectionDto> _sections;
@@ -268,16 +268,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.type, type) || other.type == type)&&(identical(other.chiefComplaint, chiefComplaint) || other.chiefComplaint == chiefComplaint)&&(identical(other.result, result) || other.result == result)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.primaryDiagnosis, primaryDiagnosis) || other.primaryDiagnosis == primaryDiagnosis)&&(identical(other.pausedReason, pausedReason) || other.pausedReason == pausedReason)&&(identical(other.pausedNote, pausedNote) || other.pausedNote == pausedNote)&&(identical(other.pausedAt, pausedAt) || other.pausedAt == pausedAt)&&(identical(other.signedAt, signedAt) || other.signedAt == signedAt)&&const DeepCollectionEquality().equals(other._sections, _sections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.type, type) || other.type == type)&&(identical(other.chiefComplaint, chiefComplaint) || other.chiefComplaint == chiefComplaint)&&(identical(other.result, result) || other.result == result)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.primaryDiagnosis, primaryDiagnosis) || other.primaryDiagnosis == primaryDiagnosis)&&(identical(other.pauseReason, pauseReason) || other.pauseReason == pauseReason)&&(identical(other.pauseNote, pauseNote) || other.pauseNote == pauseNote)&&(identical(other.pausedAt, pausedAt) || other.pausedAt == pausedAt)&&(identical(other.signedAt, signedAt) || other.signedAt == signedAt)&&const DeepCollectionEquality().equals(other._sections, _sections));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status,createdAt,patient,type,chiefComplaint,result,summary,primaryDiagnosis,pausedReason,pausedNote,pausedAt,signedAt,const DeepCollectionEquality().hash(_sections));
+int get hashCode => Object.hash(runtimeType,id,status,createdAt,patient,type,chiefComplaint,result,summary,primaryDiagnosis,pauseReason,pauseNote,pausedAt,signedAt,const DeepCollectionEquality().hash(_sections));
 
 @override
 String toString() {
-  return 'ConsultationDto(id: $id, status: $status, createdAt: $createdAt, patient: $patient, type: $type, chiefComplaint: $chiefComplaint, result: $result, summary: $summary, primaryDiagnosis: $primaryDiagnosis, pausedReason: $pausedReason, pausedNote: $pausedNote, pausedAt: $pausedAt, signedAt: $signedAt, sections: $sections)';
+  return 'ConsultationDto(id: $id, status: $status, createdAt: $createdAt, patient: $patient, type: $type, chiefComplaint: $chiefComplaint, result: $result, summary: $summary, primaryDiagnosis: $primaryDiagnosis, pauseReason: $pauseReason, pauseNote: $pauseNote, pausedAt: $pausedAt, signedAt: $signedAt, sections: $sections)';
 }
 
 
@@ -288,7 +288,7 @@ abstract mixin class _$ConsultationDtoCopyWith<$Res> implements $ConsultationDto
   factory _$ConsultationDtoCopyWith(_ConsultationDto value, $Res Function(_ConsultationDto) _then) = __$ConsultationDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String status, DateTime createdAt, ConsultationPatientDto patient, String? type, String? chiefComplaint, String? result, String? summary, String? primaryDiagnosis, String? pausedReason, String? pausedNote, DateTime? pausedAt, DateTime? signedAt, List<ConsultationSectionDto> sections
+ String id, String status, DateTime createdAt, ConsultationPatientDto patient, String? type, String? chiefComplaint, String? result, String? summary, String? primaryDiagnosis, String? pauseReason, String? pauseNote, DateTime? pausedAt, DateTime? signedAt, List<ConsultationSectionDto> sections
 });
 
 
@@ -305,7 +305,7 @@ class __$ConsultationDtoCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = null,Object? createdAt = null,Object? patient = null,Object? type = freezed,Object? chiefComplaint = freezed,Object? result = freezed,Object? summary = freezed,Object? primaryDiagnosis = freezed,Object? pausedReason = freezed,Object? pausedNote = freezed,Object? pausedAt = freezed,Object? signedAt = freezed,Object? sections = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = null,Object? createdAt = null,Object? patient = null,Object? type = freezed,Object? chiefComplaint = freezed,Object? result = freezed,Object? summary = freezed,Object? primaryDiagnosis = freezed,Object? pauseReason = freezed,Object? pauseNote = freezed,Object? pausedAt = freezed,Object? signedAt = freezed,Object? sections = null,}) {
   return _then(_ConsultationDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -316,8 +316,8 @@ as String?,chiefComplaint: freezed == chiefComplaint ? _self.chiefComplaint : ch
 as String?,result: freezed == result ? _self.result : result // ignore: cast_nullable_to_non_nullable
 as String?,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as String?,primaryDiagnosis: freezed == primaryDiagnosis ? _self.primaryDiagnosis : primaryDiagnosis // ignore: cast_nullable_to_non_nullable
-as String?,pausedReason: freezed == pausedReason ? _self.pausedReason : pausedReason // ignore: cast_nullable_to_non_nullable
-as String?,pausedNote: freezed == pausedNote ? _self.pausedNote : pausedNote // ignore: cast_nullable_to_non_nullable
+as String?,pauseReason: freezed == pauseReason ? _self.pauseReason : pauseReason // ignore: cast_nullable_to_non_nullable
+as String?,pauseNote: freezed == pauseNote ? _self.pauseNote : pauseNote // ignore: cast_nullable_to_non_nullable
 as String?,pausedAt: freezed == pausedAt ? _self.pausedAt : pausedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,signedAt: freezed == signedAt ? _self.signedAt : signedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,sections: null == sections ? _self._sections : sections // ignore: cast_nullable_to_non_nullable

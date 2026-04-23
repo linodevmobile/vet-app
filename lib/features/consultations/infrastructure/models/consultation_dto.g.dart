@@ -19,8 +19,8 @@ _ConsultationDto _$ConsultationDtoFromJson(Map<String, dynamic> json) =>
       result: json['result'] as String?,
       summary: json['summary'] as String?,
       primaryDiagnosis: json['primary_diagnosis'] as String?,
-      pausedReason: json['paused_reason'] as String?,
-      pausedNote: json['paused_note'] as String?,
+      pauseReason: json['pause_reason'] as String?,
+      pauseNote: json['pause_note'] as String?,
       pausedAt: json['paused_at'] == null
           ? null
           : DateTime.parse(json['paused_at'] as String),
@@ -48,8 +48,8 @@ Map<String, dynamic> _$ConsultationDtoToJson(_ConsultationDto instance) =>
       'result': instance.result,
       'summary': instance.summary,
       'primary_diagnosis': instance.primaryDiagnosis,
-      'paused_reason': instance.pausedReason,
-      'paused_note': instance.pausedNote,
+      'pause_reason': instance.pauseReason,
+      'pause_note': instance.pauseNote,
       'paused_at': instance.pausedAt?.toIso8601String(),
       'signed_at': instance.signedAt?.toIso8601String(),
       'sections': instance.sections.map((e) => e.toJson()).toList(),

@@ -26,6 +26,8 @@ import 'package:vet_app/features/consultation/presentation/sections/consultation
 import 'package:vet_app/features/consultation/presentation/sections/consultation_sign_bar.dart';
 import 'package:vet_app/features/consultation/presentation/sections/pause_consultation_sheet.dart';
 import 'package:vet_app/features/consultation/presentation/sections/sign_consultation_sheet.dart';
+import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
+import 'package:vet_app/features/consultations/presentation/controllers/recent_consultations.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 
 class ConsultationView extends ConsumerStatefulWidget {
@@ -272,6 +274,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       data: (_) {
         // El AsyncData(null) del build() inicial dispara sin este guard.
         if (prev is AsyncLoading) {
+          // Dashboard queda montado en el shell route → invalidar para que
+          // refetchee y muestre la consulta recién pausada.
+          ref.invalidate(pausedConsultationsProvider);
           DsToast.show(
             context,
             message: 'Consulta pausada',
@@ -292,6 +297,11 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       ),
       data: (_) {
         if (prev is AsyncLoading) {
+          // Firmar quita la consulta de pausadas (si estaba) y la agrega a
+          // recientes. Ambas listas del dashboard quedan stale.
+          ref
+            ..invalidate(pausedConsultationsProvider)
+            ..invalidate(recentConsultationsProvider);
           DsToast.show(
             context,
             message: 'Consulta firmada',
