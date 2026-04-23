@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vet_app/core/errors/api_exception_handler.dart';
 import 'package:vet_app/features/consultation/domain/datasources/consultation_datasource.dart';
+import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_process_result.dart';
+import 'package:vet_app/features/consultation/domain/entities/consultation_result.dart';
 import 'package:vet_app/features/consultation/domain/repositories/consultation_repository.dart';
 import 'package:vet_app/features/consultation/infrastructure/datasources/consultation_datasource_impl.dart';
 
@@ -31,6 +33,42 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
         consultationId: consultationId,
         consultationType: consultationType,
         chiefComplaint: chiefComplaint,
+      );
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<void> pauseConsultation({
+    required String consultationId,
+    required ConsultationPauseReason reason,
+    String? note,
+  }) async {
+    try {
+      await _datasource.pauseConsultation(
+        consultationId: consultationId,
+        reason: reason,
+        note: note,
+      );
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<void> signConsultation({
+    required String consultationId,
+    required ConsultationResult result,
+    String? summary,
+    String? primaryDiagnosis,
+  }) async {
+    try {
+      await _datasource.signConsultation(
+        consultationId: consultationId,
+        result: result,
+        summary: summary,
+        primaryDiagnosis: primaryDiagnosis,
       );
     } catch (e) {
       throw ApiExceptionHandler.handle(e);

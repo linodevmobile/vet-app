@@ -6,6 +6,7 @@ import 'package:vet_app/app/router/app_routes.dart';
 import 'package:vet_app/app/shared/utils/veterinarian_formatters.dart';
 import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/molecules/ds_field_label.dart';
+import 'package:vet_app/design_system/molecules/ds_loading_view.dart';
 import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/auth/presentation/controllers/current_user.dart';
@@ -15,7 +16,9 @@ import 'package:vet_app/features/consultation/presentation/controllers/active_co
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_result.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_state.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/pause_consultation_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/recorder_error_message.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/sign_consultation_controller.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/default_text_body.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/exam_body.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/identification_body.dart';
@@ -27,6 +30,7 @@ import 'package:vet_app/features/consultation/presentation/sections/consultation
 import 'package:vet_app/features/consultation/presentation/sections/consultation_header_section.dart';
 import 'package:vet_app/features/consultation/presentation/sections/consultation_sign_bar.dart';
 import 'package:vet_app/features/consultation/presentation/sections/pause_consultation_sheet.dart';
+import 'package:vet_app/features/consultation/presentation/sections/sign_consultation_sheet.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 
 class ConsultationView extends ConsumerStatefulWidget {
@@ -191,16 +195,55 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     String? note,
   ) {
     Navigator.of(sheetContext).pop();
-    DsToast.show(
-      context,
-      message: 'Consulta pausada · ${reason.label}',
-      variant: DsToastVariant.success,
-    );
-    context.go(AppRoutes.today);
+    final consultationId = ref.read(activeConsultationProvider);
+    if (consultationId == null) {
+      DsToast.show(
+        context,
+        message: 'Graba al menos una sección antes de pausar',
+        variant: DsToastVariant.error,
+      );
+      return;
+    }
+    ref.read(pauseConsultationControllerProvider.notifier).pause(
+          consultationId: consultationId,
+          reason: reason,
+          note: note,
+        );
   }
 
-  void _onSign() {
-    context.go(AppRoutes.today);
+  Future<void> _onSign() async {
+    final consultationId = ref.read(activeConsultationProvider);
+    if (consultationId == null) {
+      DsToast.show(
+        context,
+        message: 'Graba al menos una sección antes de firmar',
+        variant: DsToastVariant.error,
+      );
+      return;
+    }
+    final initialSummary =
+        _values[ConsultationSection.signature]?.text.trim() ?? '';
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      builder: (sheetContext) => SignConsultationSheet(
+        patientName: widget.patient.name,
+        initialSummary: initialSummary,
+        onCancel: () => Navigator.of(sheetContext).pop(),
+        onConfirm: (result, summary, diagnosis) {
+          Navigator.of(sheetContext).pop();
+          ref.read(signConsultationControllerProvider.notifier).sign(
+                consultationId: consultationId,
+                result: result,
+                summary: summary,
+                primaryDiagnosis: diagnosis,
+              );
+        },
+      ),
+    );
   }
 
   void _back() {
@@ -241,7 +284,55 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
           if (controller == null) return;
           controller.text = next.result.suggestedText;
         },
+      )
+      ..listen<AsyncValue<void>>(
+        pauseConsultationControllerProvider,
+        (prev, next) {
+          next.whenOrNull(
+            error: (error, _) => DsToast.show(
+              context,
+              message: 'No se pudo pausar: $error',
+              variant: DsToastVariant.error,
+            ),
+            data: (_) {
+              // El AsyncData(null) del build() inicial dispara sin este guard.
+              if (prev is AsyncLoading) {
+                DsToast.show(
+                  context,
+                  message: 'Consulta pausada',
+                  variant: DsToastVariant.success,
+                );
+                context.go(AppRoutes.today);
+              }
+            },
+          );
+        },
+      )
+      ..listen<AsyncValue<void>>(
+        signConsultationControllerProvider,
+        (prev, next) {
+          next.whenOrNull(
+            error: (error, _) => DsToast.show(
+              context,
+              message: 'No se pudo firmar: $error',
+              variant: DsToastVariant.error,
+            ),
+            data: (_) {
+              if (prev is AsyncLoading) {
+                DsToast.show(
+                  context,
+                  message: 'Consulta firmada',
+                  variant: DsToastVariant.success,
+                );
+                context.go(AppRoutes.today);
+              }
+            },
+          );
+        },
       );
+
+    final busy = ref.watch(pauseConsultationControllerProvider).isLoading ||
+        ref.watch(signConsultationControllerProvider).isLoading;
 
     final recorderState =
         ref.watch(consultationRecorderControllerProvider).value ??
@@ -318,6 +409,13 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
                       onSign: _onSign,
                     ),
                   ],
+                ),
+              ),
+            if (busy)
+              const Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black54,
+                  child: DsLoadingView(),
                 ),
               ),
           ],
