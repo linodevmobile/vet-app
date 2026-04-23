@@ -7,6 +7,9 @@ import 'package:vet_app/design_system/atoms/ds_icon_button.dart';
 import 'package:vet_app/design_system/molecules/ds_screen_header.dart';
 import 'package:vet_app/design_system/organisms/ds_async_value.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/resume_consultation_controller.dart';
+import 'package:vet_app/features/consultation/presentation/sections/resume_consultation_sheet.dart';
+import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 import 'package:vet_app/features/patients/presentation/controllers/all_patients.dart';
 import 'package:vet_app/features/patients/presentation/controllers/filtered_patients.dart';
@@ -73,6 +76,7 @@ class PatientsView extends ConsumerWidget {
                         onRetry: refresh,
                         data: (list) => _buildResults(
                           context,
+                          ref,
                           list,
                           query,
                           openRegister,
@@ -91,6 +95,7 @@ class PatientsView extends ConsumerWidget {
 
   Widget _buildResults(
     BuildContext context,
+    WidgetRef ref,
     List<Patient> list,
     String query,
     VoidCallback onCreate,
@@ -103,11 +108,37 @@ class PatientsView extends ConsumerWidget {
           (p) => PatientResultTile(
             patient: p,
             lastVisitLabel: DateFormatters.relativeAgo(p.lastVisit),
-            onTap: () => context.push(AppRoutes.consultationNew, extra: p),
+            onTap: () => _onPatientTap(context, ref, p),
           ),
         )
         .toList();
     return PatientResultsSection(tiles: tiles);
+  }
+
+  // Si el paciente tiene una consulta pausada, abrimos el sheet de reanudar
+  // (mismo flujo que el dashboard) en vez de crear una nueva. La navegación
+  // post-resume la maneja el listener en HomeView (vivo en el IndexedStack).
+  void _onPatientTap(BuildContext context, WidgetRef ref, Patient p) {
+    final paused = (ref.read(pausedConsultationsProvider).value ?? const [])
+        .where((pc) => pc.patient.id == p.id)
+        .firstOrNull;
+
+    if (paused != null) {
+      showResumeConsultationSheet(
+        context,
+        patientName: paused.patient.name,
+        reason: paused.reason,
+        note: paused.note,
+        pausedAt: paused.pausedAt,
+        sectionsCompleted: paused.sectionsCompleted,
+        sectionsTotal: paused.sectionsTotal,
+        onConfirm: () => ref
+            .read(resumeConsultationControllerProvider.notifier)
+            .resume(paused.id),
+      );
+      return;
+    }
+    context.push(AppRoutes.consultationNew, extra: p);
   }
 
   void _pop(BuildContext context) {
