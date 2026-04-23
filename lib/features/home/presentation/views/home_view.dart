@@ -7,6 +7,8 @@ import 'package:vet_app/app/shared/utils/date_formatters.dart';
 import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/appointments/presentation/controllers/today_appointments.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/resume_consultation_controller.dart';
+import 'package:vet_app/features/consultation/presentation/sections/resume_consultation_sheet.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/recent_consultations.dart';
 import 'package:vet_app/features/home/presentation/controllers/dashboard_header_controller.dart';
@@ -24,6 +26,26 @@ class HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<AsyncValue<String?>>(
+      resumeConsultationControllerProvider,
+      (prev, next) {
+        next.whenOrNull(
+          error: (e, _) => DsToast.show(
+            context,
+            message: 'No se pudo reanudar: $e',
+            variant: DsToastVariant.error,
+          ),
+          data: (id) {
+            // El AsyncData(null) del build() inicial no dispara acá por el guard.
+            if (prev is AsyncLoading && id != null) {
+              ref.invalidate(pausedConsultationsProvider);
+              context.push(AppRoutes.consultationById(id));
+            }
+          },
+        );
+      },
+    );
+
     final header = ref.watch(dashboardHeaderProvider);
     final suggestions = ref.watch(recentPatientNamesProvider);
     final appointments =
@@ -69,14 +91,18 @@ class HomeView extends ConsumerWidget {
             sectionsCompleted: p.sectionsCompleted,
             sectionsTotal: p.sectionsTotal,
             isStale: ConsultationPauseFormatters.isStale(p.pausedAt),
-            onTap: () {
-              // TODO(consultation): resume real — necesita endpoint /consultations/:id y route consultation/:id.
-              DsToast.show(
-                context,
-                message: 'Abrir consulta de ${p.patient.name} (pendiente)',
-                variant: DsToastVariant.success,
-              );
-            },
+            onTap: () => showResumeConsultationSheet(
+              context,
+              patientName: p.patient.name,
+              reason: p.reason,
+              note: p.note,
+              pausedAt: p.pausedAt,
+              sectionsCompleted: p.sectionsCompleted,
+              sectionsTotal: p.sectionsTotal,
+              onConfirm: () => ref
+                  .read(resumeConsultationControllerProvider.notifier)
+                  .resume(p.id),
+            ),
           ),
         )
         .toList();

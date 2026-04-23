@@ -22,6 +22,13 @@ abstract final class ConsultationProcessRequest {
 
   static String? wireFor(ConsultationSection section) => _wire[section];
 
+  static ConsultationSection? sectionForWire(String wire) {
+    for (final entry in _wire.entries) {
+      if (entry.value == wire) return entry.key;
+    }
+    return null;
+  }
+
   static Future<FormData> fromAudio({
     required File audio,
     required String section,

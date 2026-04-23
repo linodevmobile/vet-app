@@ -61,6 +61,16 @@ GoRouter appRouter(Ref ref) {
           return ConsultationView(patient: patient);
         },
       ),
+      GoRoute(
+        path: '/consultation/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id'];
+          if (id == null || id.isEmpty) {
+            return const _MissingConsultationFallback();
+          }
+          return ConsultationView(consultationId: id);
+        },
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             HomeShell(navigationShell: navigationShell),
@@ -136,6 +146,37 @@ class _MissingPatientFallback extends StatelessWidget {
           padding: EdgeInsets.all(24),
           child: Text(
             'No se especificó un paciente para la consulta.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MissingConsultationFallback extends StatelessWidget {
+  const _MissingConsultationFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.today);
+            }
+          },
+        ),
+      ),
+      body: const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'No se especificó la consulta a reanudar.',
             textAlign: TextAlign.center,
           ),
         ),

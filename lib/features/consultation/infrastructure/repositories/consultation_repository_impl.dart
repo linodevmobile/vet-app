@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vet_app/core/errors/api_exception_handler.dart';
 import 'package:vet_app/features/consultation/domain/datasources/consultation_datasource.dart';
+import 'package:vet_app/features/consultation/domain/entities/consultation.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_process_result.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_result.dart';
@@ -70,6 +71,24 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
         summary: summary,
         primaryDiagnosis: primaryDiagnosis,
       );
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<Consultation> getById(String consultationId) async {
+    try {
+      return await _datasource.getById(consultationId);
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<void> resumeConsultation(String consultationId) async {
+    try {
+      await _datasource.resumeConsultation(consultationId);
     } catch (e) {
       throw ApiExceptionHandler.handle(e);
     }

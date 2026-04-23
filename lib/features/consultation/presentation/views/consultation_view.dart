@@ -5,14 +5,17 @@ import 'package:go_router/go_router.dart';
 import 'package:vet_app/app/router/app_routes.dart';
 import 'package:vet_app/app/shared/utils/veterinarian_formatters.dart';
 import 'package:vet_app/design_system/atoms/ds_text_input.dart';
+import 'package:vet_app/design_system/molecules/ds_error_view.dart';
 import 'package:vet_app/design_system/molecules/ds_field_label.dart';
 import 'package:vet_app/design_system/molecules/ds_loading_view.dart';
 import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/auth/presentation/controllers/current_user.dart';
+import 'package:vet_app/features/consultation/domain/entities/consultation.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/active_consultation.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_detail_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_result.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_state.dart';
@@ -29,11 +32,17 @@ import 'package:vet_app/features/consultation/presentation/sections/sign_consult
 import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/recent_consultations.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
+import 'package:vet_app/features/patients/domain/entities/species.dart';
 
 class ConsultationView extends ConsumerStatefulWidget {
-  const ConsultationView({required this.patient, super.key});
+  const ConsultationView({this.patient, this.consultationId, super.key})
+    : assert(
+        (patient != null) != (consultationId != null),
+        'ConsultationView requiere exactamente uno de patient/consultationId',
+      );
 
-  final Patient patient;
+  final Patient? patient;
+  final String? consultationId;
 
   @override
   ConsumerState<ConsultationView> createState() => _ConsultationViewState();
@@ -58,6 +67,10 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   final TextEditingController _weightCtrl = TextEditingController();
   final Map<ConsultationSection, TextEditingController> _values = {};
   ConsultationSection _active = ConsultationSection.anamnesis;
+
+  // Modo resume: se rellena al llegar la Consultation del backend.
+  Consultation? _resumedFrom;
+  bool _hydrated = false;
 
   @override
   void initState() {
@@ -85,9 +98,27 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   }
 
   String _prefillIdentification() {
+    // Modo resume: se hidrata al llegar la Consultation.
     final p = widget.patient;
+    if (p == null) {
+      return '';
+    }
     return '${p.name} · ${p.breed} · ${p.ageYears} años · ${p.ownerName}';
   }
+
+  // Acceso unificado a datos del paciente, agnóstico del modo de la view.
+  String get _patientName =>
+      widget.patient?.name ?? _resumedFrom?.patient.name ?? '';
+  Species get _species =>
+      widget.patient?.species ?? _resumedFrom?.patient.species ?? Species.dog;
+  String get _patientId => widget.patient?.id ?? _resumedFrom?.patient.id ?? '';
+  String get _patientSubtitle {
+    final p = widget.patient;
+    if (p != null) return '${p.breed} · ${p.ageYears} años';
+    return ''; // PatientSummary no trae breed/age — TODO backend
+  }
+
+  bool get _isUrgent => widget.patient?.isAlert ?? false;
 
   @override
   void dispose() {
@@ -121,8 +152,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   bool _isFilled(ConsultationSection section) =>
       _values[section]?.text.trim().isNotEmpty ?? false;
 
-  int get _completedCount =>
-      ConsultationSection.values.where(_isFilled).length;
+  int get _completedCount => ConsultationSection.values.where(_isFilled).length;
 
   void _toggle(ConsultationSection s) {
     setState(() {
@@ -136,9 +166,11 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   }
 
   void _toggleRecording() {
-    ref.read(consultationRecorderControllerProvider.notifier).toggle(
+    ref
+        .read(consultationRecorderControllerProvider.notifier)
+        .toggle(
           section: _active,
-          patientId: widget.patient.id,
+          patientId: _patientId,
           consultationId: ref.read(activeConsultationProvider),
         );
   }
@@ -148,11 +180,11 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   }
 
   Future<void> _openCompliance() => showConsultationComplianceSheet(
-        context,
-        sections: ConsultationSection.values,
-        isFilled: _isFilled,
-        onJump: _jumpToSection,
-      );
+    context,
+    sections: ConsultationSection.values,
+    isFilled: _isFilled,
+    onJump: _jumpToSection,
+  );
 
   void _jumpToSection(ConsultationSection section) {
     setState(() {
@@ -162,12 +194,12 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   }
 
   Future<void> _openPauseSheet() => showPauseConsultationSheet(
-        context,
-        patientName: widget.patient.name,
-        sectionsCompleted: _completedCount,
-        sectionsTotal: ConsultationSection.values.length,
-        onConfirm: _confirmPause,
-      );
+    context,
+    patientName: _patientName,
+    sectionsCompleted: _completedCount,
+    sectionsTotal: ConsultationSection.values.length,
+    onConfirm: _confirmPause,
+  );
 
   void _confirmPause(ConsultationPauseReason reason, String? note) {
     final consultationId = ref.read(activeConsultationProvider);
@@ -179,11 +211,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       );
       return;
     }
-    ref.read(pauseConsultationControllerProvider.notifier).pause(
-          consultationId: consultationId,
-          reason: reason,
-          note: note,
-        );
+    ref
+        .read(pauseConsultationControllerProvider.notifier)
+        .pause(consultationId: consultationId, reason: reason, note: note);
   }
 
   Future<void> _onSign() async {
@@ -198,11 +228,12 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     }
     await showSignConsultationSheet(
       context,
-      patientName: widget.patient.name,
-      initialSummary:
-          _values[ConsultationSection.signature]?.text.trim() ?? '',
+      patientName: _patientName,
+      initialSummary: _values[ConsultationSection.signature]?.text.trim() ?? '',
       onConfirm: (result, summary, diagnosis) {
-        ref.read(signConsultationControllerProvider.notifier).sign(
+        ref
+            .read(signConsultationControllerProvider.notifier)
+            .sign(
               consultationId: consultationId,
               result: result,
               summary: summary,
@@ -213,12 +244,21 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   }
 
   void _back() {
+    if (_shouldWarnOnBack) {
+      _openPauseSheet();
+      return;
+    }
     if (context.canPop()) {
       context.pop();
     } else {
       context.go(AppRoutes.patients);
     }
   }
+
+  // Gatillo del warning: si hay consulta activa (backend conoce el id) y el
+  // doctor ya trabajó en 2+ secciones, salir sin pausar perdería la sesión.
+  bool get _shouldWarnOnBack =>
+      ref.read(activeConsultationProvider) != null && _completedCount >= 2;
 
   void _attachListeners() {
     ref
@@ -238,6 +278,36 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         signConsultationControllerProvider,
         _onSignChange,
       );
+    final resumeId = widget.consultationId;
+    if (resumeId != null) {
+      ref.listen<AsyncValue<Consultation>>(
+        consultationDetailControllerProvider(resumeId),
+        _onConsultationDetailChange,
+      );
+    }
+  }
+
+  void _onConsultationDetailChange(
+    AsyncValue<Consultation>? prev,
+    AsyncValue<Consultation> next,
+  ) {
+    next.whenOrNull(data: _hydrateFromConsultation);
+  }
+
+  void _hydrateFromConsultation(Consultation c) {
+    if (_hydrated) return;
+    _motivoCtrl.text = c.chiefComplaint ?? '';
+    for (final sc in c.sections) {
+      _values[sc.section]?.text = sc.text ?? '';
+    }
+    // PatientSummary no trae breed/age/owner → identificación degradada.
+    _values[ConsultationSection.identification]?.text =
+        '${c.patient.name} · ${c.patient.species.name}';
+    ref.read(activeConsultationProvider.notifier).setId(c.id);
+    setState(() {
+      _resumedFrom = c;
+      _hydrated = true;
+    });
   }
 
   void _onRecorderChange(
@@ -315,109 +385,145 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
 
   @override
   Widget build(BuildContext context) {
-    final subtitle =
-        '${widget.patient.breed} · ${widget.patient.ageYears} años';
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
     _attachListeners();
 
-    // Watch mantiene vivo el provider durante la vida de la view (sin watch,
-    // auto-dispose descarta el state entre reads y perdemos el consultation_id
-    // guardado por el recorder). Al salir de la view se descarta y la próxima
+    // Watch mantiene vivo el provider durante toda la vida de la view (sin
+    // watch, auto-dispose descarta el state entre reads y perdemos el
+    // consultation_id que setea el recorder o la hidratación en modo resume).
+    // Debe ir ANTES del early-return para cubrir la fase de loading del
+    // resume: sin un watch vivo, el setId del hydrate se pierde antes de que
+    // el rebuild lo lea. Al salir de la view se descarta y la próxima
     // consulta arranca limpia.
-    final hasActiveConsultation =
-        ref.watch(activeConsultationProvider) != null;
+    final activeConsultationId = ref.watch(activeConsultationProvider);
+    final hasActiveConsultation = activeConsultationId != null;
 
-    final busy = ref.watch(pauseConsultationControllerProvider).isLoading ||
+    // Modo resume: hasta que no hidratamos no podemos mostrar la UI normal
+    // (los controllers estarían vacíos). Early-return loading/error.
+    final resumeId = widget.consultationId;
+    if (resumeId != null && !_hydrated) {
+      final detail = ref.watch(consultationDetailControllerProvider(resumeId));
+      if (detail.hasError) {
+        return Scaffold(
+          backgroundColor: DsColors.bg,
+          body: SafeArea(
+            child: DsErrorView(
+              message: 'No se pudo cargar la consulta: ${detail.error}',
+              onRetry: () => ref.invalidate(
+                consultationDetailControllerProvider(resumeId),
+              ),
+            ),
+          ),
+        );
+      }
+      return const Scaffold(
+        backgroundColor: DsColors.bg,
+        body: SafeArea(child: Center(child: DsLoadingView())),
+      );
+    }
+
+    final busy =
+        ref.watch(pauseConsultationControllerProvider).isLoading ||
         ref.watch(signConsultationControllerProvider).isLoading;
 
     final recorderState =
         ref.watch(consultationRecorderControllerProvider).value ??
-            const ConsultationRecorderState.idle();
+        const ConsultationRecorderState.idle();
 
-    return Scaffold(
-      backgroundColor: DsColors.bg,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                ConsultationHeaderSection(
-                  species: widget.patient.species,
-                  patientName: widget.patient.name,
-                  patientSubtitle: subtitle,
-                  completed: _completedCount,
-                  total: ConsultationSection.values.length,
-                  onBack: _back,
-                  onOpenChecklist: _openCompliance,
-                  // Sin consultation_id aún (ninguna sección grabada),
-                  // pausar no tiene sentido → botón oculto.
-                  onPause: hasActiveConsultation ? _openPauseSheet : null,
-                  isUrgent: widget.patient.isAlert,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(
-                      DsSpacing.lg,
-                      DsSpacing.md,
-                      DsSpacing.lg,
-                      220,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DsFieldLabel(
-                          label: 'Motivo de consulta',
-                          child: DsTextInput(
-                            controller: _motivoCtrl,
-                            hint: 'Motivo principal de la consulta',
+    final warnOnBack = hasActiveConsultation && _completedCount >= 2;
+
+    return PopScope(
+      // canPop=false bloquea el pop; el callback decide qué hacer.
+      canPop: !warnOnBack,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _openPauseSheet();
+      },
+      child: Scaffold(
+        backgroundColor: DsColors.bg,
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  ConsultationHeaderSection(
+                    species: _species,
+                    patientName: _patientName,
+                    patientSubtitle: _patientSubtitle,
+                    completed: _completedCount,
+                    total: ConsultationSection.values.length,
+                    onBack: _back,
+                    onOpenChecklist: _openCompliance,
+                    // Sin consultation_id aún (ninguna sección grabada),
+                    // pausar no tiene sentido → botón oculto.
+                    onPause: hasActiveConsultation ? _openPauseSheet : null,
+                    isUrgent: _isUrgent,
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(
+                        DsSpacing.lg,
+                        DsSpacing.md,
+                        DsSpacing.lg,
+                        220,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          DsFieldLabel(
+                            label: 'Motivo de consulta',
+                            child: DsTextInput(
+                              controller: _motivoCtrl,
+                              hint: 'Motivo principal de la consulta',
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: DsSpacing.lg),
-                        _accordionList(),
-                      ],
+                          const SizedBox(height: DsSpacing.lg),
+                          _accordionList(),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            if (!keyboardOpen)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: DsSpacing.lg,
-                      ),
-                      child: ConsultationAiBar(
-                        state: recorderState,
-                        sectionLabel: _active.title,
-                        onToggle: _toggleRecording,
-                        onDiscard: _discardRecording,
-                      ),
-                    ),
-                    const SizedBox(height: DsSpacing.md),
-                    ConsultationSignBar(
-                      completed: _completedCount,
-                      total: ConsultationSection.values.length,
-                      onOpenCompliance: _openCompliance,
-                      onSign: _onSign,
-                    ),
-                  ],
-                ),
+                ],
               ),
-            if (busy)
-              const Positioned.fill(
-                child: ColoredBox(
-                  color: Colors.black54,
-                  child: DsLoadingView(),
+              if (!keyboardOpen)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DsSpacing.lg,
+                        ),
+                        child: ConsultationAiBar(
+                          state: recorderState,
+                          sectionLabel: _active.title,
+                          onToggle: _toggleRecording,
+                          onDiscard: _discardRecording,
+                        ),
+                      ),
+                      const SizedBox(height: DsSpacing.md),
+                      ConsultationSignBar(
+                        completed: _completedCount,
+                        total: ConsultationSection.values.length,
+                        onOpenCompliance: _openCompliance,
+                        onSign: _onSign,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-          ],
+              if (busy)
+                const Positioned.fill(
+                  child: ColoredBox(
+                    color: Colors.black54,
+                    child: DsLoadingView(),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

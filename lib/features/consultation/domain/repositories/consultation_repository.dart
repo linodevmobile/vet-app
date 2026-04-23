@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:vet_app/features/consultation/domain/entities/consultation.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_process_result.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_result.dart';
@@ -26,4 +27,8 @@ abstract interface class IConsultationRepository {
     String? summary,
     String? primaryDiagnosis,
   });
+
+  Future<Consultation> getById(String consultationId);
+
+  Future<void> resumeConsultation(String consultationId);
 }
