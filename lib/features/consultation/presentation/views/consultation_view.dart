@@ -11,6 +11,11 @@ import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/auth/presentation/controllers/current_user.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/active_consultation.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_controller.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_result.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_state.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/recorder_error_message.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/default_text_body.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/exam_body.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/identification_body.dart';
@@ -33,7 +38,8 @@ class ConsultationView extends ConsumerStatefulWidget {
   ConsumerState<ConsultationView> createState() => _ConsultationViewState();
 }
 
-class _ConsultationViewState extends ConsumerState<ConsultationView> {
+class _ConsultationViewState extends ConsumerState<ConsultationView>
+    with WidgetsBindingObserver {
   static const List<ConsultationSection> _simpleTextSections = [
     ConsultationSection.anamnesis,
     ConsultationSection.problems,
@@ -51,11 +57,11 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
   final TextEditingController _weightCtrl = TextEditingController();
   final Map<ConsultationSection, TextEditingController> _values = {};
   ConsultationSection _active = ConsultationSection.anamnesis;
-  bool _recording = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     final sectionsWithBody = [
       ConsultationSection.identification,
       ConsultationSection.exam,
@@ -84,6 +90,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _motivoCtrl.dispose();
     _tempCtrl.dispose();
     _heartRateCtrl.dispose();
@@ -93,6 +100,17 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Solo `paused` / `hidden` indican que la app pasó al background real.
+    // `inactive` ocurre con diálogos del sistema (ej. prompt de permisos),
+    // no se puede tratar como background — cortaría la grabación al instante.
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      ref.read(consultationRecorderControllerProvider.notifier).stop();
+    }
   }
 
   void _onValueChanged() {
@@ -117,7 +135,15 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
   }
 
   void _toggleRecording() {
-    setState(() => _recording = !_recording);
+    ref.read(consultationRecorderControllerProvider.notifier).toggle(
+          section: _active,
+          patientId: widget.patient.id,
+          consultationId: ref.read(activeConsultationProvider),
+        );
+  }
+
+  void _discardRecording() {
+    ref.read(consultationRecorderControllerProvider.notifier).discard();
   }
 
   Future<void> _openCompliance() async {
@@ -191,6 +217,36 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
         '${widget.patient.breed} · ${widget.patient.ageYears} años';
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
+    ref
+      ..listen<AsyncValue<ConsultationRecorderState>>(
+        consultationRecorderControllerProvider,
+        (prev, next) {
+          next.whenOrNull(
+            error: (error, _) {
+              DsToast.show(
+                context,
+                message: recorderErrorMessage(error),
+                variant: DsToastVariant.error,
+              );
+            },
+          );
+        },
+      )
+      ..listen<ConsultationRecorderDelivery?>(
+        consultationRecorderResultProvider,
+        (prev, next) {
+          if (next == null) return;
+          if (prev?.seq == next.seq) return;
+          final controller = _values[next.section];
+          if (controller == null) return;
+          controller.text = next.result.suggestedText;
+        },
+      );
+
+    final recorderState =
+        ref.watch(consultationRecorderControllerProvider).value ??
+            const ConsultationRecorderState.idle();
+
     return Scaffold(
       backgroundColor: DsColors.bg,
       body: SafeArea(
@@ -248,9 +304,10 @@ class _ConsultationViewState extends ConsumerState<ConsultationView> {
                         horizontal: DsSpacing.lg,
                       ),
                       child: ConsultationAiBar(
-                        recording: _recording,
+                        state: recorderState,
                         sectionLabel: _active.title,
                         onToggle: _toggleRecording,
+                        onDiscard: _discardRecording,
                       ),
                     ),
                     const SizedBox(height: DsSpacing.md),

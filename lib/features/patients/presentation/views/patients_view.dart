@@ -72,6 +72,7 @@ class PatientsView extends ConsumerWidget {
                         value: results,
                         onRetry: refresh,
                         data: (list) => _buildResults(
+                          context,
                           list,
                           query,
                           openRegister,
@@ -89,6 +90,7 @@ class PatientsView extends ConsumerWidget {
   }
 
   Widget _buildResults(
+    BuildContext context,
     List<Patient> list,
     String query,
     VoidCallback onCreate,
@@ -101,9 +103,7 @@ class PatientsView extends ConsumerWidget {
           (p) => PatientResultTile(
             patient: p,
             lastVisitLabel: DateFormatters.relativeAgo(p.lastVisit),
-            onTap: () {
-              // TODO(patients): abrir ficha del paciente.
-            },
+            onTap: () => context.push(AppRoutes.consultationNew, extra: p),
           ),
         )
         .toList();

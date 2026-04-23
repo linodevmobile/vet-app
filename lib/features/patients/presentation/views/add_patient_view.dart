@@ -83,7 +83,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
             message: '${patient.name} creado',
             variant: DsToastVariant.success,
           );
-          _pop();
+          context.go(AppRoutes.consultationNew, extra: patient);
         },
       );
     });

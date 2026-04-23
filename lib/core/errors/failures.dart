@@ -57,3 +57,25 @@ final class UnknownFailure extends Failure {
     super.cause,
   });
 }
+
+/// Permiso de micrófono no concedido. `permanent = true` indica que el usuario
+/// marcó "no volver a preguntar" (Android) o denegó dos veces (iOS) — en ese
+/// caso el prompt nativo ya no aparece y hay que enviarlo a Ajustes.
+final class MicPermissionFailure extends Failure {
+  const MicPermissionFailure({
+    super.message = 'Necesitamos acceso al micrófono para grabar.',
+    this.permanent = false,
+    super.cause,
+  });
+
+  final bool permanent;
+}
+
+/// Falla de captura de audio: codec no soportado, storage lleno, device sin
+/// micrófono, o error interno del paquete `record`.
+final class AudioRecordingFailure extends Failure {
+  const AudioRecordingFailure({
+    super.message = 'No se pudo grabar audio.',
+    super.cause,
+  });
+}
