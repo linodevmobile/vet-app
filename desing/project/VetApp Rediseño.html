@@ -73,7 +73,6 @@
       }}>
         {tabs.map(t => {
           const active = (t.id === 'patients' && ['patients','patient','newpatient'].includes(current))
-                      || (t.id === 'consultation' && current === 'consultation')
                       || (t.id === current);
           return (
             <button key={t.id} onClick={() => onNav(t.id)} style={{
