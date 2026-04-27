@@ -62,8 +62,8 @@ const _allTextBearingSections = <ConsultationSection>{
 class ConsultationView extends ConsumerStatefulWidget {
   const ConsultationView({this.patient, this.consultationId, super.key})
     : assert(
-        (patient != null) != (consultationId != null),
-        'ConsultationView requiere exactamente uno de patient/consultationId',
+        patient != null || consultationId != null,
+        'ConsultationView requiere patient o consultationId',
       );
 
   final Patient? patient;
@@ -112,6 +112,14 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     if (widget.patient != null) {
       for (final s in ConsultationSection.values) {
         if (s != ConsultationSection.reason) _collapsed.add(s);
+      }
+      // El provider es auto-dispose y nadie lo watcheó durante la navegación.
+      final id = widget.consultationId;
+      if (id != null) {
+        Future.microtask(() {
+          if (!mounted) return;
+          ref.read(activeConsultationProvider.notifier).setId(id);
+        });
       }
     }
   }
@@ -287,10 +295,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     }
   }
 
-  // Si la consulta ya está creada y el doctor trabajó en 2+ secciones, salir
-  // sin pausar perdería la sesión.
+  // La consulta se crea upfront en in_progress; salir sin pausar la deja colgada.
   bool get _shouldWarnOnBack =>
-      ref.read(activeConsultationProvider) != null && _completedCount >= 2;
+      ref.read(activeConsultationProvider) != null;
 
   void _attachListeners() {
     ref
@@ -315,7 +322,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         _onSyncChange,
       );
     final resumeId = widget.consultationId;
-    if (resumeId != null) {
+    if (resumeId != null && widget.patient == null) {
       ref.listen<AsyncValue<Consultation>>(
         consultationDetailControllerProvider(resumeId),
         _onConsultationDetailChange,
@@ -441,7 +448,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     final hasActiveConsultation = activeConsultationId != null;
 
     final resumeId = widget.consultationId;
-    if (resumeId != null && !_hydrated) {
+    if (resumeId != null && widget.patient == null && !_hydrated) {
       final detail = ref.watch(consultationDetailControllerProvider(resumeId));
       if (detail.hasError) {
         return Scaffold(

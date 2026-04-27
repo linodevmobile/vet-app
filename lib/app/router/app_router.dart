@@ -54,11 +54,14 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: AppRoutes.consultationNew,
         builder: (context, state) {
-          final patient = state.extra;
-          if (patient is! Patient) {
+          final extra = state.extra;
+          if (extra is! ({Patient patient, String consultationId})) {
             return const _MissingPatientFallback();
           }
-          return ConsultationView(patient: patient);
+          return ConsultationView(
+            patient: extra.patient,
+            consultationId: extra.consultationId,
+          );
         },
       ),
       GoRoute(

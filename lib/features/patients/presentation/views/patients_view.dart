@@ -161,7 +161,10 @@ class PatientsView extends ConsumerWidget {
     state.maybeWhen(
       data: (id) {
         if (id == null) return;
-        context.push(AppRoutes.consultationNew, extra: p);
+        context.push(
+          AppRoutes.consultationNew,
+          extra: (patient: p, consultationId: id),
+        );
       },
       error: (e, _) => DsToast.show(
         context,

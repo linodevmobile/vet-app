@@ -111,7 +111,10 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
         data: (id) {
           final patient = _pendingPatient;
           if (id == null || patient == null) return;
-          context.go(AppRoutes.consultationNew, extra: patient);
+          context.go(
+            AppRoutes.consultationNew,
+            extra: (patient: patient, consultationId: id),
+          );
         },
       );
     });
