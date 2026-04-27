@@ -3,57 +3,66 @@ import 'package:vet_app/design_system/tokens/tokens.dart';
 
 class IdentificationBody extends StatelessWidget {
   const IdentificationBody({
-    required this.name,
-    required this.subtitle,
+    required this.summary,
     super.key,
   });
 
-  final String name;
-  final String subtitle;
+  /// Línea preformateada con datos del paciente. Ej: "Thor · Golden Retriever
+  /// · M · 4a · 28.4 kg". El formateo lo hace la View desde Patient.
+  final String summary;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: DsColors.okSoft,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: DsColors.ok.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle_outline, size: 16, color: DsColors.ok),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: DsTypography.titleSm.copyWith(fontSize: 13),
-                ),
-                if (subtitle.isNotEmpty)
-                  Text(
-                    subtitle,
-                    style: DsTypography.bodySm.copyWith(
-                      fontSize: 11,
-                      color: DsColors.ink60,
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: DsColors.primarySoft,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.check, size: 16, color: DsColors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Prellenado desde ficha. ',
+                        style: DsTypography.bodyMd.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: DsColors.primary,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Sincronizado con el registro permanente.',
+                        style: DsTypography.bodyMd.copyWith(
+                          fontSize: 12,
+                          color: DsColors.ink80,
+                        ),
+                      ),
+                    ],
                   ),
-                const SizedBox(height: 2),
-                Text(
-                  'Prellenado desde ficha · sincronizado',
-                  style: DsTypography.kicker.copyWith(
-                    fontSize: 9,
-                    color: DsColors.ok,
-                    letterSpacing: 0.6,
-                  ),
                 ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        if (summary.isNotEmpty)
+          Text(
+            summary,
+            style: DsTypography.bodyMd.copyWith(
+              fontSize: 14,
+              color: DsColors.ink80,
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 }

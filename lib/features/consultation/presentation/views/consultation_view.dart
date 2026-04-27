@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vet_app/app/router/app_routes.dart';
+import 'package:vet_app/app/shared/utils/patient_formatters.dart';
 import 'package:vet_app/app/shared/utils/veterinarian_formatters.dart';
 import 'package:vet_app/design_system/molecules/ds_error_view.dart';
 import 'package:vet_app/design_system/molecules/ds_loading_view.dart';
@@ -81,14 +82,14 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   final TextEditingController _tllcCtrl = TextEditingController();
   final TextEditingController _trcpCtrl = TextEditingController();
 
-  String _food = 'Concentrado';
-  String _mucosa = 'Rosadas';
-  String _bcs = '5/9';
-  String _attitudeOwner = 'Dócil';
-  String _attitudeVet = 'Amigable';
-  String _pulse = 'Normal';
-  String _treatment = 'Ambulatorio';
-  double _dehydration = 4;
+  String? _food;
+  String? _mucosa;
+  String? _bcs;
+  String? _attitudeOwner;
+  String? _attitudeVet;
+  String? _pulse;
+  String? _treatment;
+  double _dehydration = 0;
 
   final Set<ConsultationSection> _collapsed = {};
 
@@ -160,12 +161,20 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   }
   bool get _isUrgent => widget.patient?.isAlert ?? false;
 
+  String get _identificationSummary {
+    final p = widget.patient;
+    if (p != null) return PatientFormatters.identificationLine(p);
+    final r = _resumedFrom?.patient;
+    if (r == null) return '';
+    return PatientFormatters.identificationLineFromSummary(r);
+  }
+
   bool _isFilled(ConsultationSection s) {
     switch (s) {
       case ConsultationSection.identification:
         return _patientName.isNotEmpty;
       case ConsultationSection.food:
-        return _food.isNotEmpty;
+        return _food != null;
       case ConsultationSection.vitals:
         return _tempCtrl.text.isNotEmpty &&
             _fcCtrl.text.isNotEmpty &&
@@ -173,9 +182,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
             _weightCtrl.text.isNotEmpty;
       case ConsultationSection.exam:
         // Per design: filled cuando los 3 dropdowns clave tienen valor.
-        return _mucosa.isNotEmpty && _bcs.isNotEmpty && _pulse.isNotEmpty;
+        return _mucosa != null && _bcs != null && _pulse != null;
       case ConsultationSection.treatment:
-        return _treatment.isNotEmpty;
+        return _treatment != null;
       // Resto: secciones de texto libre — filled si el textarea tiene algo.
       // ignore: no_default_cases
       default:
@@ -565,10 +574,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
 
     switch (s) {
       case ConsultationSection.identification:
-        return IdentificationBody(
-          name: _patientName,
-          subtitle: _patientSubtitle,
-        );
+        return IdentificationBody(summary: _identificationSummary);
       case ConsultationSection.food:
         return FoodBody(
           value: _food,

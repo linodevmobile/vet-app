@@ -58,6 +58,12 @@ class DsMiniInput extends StatelessWidget {
                   decoration: const InputDecoration(
                     isDense: true,
                     border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    focusedErrorBorder: InputBorder.none,
+                    filled: false,
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),

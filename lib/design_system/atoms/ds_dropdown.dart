@@ -7,15 +7,17 @@ class DsDropdown<T> extends StatelessWidget {
     required this.options,
     required this.onChanged,
     this.label,
+    this.hint,
     this.labelBuilder,
     this.enabled = true,
     super.key,
   });
 
-  final T value;
+  final T? value;
   final List<T> options;
   final ValueChanged<T> onChanged;
   final String? label;
+  final String? hint;
   final String Function(T)? labelBuilder;
   final bool enabled;
 
@@ -49,6 +51,15 @@ class DsDropdown<T> extends StatelessWidget {
             child: DropdownButton<T>(
               value: value,
               isExpanded: true,
+              hint: hint == null
+                  ? null
+                  : Text(
+                      hint!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: DsColors.ink40,
+                      ),
+                    ),
               icon: const Icon(
                 Icons.keyboard_arrow_down_rounded,
                 color: DsColors.ink60,

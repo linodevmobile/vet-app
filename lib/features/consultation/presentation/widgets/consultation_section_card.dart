@@ -44,12 +44,12 @@ class ConsultationSectionCard extends StatelessWidget {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: filled ? DsColors.okSoft : DsColors.surfaceAlt,
+                      color: filled ? DsColors.primary : DsColors.surfaceAlt,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     alignment: Alignment.center,
                     child: filled
-                        ? const Icon(Icons.check, size: 14, color: DsColors.ok)
+                        ? const Icon(Icons.check, size: 14, color: Colors.white)
                         : Text(
                             n,
                             style: const TextStyle(

@@ -29,15 +29,15 @@ class ExamBody extends StatelessWidget {
     super.key,
   });
 
-  final String mucosa;
+  final String? mucosa;
   final ValueChanged<String> onMucosaChanged;
   final double dehydration;
   final ValueChanged<double> onDehydrationChanged;
-  final String bcs;
+  final String? bcs;
   final ValueChanged<String> onBcsChanged;
-  final String attitudeOwner;
+  final String? attitudeOwner;
   final ValueChanged<String> onAttitudeOwnerChanged;
-  final String attitudeVet;
+  final String? attitudeVet;
   final ValueChanged<String> onAttitudeVetChanged;
   final TextEditingController systemsCtrl;
   final bool systemsRecording;
@@ -46,7 +46,7 @@ class ExamBody extends StatelessWidget {
   final VoidCallback onSystemsBlur;
   final TextEditingController tllc;
   final TextEditingController trcp;
-  final String pulse;
+  final String? pulse;
   final ValueChanged<String> onPulseChanged;
 
   @override
@@ -56,6 +56,7 @@ class ExamBody extends StatelessWidget {
       children: [
         DsDropdown<String>(
           label: 'Mucosas',
+          hint: 'Seleccionar…',
           value: mucosa,
           options: SectionOptions.mucosa,
           onChanged: onMucosaChanged,
@@ -68,6 +69,7 @@ class ExamBody extends StatelessWidget {
         const SizedBox(height: 12),
         DsDropdown<String>(
           label: 'Condición corporal (WSAVA)',
+          hint: 'Seleccionar…',
           value: bcs,
           options: SectionOptions.bcs,
           onChanged: onBcsChanged,
@@ -75,6 +77,7 @@ class ExamBody extends StatelessWidget {
         const SizedBox(height: 12),
         DsDropdown<String>(
           label: 'Actitud con el propietario',
+          hint: 'Seleccionar…',
           value: attitudeOwner,
           options: SectionOptions.attitude,
           onChanged: onAttitudeOwnerChanged,
@@ -82,6 +85,7 @@ class ExamBody extends StatelessWidget {
         const SizedBox(height: 12),
         DsDropdown<String>(
           label: 'Actitud con el doctor',
+          hint: 'Seleccionar…',
           value: attitudeVet,
           options: SectionOptions.attitude,
           onChanged: onAttitudeVetChanged,
@@ -110,6 +114,7 @@ class ExamBody extends StatelessWidget {
         const SizedBox(height: 12),
         DsDropdown<String>(
           label: 'Pulso',
+          hint: 'Seleccionar…',
           value: pulse,
           options: SectionOptions.pulse,
           onChanged: onPulseChanged,

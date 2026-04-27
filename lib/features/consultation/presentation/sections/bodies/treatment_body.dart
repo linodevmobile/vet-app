@@ -9,13 +9,14 @@ class TreatmentBody extends StatelessWidget {
     super.key,
   });
 
-  final String value;
+  final String? value;
   final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
     return DsDropdown<String>(
       label: 'Modalidad',
+      hint: 'Seleccionar…',
       value: value,
       options: SectionOptions.treatment,
       onChanged: onChanged,

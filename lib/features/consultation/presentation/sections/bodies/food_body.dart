@@ -9,13 +9,14 @@ class FoodBody extends StatelessWidget {
     super.key,
   });
 
-  final String value;
+  final String? value;
   final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
     return DsDropdown<String>(
       label: 'Régimen alimentario',
+      hint: 'Seleccionar…',
       value: value,
       options: SectionOptions.food,
       onChanged: onChanged,

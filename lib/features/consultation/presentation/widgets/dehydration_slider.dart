@@ -11,6 +11,9 @@ class DehydrationSlider extends StatelessWidget {
   final double value;
   final ValueChanged<double> onChanged;
 
+  static const double _max = 12;
+  static const _ticks = [0.0, 5.0, 8.0, 12.0];
+
   Color get _color {
     if (value < 5) return DsColors.ok;
     if (value < 8) return DsColors.warn;
@@ -53,10 +56,34 @@ class DehydrationSlider extends StatelessWidget {
             trackHeight: 4,
           ),
           child: Slider(
-            value: value.clamp(0, 12),
-            max: 12,
-            divisions: 12,
+            value: value.clamp(0, _max),
+            max: _max,
+            divisions: _max.toInt(),
             onChanged: onChanged,
+          ),
+        ),
+        // Slider tiene padding interno horizontal — replicarlo para que las
+        // marcas inferiores se alineen con los puntos del thumb.
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: SizedBox(
+            height: 14,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                for (final t in _ticks)
+                  Align(
+                    alignment: Alignment(2 * (t / _max) - 1, 0),
+                    child: Text(
+                      '${t.toInt()}%',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: DsColors.ink40,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ],
