@@ -119,7 +119,7 @@ final class ConsultationProcessControllerProvider
 }
 
 String _$consultationProcessControllerHash() =>
-    r'9e69951f82973314000ffa2fdfdf36cd6bcdbd04';
+    r'f444dabe54cda40be8ba75bee7c448a848533718';
 
 /// Escucha grabaciones recién terminadas (canal `consultationRecorderDelivery`),
 /// las procesa contra `/ai/process-section` y expone el resultado tipado.

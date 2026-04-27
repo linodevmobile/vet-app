@@ -11,6 +11,8 @@ class SignatureBody extends StatelessWidget {
     required this.isRecording,
     required this.onMicTap,
     this.micEnabled = true,
+    this.isProcessing = false,
+    this.recordingElapsed,
     this.onSign,
     this.onChanged,
     this.onEditingComplete,
@@ -23,6 +25,8 @@ class SignatureBody extends StatelessWidget {
   final bool isRecording;
   final VoidCallback onMicTap;
   final bool micEnabled;
+  final bool isProcessing;
+  final Duration? recordingElapsed;
   final VoidCallback? onSign;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onEditingComplete;
@@ -37,6 +41,8 @@ class SignatureBody extends StatelessWidget {
           label: 'Observaciones e indicaciones',
           hint: 'Observaciones generales, indicaciones al propietario…',
           isRecording: isRecording,
+          isProcessing: isProcessing,
+          recordingElapsed: recordingElapsed,
           micEnabled: micEnabled,
           onMicTap: onMicTap,
           onChanged: onChanged,

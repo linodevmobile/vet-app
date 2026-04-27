@@ -6,6 +6,7 @@ import 'package:vet_app/features/consultation/domain/entities/consultation_proce
 import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
 import 'package:vet_app/features/consultation/domain/usecases/process_consultation_section_usecase.dart';
 import 'package:vet_app/features/consultation/infrastructure/repositories/consultation_repository_impl.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_processing_section.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_delivery.dart';
 
 part 'consultation_process_controller.g.dart';
@@ -44,6 +45,9 @@ class ConsultationProcessController extends _$ConsultationProcessController {
 
   Future<void> _process(ConsultationRecorderDelivery delivery) async {
     state = const AsyncLoading();
+    ref
+        .read(consultationProcessingSectionProvider.notifier)
+        .start(delivery.section);
     final useCase = ref.read(processConsultationSectionUseCaseProvider);
     final guarded = await AsyncValue.guard(
       () => useCase(section: delivery.section, audio: delivery.audio),
@@ -52,6 +56,7 @@ class ConsultationProcessController extends _$ConsultationProcessController {
       await _safeDelete(delivery.audio);
       return;
     }
+    ref.read(consultationProcessingSectionProvider.notifier).clear();
     if (guarded.hasError) {
       state = AsyncError(
         guarded.error!,

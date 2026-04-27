@@ -9,6 +9,8 @@ class LabsBody extends StatelessWidget {
     required this.isRecording,
     required this.onMicTap,
     this.micEnabled = true,
+    this.isProcessing = false,
+    this.recordingElapsed,
     this.onAttach,
     this.onChanged,
     this.onEditingComplete,
@@ -19,6 +21,8 @@ class LabsBody extends StatelessWidget {
   final bool isRecording;
   final VoidCallback onMicTap;
   final bool micEnabled;
+  final bool isProcessing;
+  final Duration? recordingElapsed;
   final VoidCallback? onAttach;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onEditingComplete;
@@ -33,6 +37,8 @@ class LabsBody extends StatelessWidget {
           label: 'Exámenes solicitados / resultados',
           hint: 'Laboratorio, imagen…',
           isRecording: isRecording,
+          isProcessing: isProcessing,
+          recordingElapsed: recordingElapsed,
           micEnabled: micEnabled,
           onMicTap: onMicTap,
           onChanged: onChanged,

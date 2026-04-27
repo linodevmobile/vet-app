@@ -17,6 +17,7 @@ import 'package:vet_app/features/consultation/infrastructure/models/consultation
 import 'package:vet_app/features/consultation/presentation/controllers/active_consultation.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_detail_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_process_controller.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_processing_section.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_state.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_sync_controller.dart';
@@ -467,8 +468,8 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     final recorderState =
         ref.watch(consultationRecorderControllerProvider).value ??
         const ConsultationRecorderState.idle();
-    final processLoading =
-        ref.watch(consultationProcessControllerProvider).isLoading;
+    final processingSection =
+        ref.watch(consultationProcessingSectionProvider);
 
     return PopScope(
       canPop: !_shouldWarnOnBack,
@@ -513,7 +514,11 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
                               filled: _isFilled(s),
                               expanded: !_collapsed.contains(s),
                               onToggle: () => _toggle(s),
-                              child: _buildBody(s, recorderState, processLoading),
+                              child: _buildBody(
+                                s,
+                                recorderState,
+                                processingSection,
+                              ),
                             ),
                         ],
                       ),
@@ -550,14 +555,20 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   Widget _buildBody(
     ConsultationSection s,
     ConsultationRecorderState recorderState,
-    bool processLoading,
+    ConsultationSection? processingSection,
   ) {
     final isRecordingThis =
         recorderState is RecorderRecording && recorderState.section == s;
+    final isProcessingThis = processingSection == s;
+    final processingActive = processingSection != null;
     // Mientras procesa el audio o graba otra sección, el resto de mics se
     // bloquean para evitar pisar la entrega activa.
-    final micEnabled = !processLoading &&
+    final micEnabled = !processingActive &&
         (recorderState is RecorderIdle || isRecordingThis);
+    final recordingElapsed =
+        recorderState is RecorderRecording && recorderState.section == s
+            ? recorderState.elapsed
+            : null;
     void onMic() => _toggleRecording(s);
     void onBlur() => _syncSectionText(s);
 
@@ -566,6 +577,8 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         controller: _textCtrls[s]!,
         label: s.hint,
         isRecording: isRecordingThis,
+        isProcessing: isProcessingThis,
+        recordingElapsed: recordingElapsed,
         micEnabled: micEnabled,
         onMicTap: onMic,
         onEditingComplete: onBlur,
@@ -601,6 +614,8 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
           onAttitudeVetChanged: (v) => setState(() => _attitudeVet = v),
           systemsCtrl: _textCtrls[ConsultationSection.exam]!,
           systemsRecording: isRecordingThis,
+          systemsProcessing: isProcessingThis,
+          systemsRecordingElapsed: recordingElapsed,
           systemsMicEnabled: micEnabled,
           onSystemsMic: onMic,
           onSystemsBlur: onBlur,
@@ -613,6 +628,8 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         return LabsBody(
           controller: _textCtrls[s]!,
           isRecording: isRecordingThis,
+          isProcessing: isProcessingThis,
+          recordingElapsed: recordingElapsed,
           micEnabled: micEnabled,
           onMicTap: onMic,
           onEditingComplete: onBlur,
@@ -638,6 +655,8 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
           doctorRegistry:
               user == null ? '' : VeterinarianFormatters.registry(user),
           isRecording: isRecordingThis,
+          isProcessing: isProcessingThis,
+          recordingElapsed: recordingElapsed,
           micEnabled: micEnabled,
           onMicTap: onMic,
           onEditingComplete: onBlur,

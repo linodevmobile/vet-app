@@ -12,6 +12,8 @@ class FieldWithMic extends StatelessWidget {
     this.maxLines = 6,
     this.hint,
     this.micEnabled = true,
+    this.isProcessing = false,
+    this.recordingElapsed,
     this.onChanged,
     this.onEditingComplete,
     super.key,
@@ -25,6 +27,8 @@ class FieldWithMic extends StatelessWidget {
   final int maxLines;
   final String? hint;
   final bool micEnabled;
+  final bool isProcessing;
+  final Duration? recordingElapsed;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onEditingComplete;
 
@@ -87,7 +91,128 @@ class FieldWithMic extends StatelessWidget {
             ),
           ),
         ),
+        if (isRecording) ...[
+          const SizedBox(height: 6),
+          _RecordingPill(elapsed: recordingElapsed ?? Duration.zero),
+        ] else if (isProcessing) ...[
+          const SizedBox(height: 6),
+          const _ProcessingPill(),
+        ],
       ],
+    );
+  }
+}
+
+class _RecordingPill extends StatefulWidget {
+  const _RecordingPill({required this.elapsed});
+
+  final Duration elapsed;
+
+  @override
+  State<_RecordingPill> createState() => _RecordingPillState();
+}
+
+class _RecordingPillState extends State<_RecordingPill>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  String _format(Duration d) {
+    final m = d.inMinutes.toString().padLeft(2, '0');
+    final s = (d.inSeconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: DsColors.urgentSoft,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedBuilder(
+            animation: _pulse,
+            builder: (_, __) => Opacity(
+              opacity: 0.4 + 0.6 * _pulse.value,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: DsColors.urgent,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Escuchando…',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: DsColors.urgent,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _format(widget.elapsed),
+            style: const TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 11,
+              color: DsColors.ink60,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProcessingPill extends StatelessWidget {
+  const _ProcessingPill();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: DsColors.aiSoft,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 12,
+            height: 12,
+            child: CircularProgressIndicator(
+              strokeWidth: 1.6,
+              valueColor: AlwaysStoppedAnimation(DsColors.ai),
+            ),
+          ),
+          SizedBox(width: 8),
+          Text(
+            'Procesando audio…',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: DsColors.ai,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

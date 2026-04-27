@@ -26,6 +26,8 @@ class ExamBody extends StatelessWidget {
     required this.trcp,
     required this.pulse,
     required this.onPulseChanged,
+    this.systemsProcessing = false,
+    this.systemsRecordingElapsed,
     super.key,
   });
 
@@ -42,6 +44,8 @@ class ExamBody extends StatelessWidget {
   final TextEditingController systemsCtrl;
   final bool systemsRecording;
   final bool systemsMicEnabled;
+  final bool systemsProcessing;
+  final Duration? systemsRecordingElapsed;
   final VoidCallback onSystemsMic;
   final VoidCallback onSystemsBlur;
   final TextEditingController tllc;
@@ -95,6 +99,8 @@ class ExamBody extends StatelessWidget {
           controller: systemsCtrl,
           label: 'Sistemas afectados',
           isRecording: systemsRecording,
+          isProcessing: systemsProcessing,
+          recordingElapsed: systemsRecordingElapsed,
           micEnabled: systemsMicEnabled,
           onMicTap: onSystemsMic,
           onEditingComplete: onSystemsBlur,
