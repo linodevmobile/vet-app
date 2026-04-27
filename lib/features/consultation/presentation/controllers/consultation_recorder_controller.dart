@@ -1,23 +1,14 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vet_app/core/audio/audio_recording_service.dart';
 import 'package:vet_app/core/audio/microphone_permission_service.dart';
 import 'package:vet_app/core/errors/failures.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
-import 'package:vet_app/features/consultation/domain/usecases/process_consultation_audio_usecase.dart';
-import 'package:vet_app/features/consultation/infrastructure/models/consultation_process_request.dart';
-import 'package:vet_app/features/consultation/infrastructure/repositories/consultation_repository_impl.dart';
-import 'package:vet_app/features/consultation/presentation/controllers/active_consultation.dart';
-import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_result.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_delivery.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_state.dart';
 
 part 'consultation_recorder_controller.g.dart';
-
-@riverpod
-ProcessConsultationAudioUseCase processConsultationAudioUseCase(Ref ref) =>
-    ProcessConsultationAudioUseCase(ref.watch(consultationRepositoryProvider));
 
 @riverpod
 class ConsultationRecorderController extends _$ConsultationRecorderController {
@@ -28,8 +19,6 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
   StreamSubscription<double>? _amplitudeSub;
   double _lastAmplitude = 0;
   ConsultationSection? _activeSection;
-  String? _patientId;
-  String? _consultationId;
   bool _autoStopTriggered = false;
 
   @override
@@ -38,28 +27,19 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
     return const ConsultationRecorderState.idle();
   }
 
-  Future<void> toggle({
-    required ConsultationSection section,
-    required String patientId,
-    String? consultationId,
-  }) async {
+  Future<void> toggle({required ConsultationSection section}) async {
     final current = state.value;
     if (current is RecorderIdle) {
-      await _start(
-        section: section,
-        patientId: patientId,
-        consultationId: consultationId,
-      );
+      await _start(section: section);
     } else if (current is RecorderRecording) {
-      await _stopAndUpload();
+      await _stopAndDeliver();
     }
-    // RecorderUploading: botón deshabilitado, no debería llegar tap.
   }
 
   /// Cierre programático (ej. app a background). No-op fuera de recording.
   Future<void> stop() async {
     if (state.value is! RecorderRecording) return;
-    await _stopAndUpload();
+    await _stopAndDeliver();
   }
 
   Future<void> discard() async {
@@ -78,16 +58,7 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
     _resetContext();
   }
 
-  Future<void> _start({
-    required ConsultationSection section,
-    required String patientId,
-    String? consultationId,
-  }) async {
-    if (ConsultationProcessRequest.wireFor(section) == null) {
-      // Sección que no va al backend (identification / signature) — ignorar.
-      return;
-    }
-
+  Future<void> _start({required ConsultationSection section}) async {
     final permission =
         await ref.read(microphonePermissionServiceProvider).request();
     if (!ref.mounted) return;
@@ -115,13 +86,12 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
     }
 
     _activeSection = section;
-    _patientId = patientId;
-    _consultationId = consultationId;
     _autoStopTriggered = false;
     _lastAmplitude = 0;
 
-    state = const AsyncData(
+    state = AsyncData(
       ConsultationRecorderState.recording(
+        section: section,
         elapsed: Duration.zero,
         amplitude: 0,
       ),
@@ -133,23 +103,24 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
 
   void _onElapsed(Duration elapsed) {
     if (!ref.mounted) return;
-    if (state.value is! RecorderRecording) return;
+    final section = _activeSection;
+    if (state.value is! RecorderRecording || section == null) return;
     state = AsyncData(
       ConsultationRecorderState.recording(
+        section: section,
         elapsed: elapsed,
         amplitude: _lastAmplitude,
       ),
     );
     if (elapsed >= _maxDuration && !_autoStopTriggered) {
       _autoStopTriggered = true;
-      unawaited(_stopAndUpload());
+      unawaited(_stopAndDeliver());
     }
   }
 
-  Future<void> _stopAndUpload() async {
+  Future<void> _stopAndDeliver() async {
     final section = _activeSection;
-    final patientId = _patientId;
-    if (section == null || patientId == null) {
+    if (section == null) {
       state = const AsyncData(ConsultationRecorderState.idle());
       _resetContext();
       return;
@@ -164,7 +135,7 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
 
     final service = ref.read(audioRecordingServiceProvider);
 
-    // Tap accidental: si no duró el mínimo, descartar sin pegarle al backend.
+    // Tap accidental: si no duró el mínimo, descartar sin emitir.
     if (elapsed < _minDuration) {
       final guarded = await AsyncValue.guard(service.discard);
       if (!ref.mounted) return;
@@ -193,40 +164,9 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
 
     final file = stopped.requireValue;
 
-    state = AsyncData(ConsultationRecorderState.uploading(section: section));
-
-    final wire = ConsultationProcessRequest.wireFor(section)!;
-    final consultationId = _consultationId;
-    final upload = await AsyncValue.guard(
-      () => ref.read(processConsultationAudioUseCaseProvider)(
-        audio: file,
-        section: wire,
-        patientId: patientId,
-        consultationId: consultationId,
-      ),
-    );
-    if (!ref.mounted) {
-      await _safeDelete(file);
-      return;
-    }
-    if (upload.hasError) {
-      await _safeDelete(file);
-      if (!ref.mounted) return;
-      state = AsyncError(
-        upload.error!,
-        upload.stackTrace ?? StackTrace.current,
-      );
-      state = const AsyncData(ConsultationRecorderState.idle());
-      _resetContext();
-      return;
-    }
-
-    final result = upload.requireValue;
-    ref.read(activeConsultationProvider.notifier).setId(result.consultationId);
     ref
-        .read(consultationRecorderResultProvider.notifier)
-        .emit(section: section, result: result);
-    await _safeDelete(file);
+        .read(consultationRecorderDeliveryProvider.notifier)
+        .emit(section: section, audio: file);
 
     state = const AsyncData(ConsultationRecorderState.idle());
     _resetContext();
@@ -241,14 +181,7 @@ class ConsultationRecorderController extends _$ConsultationRecorderController {
 
   void _resetContext() {
     _activeSection = null;
-    _patientId = null;
-    _consultationId = null;
     _autoStopTriggered = false;
     _lastAmplitude = 0;
-  }
-
-  Future<void> _safeDelete(File file) async {
-    if (!file.existsSync()) return;
-    await AsyncValue.guard(file.delete);
   }
 }

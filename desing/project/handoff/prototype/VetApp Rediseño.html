@@ -73,7 +73,6 @@
       }}>
         {tabs.map(t => {
           const active = (t.id === 'patients' && ['patients','patient','newpatient'].includes(current))
-                      || (t.id === 'consultation' && current === 'consultation')
                       || (t.id === current);
           return (
             <button key={t.id} onClick={() => onNav(t.id)} style={{
@@ -136,6 +135,21 @@
           </Field>
         </Card>
 
+        <Card pad={16} style={{ marginBottom: 12 }}>
+          <Field label="Raza">
+            <TextInput placeholder="Ej. Labrador retriever" value=""/>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+              {['Mestizo', 'Labrador', 'Golden', 'Bulldog', 'Pastor Alemán', 'Otra'].map((b, i) => (
+                <button key={i} style={{
+                  padding: '5px 10px', borderRadius: 999,
+                  border: `1px solid ${T.line}`, background: T.surface,
+                  fontSize: 11, fontWeight: 500, color: T.ink80, cursor: 'pointer',
+                }}>{b}</button>
+              ))}
+            </div>
+          </Field>
+        </Card>
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
           <Card pad={14}>
             <Field label="Edad">
@@ -156,6 +170,14 @@
           <div style={{ height: 10 }}/>
           <Field label="Teléfono">
             <TextInput placeholder="+34 600 000 000" value=""/>
+          </Field>
+          <div style={{ height: 10 }}/>
+          <Field label="Email">
+            <TextInput placeholder="dueno@email.com" value=""/>
+          </Field>
+          <div style={{ height: 10 }}/>
+          <Field label="Dirección">
+            <TextInput placeholder="Calle, número, ciudad" value=""/>
           </Field>
         </Card>
 
@@ -191,7 +213,7 @@
     );
   }
 
-  function Phone({ screen, navigate, toast, toasts, dialog, setDialog, currentPatient, setCurrentPatient }) {
+  function Phone({ screen, navigate, toast, toasts, dialog, setDialog, currentPatient, setCurrentPatient, overlay, setOverlay }) {
     // Persistent screen — localStorage
     return (
       <div style={{
@@ -237,6 +259,16 @@
         <ToastStack toasts={toasts}/>
         {/* Info dialog */}
         {dialog && <InfoDialog {...dialog} onClose={() => setDialog(null)}/>}
+        {/* Standalone overlays (for chip demos) */}
+        {overlay === 'pause' && (
+          <PauseSheet
+            patient="Thor"
+            completed={6}
+            total={10}
+            onClose={() => setOverlay(null)}
+            onConfirm={() => { setOverlay(null); toast('success', 'Consulta pausada · disponible en el dashboard'); }}
+          />
+        )}
         {/* tab bar — hidden on splash/login */}
         {!['splash', 'login'].includes(screen) && <TabBar current={screen} onNav={navigate}/>}
       </div>
@@ -256,6 +288,7 @@
     const { toasts, push: toast } = useToasts();
     const [dialog, setDialog] = useState(null);
     const [currentPatient, setCurrentPatient] = useState(null);
+    const [overlay, setOverlay] = useState(null);
     const openDialog = (d) => setDialog(d);
 
     const screens = [
@@ -335,7 +368,7 @@
             ))}
           </div>
 
-          <Phone screen={screen} navigate={navigate} toast={toast} toasts={toasts} dialog={dialog} setDialog={setDialog} currentPatient={currentPatient} setCurrentPatient={setCurrentPatient}/>
+          <Phone screen={screen} navigate={navigate} toast={toast} toasts={toasts} dialog={dialog} setDialog={setDialog} currentPatient={currentPatient} setCurrentPatient={setCurrentPatient} overlay={overlay} setOverlay={setOverlay}/>
 
           {/* Utility row — dialog + toast triggers */}
           <div style={{
@@ -355,6 +388,7 @@
               title: 'Medicación vencida',
               body: 'Esta medicación venció hace 45 min. Registra motivo en la bitácora.',
             })}>Dialog warn</UtilChip>
+            <UtilChip onClick={() => setOverlay('pause')}>Sheet: Pausar consulta</UtilChip>
           </div>
 
           <div style={{

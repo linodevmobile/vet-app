@@ -5,9 +5,8 @@ part 'consultation_process_result.freezed.dart';
 @freezed
 abstract class ConsultationProcessResult with _$ConsultationProcessResult {
   const factory ConsultationProcessResult({
-    required String consultationId,
-    required String section,
     required String suggestedText,
-    required String transcription,
+    String? transcription,
+    Map<String, dynamic>? aiSuggested,
   }) = _ConsultationProcessResult;
 }

@@ -1,33 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:vet_app/design_system/atoms/ds_dashed_border.dart';
-import 'package:vet_app/design_system/atoms/ds_text_input.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
+import 'package:vet_app/features/consultation/presentation/widgets/field_with_mic.dart';
 
 class SignatureBody extends StatelessWidget {
   const SignatureBody({
     required this.controller,
     required this.doctorName,
     required this.doctorRegistry,
+    required this.isRecording,
+    required this.onMicTap,
+    this.micEnabled = true,
     this.onSign,
+    this.onChanged,
+    this.onEditingComplete,
     super.key,
   });
 
   final TextEditingController controller;
   final String doctorName;
   final String doctorRegistry;
+  final bool isRecording;
+  final VoidCallback onMicTap;
+  final bool micEnabled;
   final VoidCallback? onSign;
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onEditingComplete;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        DsTextInput(
+        FieldWithMic(
           controller: controller,
+          label: 'Observaciones e indicaciones',
           hint: 'Observaciones generales, indicaciones al propietario…',
-          minLines: 2,
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
+          isRecording: isRecording,
+          micEnabled: micEnabled,
+          onMicTap: onMicTap,
+          onChanged: onChanged,
+          onEditingComplete: onEditingComplete,
         ),
         const SizedBox(height: 10),
         _SignatureCard(

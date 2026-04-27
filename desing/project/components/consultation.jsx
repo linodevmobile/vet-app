@@ -125,7 +125,7 @@ function ConsultHeader2({ goto, pct, completed, total, onOpenChecklist, onPause 
         }}><Icon name="back" size={14} color={T.ink60}/></button>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 10, color: T.ink40, fontFamily: T.mono, letterSpacing: 0.8, textTransform: 'uppercase' }}>
-            Consulta · v2
+            Consulta
           </div>
           <div style={{ fontSize: 14, fontWeight: 600, color: T.ink, lineHeight: 1.1 }}>Thor · Golden Retriever</div>
         </div>

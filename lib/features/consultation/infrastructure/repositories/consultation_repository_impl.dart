@@ -7,6 +7,7 @@ import 'package:vet_app/features/consultation/domain/entities/consultation.dart'
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_process_result.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_result.dart';
+import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
 import 'package:vet_app/features/consultation/domain/repositories/consultation_repository.dart';
 import 'package:vet_app/features/consultation/infrastructure/datasources/consultation_datasource_impl.dart';
 
@@ -18,23 +19,66 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
   final IConsultationDatasource _datasource;
 
   @override
-  Future<ConsultationProcessResult> processAudio({
-    required File audio,
-    required String section,
+  Future<String> createConsultation({
     required String patientId,
-    String? consultationId,
-    String? consultationType,
-    String? chiefComplaint,
+    String? type,
   }) async {
     try {
-      return await _datasource.processAudio(
-        audio: audio,
-        section: section,
+      return await _datasource.createConsultation(
         patientId: patientId,
-        consultationId: consultationId,
-        consultationType: consultationType,
-        chiefComplaint: chiefComplaint,
+        type: type,
       );
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<ConsultationProcessResult> processSection({
+    required ConsultationSection section,
+    File? audio,
+    String? textInput,
+  }) async {
+    try {
+      return await _datasource.processSection(
+        section: section,
+        audio: audio,
+        textInput: textInput,
+      );
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<void> syncSection({
+    required String consultationId,
+    required ConsultationSection section,
+    String? text,
+    Map<String, dynamic>? content,
+    String? transcription,
+    Map<String, dynamic>? aiSuggested,
+    File? audio,
+  }) async {
+    try {
+      await _datasource.syncSection(
+        consultationId: consultationId,
+        section: section,
+        text: text,
+        content: content,
+        transcription: transcription,
+        aiSuggested: aiSuggested,
+        audio: audio,
+      );
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<Consultation> getById(String consultationId) async {
+    try {
+      return await _datasource.getById(consultationId);
     } catch (e) {
       throw ApiExceptionHandler.handle(e);
     }
@@ -58,6 +102,15 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
   }
 
   @override
+  Future<void> resumeConsultation(String consultationId) async {
+    try {
+      await _datasource.resumeConsultation(consultationId);
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
   Future<void> signConsultation({
     required String consultationId,
     required ConsultationResult result,
@@ -71,24 +124,6 @@ class ConsultationRepositoryImpl implements IConsultationRepository {
         summary: summary,
         primaryDiagnosis: primaryDiagnosis,
       );
-    } catch (e) {
-      throw ApiExceptionHandler.handle(e);
-    }
-  }
-
-  @override
-  Future<Consultation> getById(String consultationId) async {
-    try {
-      return await _datasource.getById(consultationId);
-    } catch (e) {
-      throw ApiExceptionHandler.handle(e);
-    }
-  }
-
-  @override
-  Future<void> resumeConsultation(String consultationId) async {
-    try {
-      await _datasource.resumeConsultation(consultationId);
     } catch (e) {
       throw ApiExceptionHandler.handle(e);
     }

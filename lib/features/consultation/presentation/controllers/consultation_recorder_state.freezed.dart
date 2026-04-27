@@ -55,13 +55,12 @@ extension ConsultationRecorderStatePatterns on ConsultationRecorderState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( RecorderIdle value)?  idle,TResult Function( RecorderRecording value)?  recording,TResult Function( RecorderUploading value)?  uploading,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( RecorderIdle value)?  idle,TResult Function( RecorderRecording value)?  recording,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case RecorderIdle() when idle != null:
 return idle(_that);case RecorderRecording() when recording != null:
-return recording(_that);case RecorderUploading() when uploading != null:
-return uploading(_that);case _:
+return recording(_that);case _:
   return orElse();
 
 }
@@ -79,13 +78,12 @@ return uploading(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( RecorderIdle value)  idle,required TResult Function( RecorderRecording value)  recording,required TResult Function( RecorderUploading value)  uploading,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( RecorderIdle value)  idle,required TResult Function( RecorderRecording value)  recording,}){
 final _that = this;
 switch (_that) {
 case RecorderIdle():
 return idle(_that);case RecorderRecording():
-return recording(_that);case RecorderUploading():
-return uploading(_that);}
+return recording(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -99,13 +97,12 @@ return uploading(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( RecorderIdle value)?  idle,TResult? Function( RecorderRecording value)?  recording,TResult? Function( RecorderUploading value)?  uploading,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( RecorderIdle value)?  idle,TResult? Function( RecorderRecording value)?  recording,}){
 final _that = this;
 switch (_that) {
 case RecorderIdle() when idle != null:
 return idle(_that);case RecorderRecording() when recording != null:
-return recording(_that);case RecorderUploading() when uploading != null:
-return uploading(_that);case _:
+return recording(_that);case _:
   return null;
 
 }
@@ -122,12 +119,11 @@ return uploading(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  idle,TResult Function( Duration elapsed,  double amplitude)?  recording,TResult Function( ConsultationSection section)?  uploading,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  idle,TResult Function( ConsultationSection section,  Duration elapsed,  double amplitude)?  recording,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case RecorderIdle() when idle != null:
 return idle();case RecorderRecording() when recording != null:
-return recording(_that.elapsed,_that.amplitude);case RecorderUploading() when uploading != null:
-return uploading(_that.section);case _:
+return recording(_that.section,_that.elapsed,_that.amplitude);case _:
   return orElse();
 
 }
@@ -145,12 +141,11 @@ return uploading(_that.section);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  idle,required TResult Function( Duration elapsed,  double amplitude)  recording,required TResult Function( ConsultationSection section)  uploading,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  idle,required TResult Function( ConsultationSection section,  Duration elapsed,  double amplitude)  recording,}) {final _that = this;
 switch (_that) {
 case RecorderIdle():
 return idle();case RecorderRecording():
-return recording(_that.elapsed,_that.amplitude);case RecorderUploading():
-return uploading(_that.section);}
+return recording(_that.section,_that.elapsed,_that.amplitude);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -164,12 +159,11 @@ return uploading(_that.section);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  idle,TResult? Function( Duration elapsed,  double amplitude)?  recording,TResult? Function( ConsultationSection section)?  uploading,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  idle,TResult? Function( ConsultationSection section,  Duration elapsed,  double amplitude)?  recording,}) {final _that = this;
 switch (_that) {
 case RecorderIdle() when idle != null:
 return idle();case RecorderRecording() when recording != null:
-return recording(_that.elapsed,_that.amplitude);case RecorderUploading() when uploading != null:
-return uploading(_that.section);case _:
+return recording(_that.section,_that.elapsed,_that.amplitude);case _:
   return null;
 
 }
@@ -213,9 +207,10 @@ String toString() {
 
 
 class RecorderRecording implements ConsultationRecorderState {
-  const RecorderRecording({required this.elapsed, required this.amplitude});
+  const RecorderRecording({required this.section, required this.elapsed, required this.amplitude});
   
 
+ final  ConsultationSection section;
  final  Duration elapsed;
  final  double amplitude;
 
@@ -229,16 +224,16 @@ $RecorderRecordingCopyWith<RecorderRecording> get copyWith => _$RecorderRecordin
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecorderRecording&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&(identical(other.amplitude, amplitude) || other.amplitude == amplitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecorderRecording&&(identical(other.section, section) || other.section == section)&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&(identical(other.amplitude, amplitude) || other.amplitude == amplitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,elapsed,amplitude);
+int get hashCode => Object.hash(runtimeType,section,elapsed,amplitude);
 
 @override
 String toString() {
-  return 'ConsultationRecorderState.recording(elapsed: $elapsed, amplitude: $amplitude)';
+  return 'ConsultationRecorderState.recording(section: $section, elapsed: $elapsed, amplitude: $amplitude)';
 }
 
 
@@ -249,7 +244,7 @@ abstract mixin class $RecorderRecordingCopyWith<$Res> implements $ConsultationRe
   factory $RecorderRecordingCopyWith(RecorderRecording value, $Res Function(RecorderRecording) _then) = _$RecorderRecordingCopyWithImpl;
 @useResult
 $Res call({
- Duration elapsed, double amplitude
+ ConsultationSection section, Duration elapsed, double amplitude
 });
 
 
@@ -266,77 +261,12 @@ class _$RecorderRecordingCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationRecorderState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? elapsed = null,Object? amplitude = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? section = null,Object? elapsed = null,Object? amplitude = null,}) {
   return _then(RecorderRecording(
-elapsed: null == elapsed ? _self.elapsed : elapsed // ignore: cast_nullable_to_non_nullable
+section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
+as ConsultationSection,elapsed: null == elapsed ? _self.elapsed : elapsed // ignore: cast_nullable_to_non_nullable
 as Duration,amplitude: null == amplitude ? _self.amplitude : amplitude // ignore: cast_nullable_to_non_nullable
 as double,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class RecorderUploading implements ConsultationRecorderState {
-  const RecorderUploading({required this.section});
-  
-
- final  ConsultationSection section;
-
-/// Create a copy of ConsultationRecorderState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$RecorderUploadingCopyWith<RecorderUploading> get copyWith => _$RecorderUploadingCopyWithImpl<RecorderUploading>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecorderUploading&&(identical(other.section, section) || other.section == section));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,section);
-
-@override
-String toString() {
-  return 'ConsultationRecorderState.uploading(section: $section)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $RecorderUploadingCopyWith<$Res> implements $ConsultationRecorderStateCopyWith<$Res> {
-  factory $RecorderUploadingCopyWith(RecorderUploading value, $Res Function(RecorderUploading) _then) = _$RecorderUploadingCopyWithImpl;
-@useResult
-$Res call({
- ConsultationSection section
-});
-
-
-
-
-}
-/// @nodoc
-class _$RecorderUploadingCopyWithImpl<$Res>
-    implements $RecorderUploadingCopyWith<$Res> {
-  _$RecorderUploadingCopyWithImpl(this._self, this._then);
-
-  final RecorderUploading _self;
-  final $Res Function(RecorderUploading) _then;
-
-/// Create a copy of ConsultationRecorderState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? section = null,}) {
-  return _then(RecorderUploading(
-section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
-as ConsultationSection,
   ));
 }
 

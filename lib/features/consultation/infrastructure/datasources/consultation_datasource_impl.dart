@@ -8,13 +8,17 @@ import 'package:vet_app/features/consultation/domain/entities/consultation.dart'
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_process_result.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_result.dart';
+import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_section_content.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_status.dart';
 import 'package:vet_app/features/consultation/infrastructure/api/consultation_api.dart';
+import 'package:vet_app/features/consultation/infrastructure/models/consultation_create_request.dart';
 import 'package:vet_app/features/consultation/infrastructure/models/consultation_pause_request.dart';
-import 'package:vet_app/features/consultation/infrastructure/models/consultation_process_request.dart';
 import 'package:vet_app/features/consultation/infrastructure/models/consultation_process_response_dto.dart';
+import 'package:vet_app/features/consultation/infrastructure/models/consultation_section_wire.dart';
 import 'package:vet_app/features/consultation/infrastructure/models/consultation_sign_request.dart';
+import 'package:vet_app/features/consultation/infrastructure/models/process_section_request.dart';
+import 'package:vet_app/features/consultation/infrastructure/models/sync_section_request.dart';
 import 'package:vet_app/features/consultations/infrastructure/models/consultation_dto.dart';
 import 'package:vet_app/features/consultations/infrastructure/models/consultation_patient_dto.dart';
 import 'package:vet_app/features/consultations/infrastructure/models/consultation_section_dto.dart';
@@ -29,25 +33,73 @@ class ConsultationDatasourceImpl implements IConsultationDatasource {
   final ApiService _api;
 
   @override
-  Future<ConsultationProcessResult> processAudio({
-    required File audio,
-    required String section,
+  Future<String> createConsultation({
     required String patientId,
-    String? consultationId,
-    String? consultationType,
-    String? chiefComplaint,
+    String? type,
   }) async {
-    final form = await ConsultationProcessRequest.fromAudio(
-      audio: audio,
-      section: section,
+    final body = ConsultationCreateRequest.build(
       patientId: patientId,
-      consultationId: consultationId,
-      consultationType: consultationType,
-      chiefComplaint: chiefComplaint,
+      type: type,
     );
-    final raw = await _api.postMultipart(ConsultationApi.process, form);
+    final raw = await _api.post(ConsultationApi.collection, body: body);
+    final data = ApiEnvelope.unwrapMap(raw);
+    return data['id'] as String;
+  }
+
+  @override
+  Future<ConsultationProcessResult> processSection({
+    required ConsultationSection section,
+    File? audio,
+    String? textInput,
+  }) async {
+    final wire = ConsultationSectionWire.wireFor(section);
+    if (wire == null) {
+      throw ArgumentError('Section ${section.name} is not API-backed.');
+    }
+    final form = await ProcessSectionRequest.build(
+      section: wire,
+      audio: audio,
+      textInput: textInput,
+    );
+    final raw = await _api.postMultipart(ConsultationApi.aiProcessSection, form);
     final data = ApiEnvelope.unwrapMap(raw);
     return ConsultationProcessResponseDto.fromJson(data).toDomain();
+  }
+
+  @override
+  Future<void> syncSection({
+    required String consultationId,
+    required ConsultationSection section,
+    String? text,
+    Map<String, dynamic>? content,
+    String? transcription,
+    Map<String, dynamic>? aiSuggested,
+    File? audio,
+  }) async {
+    final wire = ConsultationSectionWire.wireFor(section);
+    if (wire == null) {
+      throw ArgumentError('Section ${section.name} is not API-backed.');
+    }
+    final form = await SyncSectionRequest.build(
+      text: text,
+      content: content,
+      transcription: transcription,
+      aiSuggested: aiSuggested,
+      audio: audio,
+    );
+    final raw = await _api.patchMultipart(
+      ConsultationApi.section(consultationId, wire),
+      form,
+    );
+    ApiEnvelope.unwrapDynamic(raw);
+  }
+
+  @override
+  Future<Consultation> getById(String consultationId) async {
+    final raw = await _api.get(ConsultationApi.byId(consultationId));
+    final data = ApiEnvelope.unwrapMap(raw);
+    final dto = ConsultationDto.fromJson(data);
+    return _toDomain(dto);
   }
 
   @override
@@ -64,6 +116,12 @@ class ConsultationDatasourceImpl implements IConsultationDatasource {
       ConsultationApi.pause(consultationId),
       body: body,
     );
+    ApiEnvelope.unwrapDynamic(raw);
+  }
+
+  @override
+  Future<void> resumeConsultation(String consultationId) async {
+    final raw = await _api.patch(ConsultationApi.resume(consultationId));
     ApiEnvelope.unwrapDynamic(raw);
   }
 
@@ -86,23 +144,9 @@ class ConsultationDatasourceImpl implements IConsultationDatasource {
     ApiEnvelope.unwrapDynamic(raw);
   }
 
-  @override
-  Future<Consultation> getById(String consultationId) async {
-    final raw = await _api.get(ConsultationApi.byId(consultationId));
-    final data = ApiEnvelope.unwrapMap(raw);
-    final dto = ConsultationDto.fromJson(data);
-    return _toDomain(dto);
-  }
-
-  @override
-  Future<void> resumeConsultation(String consultationId) async {
-    final raw = await _api.patch(ConsultationApi.resume(consultationId));
-    ApiEnvelope.unwrapDynamic(raw);
-  }
-
-  // Mapper DTO (compartido con `features/consultations/`) → entidad del dominio.
-  // Secciones cuyo wire no matchea el mapping client-side se ignoran (ej. si el
-  // backend agrega una nueva antes del release del cliente).
+  // Mapper DTO → entidad de dominio. Las secciones cuyo wire no matchea el
+  // mapping client-side se ignoran: si el backend agrega una nueva antes del
+  // release del cliente, no rompe el parseo.
   static Consultation _toDomain(ConsultationDto dto) => Consultation(
         id: dto.id,
         patient: _summary(dto.patient),
@@ -128,7 +172,7 @@ class ConsultationDatasourceImpl implements IConsultationDatasource {
   static ConsultationSectionContent? _sectionFromDto(
     ConsultationSectionDto dto,
   ) {
-    final section = ConsultationProcessRequest.sectionForWire(dto.section);
+    final section = ConsultationSectionWire.sectionForWire(dto.section);
     if (section == null) return null;
     return ConsultationSectionContent(section: section, text: dto.text);
   }

@@ -87,41 +87,63 @@ function Dashboard({ goto }) {
         ))}
       </Card>
 
-      {/* Hospitalization strip */}
-      <SectionTitle
-        kicker="Internación"
-        title="Pacientes en observación"
-        meta="2 activos"
-      />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 22 }}>
-        {HOSPITALIZED.map((h, i) => (
-          <Card key={i} pad={12} style={{ borderColor: h.critical ? '#E8C0B3' : T.line }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <PetAvatar species={h.species} size={28} urgent={h.critical}/>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{h.name}</div>
-                <div style={{ fontSize: 10, color: T.ink40, fontFamily: T.mono, textTransform: 'uppercase' }}>
-                  Día {h.day}
+      {/* Hospitalization strip — oculto temporalmente (feature a futuro) */}
+      {false && (
+        <>
+          <SectionTitle kicker="Internación" title="Pacientes en observación" meta="2 activos"/>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 22 }}>
+            {HOSPITALIZED.map((h, i) => (
+              <Card key={i} pad={12} style={{ borderColor: h.critical ? '#E8C0B3' : T.line }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <PetAvatar species={h.species} size={28} urgent={h.critical}/>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{h.name}</div>
+                    <div style={{ fontSize: 10, color: T.ink40, fontFamily: T.mono, textTransform: 'uppercase' }}>Día {h.day}</div>
+                  </div>
                 </div>
+                <div style={{ fontSize: 11, color: T.ink60, lineHeight: 1.4, marginBottom: 8, minHeight: 30 }}>{h.note}</div>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* En progreso — consultas pausadas esperando resultados */}
+      <SectionTitle
+        kicker="En progreso"
+        title="Consultas abiertas"
+        meta={`${IN_PROGRESS.length} esperando`}
+      />
+      <Card pad={0} style={{ marginBottom: 22 }}>
+        {IN_PROGRESS.map((c, i) => (
+          <div key={i} onClick={() => goto('consultation', { patient: c.name, resume: true })} style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '12px 14px',
+            borderBottom: i < IN_PROGRESS.length - 1 ? `1px solid ${T.lineSoft}` : 'none',
+            cursor: 'pointer', background: c.stale ? `${T.urgent}06` : 'transparent',
+          }}>
+            <PetAvatar species={c.species} size={34}/>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: T.ink }}>{c.name}</span>
+                {c.stale && <Chip tone="urgent" size="xs">+2h</Chip>}
               </div>
+              <div style={{ fontSize: 11, color: T.ink60, marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontFamily: T.mono, color: c.stale ? T.urgent : T.warn }}>⏱ {c.waiting}</span>
+                <span>· {c.status}</span>
+              </div>
+              <div style={{
+                marginTop: 6, height: 3, background: T.lineSoft, borderRadius: 2, overflow: 'hidden',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <div style={{ width: `${(c.done/10)*100}%`, height: '100%', background: T.accent }}/>
+              </div>
+              <div style={{ fontSize: 10, color: T.ink40, fontFamily: T.mono, marginTop: 3 }}>{c.done}/10 secciones</div>
             </div>
-            <div style={{ fontSize: 11, color: T.ink60, lineHeight: 1.4, marginBottom: 8, minHeight: 30 }}>
-              {h.note}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              {h.tasks.map((t, j) => (
-                <div key={j} style={{
-                  flex: 1, height: 4, borderRadius: 2,
-                  background: t ? T.accent : T.line,
-                }}/>
-              ))}
-              <span style={{ fontSize: 10, color: T.ink40, marginLeft: 6, fontFamily: T.mono }}>
-                {h.tasks.filter(Boolean).length}/{h.tasks.length}
-              </span>
-            </div>
-          </Card>
+            <Icon name="arrowR" size={14} color={T.ink40}/>
+          </div>
         ))}
-      </div>
+      </Card>
 
       {/* Recent work — compressed */}
       <SectionTitle kicker="Registros" title="Recientes"/>
@@ -165,6 +187,12 @@ const HOSPITALIZED = [
   { name: 'Simón', species: 'cat', day: 4, critical: false,
     note: 'Post-op castración · evoluciona bien',
     tasks: [true, true, true, true, true, false] },
+];
+
+const IN_PROGRESS = [
+  { name: 'Thor Smith',    species: 'dog',    waiting: '1h 47m', stale: true,  status: 'Esperando hemograma',       done: 6 },
+  { name: 'Michi Rueda',   species: 'cat',    waiting: '42m',    stale: false, status: 'Esperando radiografía',     done: 7 },
+  { name: 'Coco Pérez',    species: 'bird',   waiting: '18m',    stale: false, status: 'Procedimiento en curso',    done: 4 },
 ];
 
 const RECENT = [

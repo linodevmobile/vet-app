@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +8,9 @@ import 'package:vet_app/app/shared/utils/date_formatters.dart';
 import 'package:vet_app/design_system/atoms/ds_icon_button.dart';
 import 'package:vet_app/design_system/molecules/ds_screen_header.dart';
 import 'package:vet_app/design_system/organisms/ds_async_value.dart';
+import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/create_consultation_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/resume_consultation_controller.dart';
 import 'package:vet_app/features/consultation/presentation/sections/resume_consultation_sheet.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
@@ -118,27 +122,54 @@ class PatientsView extends ConsumerWidget {
   // Si el paciente tiene una consulta pausada, abrimos el sheet de reanudar
   // (mismo flujo que el dashboard) en vez de crear una nueva. La navegación
   // post-resume la maneja el listener en HomeView (vivo en el IndexedStack).
-  void _onPatientTap(BuildContext context, WidgetRef ref, Patient p) {
+  Future<void> _onPatientTap(
+    BuildContext context,
+    WidgetRef ref,
+    Patient p,
+  ) async {
     final paused = (ref.read(pausedConsultationsProvider).value ?? const [])
         .where((pc) => pc.patient.id == p.id)
         .firstOrNull;
 
     if (paused != null) {
-      showResumeConsultationSheet(
-        context,
-        patientName: paused.patient.name,
-        reason: paused.reason,
-        note: paused.note,
-        pausedAt: paused.pausedAt,
-        sectionsCompleted: paused.sectionsCompleted,
-        sectionsTotal: paused.sectionsTotal,
-        onConfirm: () => ref
-            .read(resumeConsultationControllerProvider.notifier)
-            .resume(paused.id),
+      // Modal no bloqueante — la confirmación dispara el resume controller.
+      unawaited(
+        showResumeConsultationSheet(
+          context,
+          patientName: paused.patient.name,
+          reason: paused.reason,
+          note: paused.note,
+          pausedAt: paused.pausedAt,
+          sectionsCompleted: paused.sectionsCompleted,
+          sectionsTotal: paused.sectionsTotal,
+          onConfirm: () => ref
+              .read(resumeConsultationControllerProvider.notifier)
+              .resume(paused.id),
+        ),
       );
       return;
     }
-    context.push(AppRoutes.consultationNew, extra: p);
+
+    // Crear la consulta vacía antes de navegar — el endpoint nuevo separa
+    // creación de procesamiento de audio. La View consume el id desde
+    // activeConsultationProvider que setea el create controller al éxito.
+    await ref
+        .read(createConsultationControllerProvider.notifier)
+        .create(patientId: p.id);
+    if (!context.mounted) return;
+    final state = ref.read(createConsultationControllerProvider);
+    state.maybeWhen(
+      data: (id) {
+        if (id == null) return;
+        context.push(AppRoutes.consultationNew, extra: p);
+      },
+      error: (e, _) => DsToast.show(
+        context,
+        message: 'No se pudo crear la consulta: $e',
+        variant: DsToastVariant.error,
+      ),
+      orElse: () {},
+    );
   }
 
   void _pop(BuildContext context) {

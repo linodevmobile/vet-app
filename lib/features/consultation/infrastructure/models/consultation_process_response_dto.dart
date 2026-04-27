@@ -8,12 +8,10 @@ part 'consultation_process_response_dto.g.dart';
 abstract class ConsultationProcessResponseDto
     with _$ConsultationProcessResponseDto {
   const factory ConsultationProcessResponseDto({
-    @JsonKey(name: 'consultation_id') required String consultationId,
-    required String section,
+    String? section,
     String? transcription,
     @JsonKey(name: 'suggested_text') String? suggestedText,
     @JsonKey(name: 'ai_suggested') Map<String, dynamic>? aiSuggested,
-    @JsonKey(name: 'audio_path') String? audioPath,
   }) = _ConsultationProcessResponseDto;
 
   const ConsultationProcessResponseDto._();
@@ -22,9 +20,8 @@ abstract class ConsultationProcessResponseDto
       _$ConsultationProcessResponseDtoFromJson(json);
 
   ConsultationProcessResult toDomain() => ConsultationProcessResult(
-        consultationId: consultationId,
-        section: section,
         suggestedText: suggestedText ?? '',
-        transcription: transcription ?? '',
+        transcription: transcription,
+        aiSuggested: aiSuggested,
       );
 }

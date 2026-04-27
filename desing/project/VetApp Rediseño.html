@@ -217,7 +217,7 @@
     // Persistent screen — localStorage
     return (
       <div style={{
-        width: 390, height: 820, borderRadius: 44, overflow: 'hidden',
+        width: 390, height: 820, flexShrink: 0, borderRadius: 44, overflow: 'hidden',
         position: 'relative', background: T.bg,
         boxShadow: '0 30px 60px rgba(0,0,0,0.15), 0 0 0 10px #0E1726, 0 0 0 11px #050912',
       }}>
@@ -290,6 +290,7 @@
     const [currentPatient, setCurrentPatient] = useState(null);
     const [overlay, setOverlay] = useState(null);
     const openDialog = (d) => setDialog(d);
+    const cleanMode = true; // TEMP: hardcoded for screenshot capture
 
     const screens = [
       ['splash',       'Splash'],
@@ -302,6 +303,18 @@
       ['hospitalization', 'Hospital'],
       ['hospital-patient', 'Ficha hospital'],
     ];
+
+    if (cleanMode) {
+      return (
+        <div style={{
+          minHeight: '100vh', background: '#EEF0F3',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 40,
+        }}>
+          <Phone screen={screen} navigate={navigate} toast={toast} toasts={toasts} dialog={dialog} setDialog={setDialog} currentPatient={currentPatient} setCurrentPatient={setCurrentPatient} overlay={overlay} setOverlay={setOverlay}/>
+        </div>
+      );
+    }
 
     return (
       <div style={{

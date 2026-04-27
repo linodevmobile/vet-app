@@ -1,104 +1,77 @@
-enum ConsultationSectionGroup {
-  registro(label: 'Registro'),
-  subjetivo(label: 'Subjetivo'),
-  objetivo(label: 'Objetivo'),
-  assessment(label: 'Assessment'),
-  plan(label: 'Plan'),
-  cierre(label: 'Cierre');
-
-  const ConsultationSectionGroup({required this.label});
-
-  final String label;
-}
-
 enum ConsultationSection {
-  identification(
+  reason(
     n: '01',
-    title: 'Identificación',
-    hint: 'Paciente y propietario',
-    group: ConsultationSectionGroup.registro,
-    deferrable: false,
+    title: 'Motivo de consulta',
+    hint: 'Razón principal de la visita',
   ),
   anamnesis(
     n: '02',
     title: 'Anamnesis',
-    hint: 'Historia clínica actual',
-    group: ConsultationSectionGroup.subjetivo,
-    deferrable: false,
+    hint: 'Historia y antecedentes',
+  ),
+  identification(
+    n: '03',
+    title: 'Identificación',
+    hint: 'Paciente y propietario',
+  ),
+  food(
+    n: '04',
+    title: 'Tipo de alimento',
+    hint: 'Régimen alimentario actual',
+  ),
+  vitals(
+    n: '05',
+    title: 'Signos vitales',
+    hint: 'Temp · FC · FR · Peso',
   ),
   exam(
-    n: '03',
+    n: '06',
     title: 'Examen físico',
-    hint: 'Constantes + hallazgos',
-    group: ConsultationSectionGroup.objetivo,
-    deferrable: false,
+    hint: 'Hallazgos estructurados',
   ),
   problems(
-    n: '04',
+    n: '07',
     title: 'Lista de problemas',
-    hint: 'Hallazgos clínicos detectados',
-    group: ConsultationSectionGroup.objetivo,
-    deferrable: false,
-  ),
-  differential(
-    n: '05',
-    title: 'Abordaje diagnóstico',
-    hint: 'Diferenciales y razonamiento',
-    group: ConsultationSectionGroup.assessment,
-    deferrable: true,
+    hint: 'Hallazgos clínicos',
   ),
   labs(
-    n: '06',
+    n: '08',
     title: 'Exámenes complementarios',
     hint: 'Laboratorio, imagen',
-    group: ConsultationSectionGroup.assessment,
-    deferrable: true,
   ),
   diagnosis(
-    n: '07',
+    n: '09',
     title: 'Diagnóstico clínico',
     hint: 'Presuntivo y definitivo',
-    group: ConsultationSectionGroup.assessment,
-    deferrable: true,
   ),
-  plan(
-    n: '08',
-    title: 'Plan terapéutico',
+  recipe(
+    n: '10',
+    title: 'Receta',
     hint: 'Medicación y posología',
-    group: ConsultationSectionGroup.plan,
-    deferrable: true,
+  ),
+  treatment(
+    n: '11',
+    title: 'Tratamiento',
+    hint: 'Modalidad de manejo',
   ),
   prognosis(
-    n: '09',
+    n: '12',
     title: 'Pronóstico y evolución',
     hint: 'Expectativa clínica',
-    group: ConsultationSectionGroup.plan,
-    deferrable: true,
   ),
   signature(
-    n: '10',
+    n: '13',
     title: 'Observaciones y firma',
-    hint: 'Firma hológrafa del profesional',
-    group: ConsultationSectionGroup.cierre,
-    deferrable: true,
+    hint: 'Firma del profesional',
   );
 
   const ConsultationSection({
     required this.n,
     required this.title,
     required this.hint,
-    required this.group,
-    required this.deferrable,
   });
 
   final String n;
   final String title;
   final String hint;
-  final ConsultationSectionGroup group;
-  final bool deferrable;
-}
-
-extension ConsultationSectionGroupX on ConsultationSectionGroup {
-  List<ConsultationSection> get sections =>
-      ConsultationSection.values.where((s) => s.group == this).toList();
 }

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ConsultationProcessResult {
 
- String get consultationId; String get section; String get suggestedText; String get transcription;
+ String get suggestedText; String? get transcription; Map<String, dynamic>? get aiSuggested;
 /// Create a copy of ConsultationProcessResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ConsultationProcessResultCopyWith<ConsultationProcessResult> get copyWith => _$
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationProcessResult&&(identical(other.consultationId, consultationId) || other.consultationId == consultationId)&&(identical(other.section, section) || other.section == section)&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&(identical(other.transcription, transcription) || other.transcription == transcription));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationProcessResult&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&(identical(other.transcription, transcription) || other.transcription == transcription)&&const DeepCollectionEquality().equals(other.aiSuggested, aiSuggested));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,consultationId,section,suggestedText,transcription);
+int get hashCode => Object.hash(runtimeType,suggestedText,transcription,const DeepCollectionEquality().hash(aiSuggested));
 
 @override
 String toString() {
-  return 'ConsultationProcessResult(consultationId: $consultationId, section: $section, suggestedText: $suggestedText, transcription: $transcription)';
+  return 'ConsultationProcessResult(suggestedText: $suggestedText, transcription: $transcription, aiSuggested: $aiSuggested)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ConsultationProcessResultCopyWith<$Res>  {
   factory $ConsultationProcessResultCopyWith(ConsultationProcessResult value, $Res Function(ConsultationProcessResult) _then) = _$ConsultationProcessResultCopyWithImpl;
 @useResult
 $Res call({
- String consultationId, String section, String suggestedText, String transcription
+ String suggestedText, String? transcription, Map<String, dynamic>? aiSuggested
 });
 
 
@@ -62,13 +62,12 @@ class _$ConsultationProcessResultCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationProcessResult
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? consultationId = null,Object? section = null,Object? suggestedText = null,Object? transcription = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? suggestedText = null,Object? transcription = freezed,Object? aiSuggested = freezed,}) {
   return _then(_self.copyWith(
-consultationId: null == consultationId ? _self.consultationId : consultationId // ignore: cast_nullable_to_non_nullable
-as String,section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
-as String,suggestedText: null == suggestedText ? _self.suggestedText : suggestedText // ignore: cast_nullable_to_non_nullable
-as String,transcription: null == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
-as String,
+suggestedText: null == suggestedText ? _self.suggestedText : suggestedText // ignore: cast_nullable_to_non_nullable
+as String,transcription: freezed == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
+as String?,aiSuggested: freezed == aiSuggested ? _self.aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
   ));
 }
 
@@ -153,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String consultationId,  String section,  String suggestedText,  String transcription)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String suggestedText,  String? transcription,  Map<String, dynamic>? aiSuggested)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ConsultationProcessResult() when $default != null:
-return $default(_that.consultationId,_that.section,_that.suggestedText,_that.transcription);case _:
+return $default(_that.suggestedText,_that.transcription,_that.aiSuggested);case _:
   return orElse();
 
 }
@@ -174,10 +173,10 @@ return $default(_that.consultationId,_that.section,_that.suggestedText,_that.tra
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String consultationId,  String section,  String suggestedText,  String transcription)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String suggestedText,  String? transcription,  Map<String, dynamic>? aiSuggested)  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationProcessResult():
-return $default(_that.consultationId,_that.section,_that.suggestedText,_that.transcription);case _:
+return $default(_that.suggestedText,_that.transcription,_that.aiSuggested);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +193,10 @@ return $default(_that.consultationId,_that.section,_that.suggestedText,_that.tra
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String consultationId,  String section,  String suggestedText,  String transcription)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String suggestedText,  String? transcription,  Map<String, dynamic>? aiSuggested)?  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationProcessResult() when $default != null:
-return $default(_that.consultationId,_that.section,_that.suggestedText,_that.transcription);case _:
+return $default(_that.suggestedText,_that.transcription,_that.aiSuggested);case _:
   return null;
 
 }
@@ -209,13 +208,20 @@ return $default(_that.consultationId,_that.section,_that.suggestedText,_that.tra
 
 
 class _ConsultationProcessResult implements ConsultationProcessResult {
-  const _ConsultationProcessResult({required this.consultationId, required this.section, required this.suggestedText, required this.transcription});
+  const _ConsultationProcessResult({required this.suggestedText, this.transcription, final  Map<String, dynamic>? aiSuggested}): _aiSuggested = aiSuggested;
   
 
-@override final  String consultationId;
-@override final  String section;
 @override final  String suggestedText;
-@override final  String transcription;
+@override final  String? transcription;
+ final  Map<String, dynamic>? _aiSuggested;
+@override Map<String, dynamic>? get aiSuggested {
+  final value = _aiSuggested;
+  if (value == null) return null;
+  if (_aiSuggested is EqualUnmodifiableMapView) return _aiSuggested;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
 
 /// Create a copy of ConsultationProcessResult
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +233,16 @@ _$ConsultationProcessResultCopyWith<_ConsultationProcessResult> get copyWith => 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationProcessResult&&(identical(other.consultationId, consultationId) || other.consultationId == consultationId)&&(identical(other.section, section) || other.section == section)&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&(identical(other.transcription, transcription) || other.transcription == transcription));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationProcessResult&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&(identical(other.transcription, transcription) || other.transcription == transcription)&&const DeepCollectionEquality().equals(other._aiSuggested, _aiSuggested));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,consultationId,section,suggestedText,transcription);
+int get hashCode => Object.hash(runtimeType,suggestedText,transcription,const DeepCollectionEquality().hash(_aiSuggested));
 
 @override
 String toString() {
-  return 'ConsultationProcessResult(consultationId: $consultationId, section: $section, suggestedText: $suggestedText, transcription: $transcription)';
+  return 'ConsultationProcessResult(suggestedText: $suggestedText, transcription: $transcription, aiSuggested: $aiSuggested)';
 }
 
 
@@ -247,7 +253,7 @@ abstract mixin class _$ConsultationProcessResultCopyWith<$Res> implements $Consu
   factory _$ConsultationProcessResultCopyWith(_ConsultationProcessResult value, $Res Function(_ConsultationProcessResult) _then) = __$ConsultationProcessResultCopyWithImpl;
 @override @useResult
 $Res call({
- String consultationId, String section, String suggestedText, String transcription
+ String suggestedText, String? transcription, Map<String, dynamic>? aiSuggested
 });
 
 
@@ -264,13 +270,12 @@ class __$ConsultationProcessResultCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationProcessResult
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? consultationId = null,Object? section = null,Object? suggestedText = null,Object? transcription = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? suggestedText = null,Object? transcription = freezed,Object? aiSuggested = freezed,}) {
   return _then(_ConsultationProcessResult(
-consultationId: null == consultationId ? _self.consultationId : consultationId // ignore: cast_nullable_to_non_nullable
-as String,section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
-as String,suggestedText: null == suggestedText ? _self.suggestedText : suggestedText // ignore: cast_nullable_to_non_nullable
-as String,transcription: null == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
-as String,
+suggestedText: null == suggestedText ? _self.suggestedText : suggestedText // ignore: cast_nullable_to_non_nullable
+as String,transcription: freezed == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
+as String?,aiSuggested: freezed == aiSuggested ? _self._aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
   ));
 }
 

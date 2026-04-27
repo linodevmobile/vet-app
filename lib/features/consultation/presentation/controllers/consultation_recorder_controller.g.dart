@@ -9,57 +9,6 @@ part of 'consultation_recorder_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(processConsultationAudioUseCase)
-final processConsultationAudioUseCaseProvider =
-    ProcessConsultationAudioUseCaseProvider._();
-
-final class ProcessConsultationAudioUseCaseProvider
-    extends
-        $FunctionalProvider<
-          ProcessConsultationAudioUseCase,
-          ProcessConsultationAudioUseCase,
-          ProcessConsultationAudioUseCase
-        >
-    with $Provider<ProcessConsultationAudioUseCase> {
-  ProcessConsultationAudioUseCaseProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'processConsultationAudioUseCaseProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$processConsultationAudioUseCaseHash();
-
-  @$internal
-  @override
-  $ProviderElement<ProcessConsultationAudioUseCase> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
-
-  @override
-  ProcessConsultationAudioUseCase create(Ref ref) {
-    return processConsultationAudioUseCase(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ProcessConsultationAudioUseCase value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ProcessConsultationAudioUseCase>(
-        value,
-      ),
-    );
-  }
-}
-
-String _$processConsultationAudioUseCaseHash() =>
-    r'8dd44f2b2fa72800a8926f75d3be093b53fd0379';
-
 @ProviderFor(ConsultationRecorderController)
 final consultationRecorderControllerProvider =
     ConsultationRecorderControllerProvider._();
@@ -90,7 +39,7 @@ final class ConsultationRecorderControllerProvider
 }
 
 String _$consultationRecorderControllerHash() =>
-    r'9c1edb87a512cb5189d6080f529f9893eb4f5e61';
+    r'59196df927370c110eb0decd793b6b673e1c5b9c';
 
 abstract class _$ConsultationRecorderController
     extends $AsyncNotifier<ConsultationRecorderState> {

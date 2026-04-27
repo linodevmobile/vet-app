@@ -9,6 +9,7 @@ import 'package:vet_app/design_system/molecules/ds_field_label.dart';
 import 'package:vet_app/design_system/molecules/ds_screen_header.dart';
 import 'package:vet_app/design_system/organisms/ds_toast.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/create_consultation_controller.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 import 'package:vet_app/features/patients/domain/validation/patient_validation_service.dart';
 import 'package:vet_app/features/patients/presentation/controllers/add_patient_controller.dart';
@@ -31,6 +32,10 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
   final _weight = TextEditingController();
   final _owner = TextEditingController();
   final _phone = TextEditingController();
+
+  // Patient recién creado, esperando que termine la creación de su consulta
+  // antes de navegar. Mantiene el dato completo para pasarlo al ConsultationView.
+  Patient? _pendingPatient;
 
   @override
   void dispose() {
@@ -83,12 +88,36 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
             message: '${patient.name} creado',
             variant: DsToastVariant.success,
           );
+          // Encadenar: paciente creado → crear consulta vacía → navegar.
+          // El segundo listener (createConsultationController) maneja el push.
+          _pendingPatient = patient;
+          ref
+              .read(createConsultationControllerProvider.notifier)
+              .create(patientId: patient.id);
+        },
+      );
+    });
+
+    ref.listen<AsyncValue<String?>>(createConsultationControllerProvider, (
+      prev,
+      next,
+    ) {
+      next.whenOrNull(
+        error: (e, _) => DsToast.show(
+          context,
+          message: 'No se pudo crear la consulta: $e',
+          variant: DsToastVariant.error,
+        ),
+        data: (id) {
+          final patient = _pendingPatient;
+          if (id == null || patient == null) return;
           context.go(AppRoutes.consultationNew, extra: patient);
         },
       );
     });
 
-    final isSaving = ref.watch(addPatientControllerProvider).isLoading;
+    final isSaving = ref.watch(addPatientControllerProvider).isLoading ||
+        ref.watch(createConsultationControllerProvider).isLoading;
 
     return Scaffold(
       body: SafeArea(
@@ -226,7 +255,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                       ),
                       const SizedBox(height: DsSpacing.xl),
                       DsPrimaryButton(
-                        label: 'Guardar paciente',
+                        label: 'Guardar y empezar consulta',
                         isLoading: isSaving,
                         onPressed: _submit,
                         icon: const Icon(Icons.arrow_forward, size: 18),

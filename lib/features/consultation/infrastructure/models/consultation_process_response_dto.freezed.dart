@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ConsultationProcessResponseDto {
 
-@JsonKey(name: 'consultation_id') String get consultationId; String get section; String? get transcription;@JsonKey(name: 'suggested_text') String? get suggestedText;@JsonKey(name: 'ai_suggested') Map<String, dynamic>? get aiSuggested;@JsonKey(name: 'audio_path') String? get audioPath;
+ String? get section; String? get transcription;@JsonKey(name: 'suggested_text') String? get suggestedText;@JsonKey(name: 'ai_suggested') Map<String, dynamic>? get aiSuggested;
 /// Create a copy of ConsultationProcessResponseDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ConsultationProcessResponseDtoCopyWith<ConsultationProcessResponseDto> get copy
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationProcessResponseDto&&(identical(other.consultationId, consultationId) || other.consultationId == consultationId)&&(identical(other.section, section) || other.section == section)&&(identical(other.transcription, transcription) || other.transcription == transcription)&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&const DeepCollectionEquality().equals(other.aiSuggested, aiSuggested)&&(identical(other.audioPath, audioPath) || other.audioPath == audioPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationProcessResponseDto&&(identical(other.section, section) || other.section == section)&&(identical(other.transcription, transcription) || other.transcription == transcription)&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&const DeepCollectionEquality().equals(other.aiSuggested, aiSuggested));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,consultationId,section,transcription,suggestedText,const DeepCollectionEquality().hash(aiSuggested),audioPath);
+int get hashCode => Object.hash(runtimeType,section,transcription,suggestedText,const DeepCollectionEquality().hash(aiSuggested));
 
 @override
 String toString() {
-  return 'ConsultationProcessResponseDto(consultationId: $consultationId, section: $section, transcription: $transcription, suggestedText: $suggestedText, aiSuggested: $aiSuggested, audioPath: $audioPath)';
+  return 'ConsultationProcessResponseDto(section: $section, transcription: $transcription, suggestedText: $suggestedText, aiSuggested: $aiSuggested)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ConsultationProcessResponseDtoCopyWith<$Res>  {
   factory $ConsultationProcessResponseDtoCopyWith(ConsultationProcessResponseDto value, $Res Function(ConsultationProcessResponseDto) _then) = _$ConsultationProcessResponseDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'consultation_id') String consultationId, String section, String? transcription,@JsonKey(name: 'suggested_text') String? suggestedText,@JsonKey(name: 'ai_suggested') Map<String, dynamic>? aiSuggested,@JsonKey(name: 'audio_path') String? audioPath
+ String? section, String? transcription,@JsonKey(name: 'suggested_text') String? suggestedText,@JsonKey(name: 'ai_suggested') Map<String, dynamic>? aiSuggested
 });
 
 
@@ -65,15 +65,13 @@ class _$ConsultationProcessResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationProcessResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? consultationId = null,Object? section = null,Object? transcription = freezed,Object? suggestedText = freezed,Object? aiSuggested = freezed,Object? audioPath = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? section = freezed,Object? transcription = freezed,Object? suggestedText = freezed,Object? aiSuggested = freezed,}) {
   return _then(_self.copyWith(
-consultationId: null == consultationId ? _self.consultationId : consultationId // ignore: cast_nullable_to_non_nullable
-as String,section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
-as String,transcription: freezed == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
+section: freezed == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
+as String?,transcription: freezed == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
 as String?,suggestedText: freezed == suggestedText ? _self.suggestedText : suggestedText // ignore: cast_nullable_to_non_nullable
 as String?,aiSuggested: freezed == aiSuggested ? _self.aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
-as Map<String, dynamic>?,audioPath: freezed == audioPath ? _self.audioPath : audioPath // ignore: cast_nullable_to_non_nullable
-as String?,
+as Map<String, dynamic>?,
   ));
 }
 
@@ -158,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'consultation_id')  String consultationId,  String section,  String? transcription, @JsonKey(name: 'suggested_text')  String? suggestedText, @JsonKey(name: 'ai_suggested')  Map<String, dynamic>? aiSuggested, @JsonKey(name: 'audio_path')  String? audioPath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? section,  String? transcription, @JsonKey(name: 'suggested_text')  String? suggestedText, @JsonKey(name: 'ai_suggested')  Map<String, dynamic>? aiSuggested)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ConsultationProcessResponseDto() when $default != null:
-return $default(_that.consultationId,_that.section,_that.transcription,_that.suggestedText,_that.aiSuggested,_that.audioPath);case _:
+return $default(_that.section,_that.transcription,_that.suggestedText,_that.aiSuggested);case _:
   return orElse();
 
 }
@@ -179,10 +177,10 @@ return $default(_that.consultationId,_that.section,_that.transcription,_that.sug
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'consultation_id')  String consultationId,  String section,  String? transcription, @JsonKey(name: 'suggested_text')  String? suggestedText, @JsonKey(name: 'ai_suggested')  Map<String, dynamic>? aiSuggested, @JsonKey(name: 'audio_path')  String? audioPath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? section,  String? transcription, @JsonKey(name: 'suggested_text')  String? suggestedText, @JsonKey(name: 'ai_suggested')  Map<String, dynamic>? aiSuggested)  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationProcessResponseDto():
-return $default(_that.consultationId,_that.section,_that.transcription,_that.suggestedText,_that.aiSuggested,_that.audioPath);case _:
+return $default(_that.section,_that.transcription,_that.suggestedText,_that.aiSuggested);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +197,10 @@ return $default(_that.consultationId,_that.section,_that.transcription,_that.sug
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'consultation_id')  String consultationId,  String section,  String? transcription, @JsonKey(name: 'suggested_text')  String? suggestedText, @JsonKey(name: 'ai_suggested')  Map<String, dynamic>? aiSuggested, @JsonKey(name: 'audio_path')  String? audioPath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? section,  String? transcription, @JsonKey(name: 'suggested_text')  String? suggestedText, @JsonKey(name: 'ai_suggested')  Map<String, dynamic>? aiSuggested)?  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationProcessResponseDto() when $default != null:
-return $default(_that.consultationId,_that.section,_that.transcription,_that.suggestedText,_that.aiSuggested,_that.audioPath);case _:
+return $default(_that.section,_that.transcription,_that.suggestedText,_that.aiSuggested);case _:
   return null;
 
 }
@@ -214,11 +212,10 @@ return $default(_that.consultationId,_that.section,_that.transcription,_that.sug
 @JsonSerializable()
 
 class _ConsultationProcessResponseDto extends ConsultationProcessResponseDto {
-  const _ConsultationProcessResponseDto({@JsonKey(name: 'consultation_id') required this.consultationId, required this.section, this.transcription, @JsonKey(name: 'suggested_text') this.suggestedText, @JsonKey(name: 'ai_suggested') final  Map<String, dynamic>? aiSuggested, @JsonKey(name: 'audio_path') this.audioPath}): _aiSuggested = aiSuggested,super._();
+  const _ConsultationProcessResponseDto({this.section, this.transcription, @JsonKey(name: 'suggested_text') this.suggestedText, @JsonKey(name: 'ai_suggested') final  Map<String, dynamic>? aiSuggested}): _aiSuggested = aiSuggested,super._();
   factory _ConsultationProcessResponseDto.fromJson(Map<String, dynamic> json) => _$ConsultationProcessResponseDtoFromJson(json);
 
-@override@JsonKey(name: 'consultation_id') final  String consultationId;
-@override final  String section;
+@override final  String? section;
 @override final  String? transcription;
 @override@JsonKey(name: 'suggested_text') final  String? suggestedText;
  final  Map<String, dynamic>? _aiSuggested;
@@ -230,7 +227,6 @@ class _ConsultationProcessResponseDto extends ConsultationProcessResponseDto {
   return EqualUnmodifiableMapView(value);
 }
 
-@override@JsonKey(name: 'audio_path') final  String? audioPath;
 
 /// Create a copy of ConsultationProcessResponseDto
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationProcessResponseDto&&(identical(other.consultationId, consultationId) || other.consultationId == consultationId)&&(identical(other.section, section) || other.section == section)&&(identical(other.transcription, transcription) || other.transcription == transcription)&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&const DeepCollectionEquality().equals(other._aiSuggested, _aiSuggested)&&(identical(other.audioPath, audioPath) || other.audioPath == audioPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationProcessResponseDto&&(identical(other.section, section) || other.section == section)&&(identical(other.transcription, transcription) || other.transcription == transcription)&&(identical(other.suggestedText, suggestedText) || other.suggestedText == suggestedText)&&const DeepCollectionEquality().equals(other._aiSuggested, _aiSuggested));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,consultationId,section,transcription,suggestedText,const DeepCollectionEquality().hash(_aiSuggested),audioPath);
+int get hashCode => Object.hash(runtimeType,section,transcription,suggestedText,const DeepCollectionEquality().hash(_aiSuggested));
 
 @override
 String toString() {
-  return 'ConsultationProcessResponseDto(consultationId: $consultationId, section: $section, transcription: $transcription, suggestedText: $suggestedText, aiSuggested: $aiSuggested, audioPath: $audioPath)';
+  return 'ConsultationProcessResponseDto(section: $section, transcription: $transcription, suggestedText: $suggestedText, aiSuggested: $aiSuggested)';
 }
 
 
@@ -265,7 +261,7 @@ abstract mixin class _$ConsultationProcessResponseDtoCopyWith<$Res> implements $
   factory _$ConsultationProcessResponseDtoCopyWith(_ConsultationProcessResponseDto value, $Res Function(_ConsultationProcessResponseDto) _then) = __$ConsultationProcessResponseDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'consultation_id') String consultationId, String section, String? transcription,@JsonKey(name: 'suggested_text') String? suggestedText,@JsonKey(name: 'ai_suggested') Map<String, dynamic>? aiSuggested,@JsonKey(name: 'audio_path') String? audioPath
+ String? section, String? transcription,@JsonKey(name: 'suggested_text') String? suggestedText,@JsonKey(name: 'ai_suggested') Map<String, dynamic>? aiSuggested
 });
 
 
@@ -282,15 +278,13 @@ class __$ConsultationProcessResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationProcessResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? consultationId = null,Object? section = null,Object? transcription = freezed,Object? suggestedText = freezed,Object? aiSuggested = freezed,Object? audioPath = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? section = freezed,Object? transcription = freezed,Object? suggestedText = freezed,Object? aiSuggested = freezed,}) {
   return _then(_ConsultationProcessResponseDto(
-consultationId: null == consultationId ? _self.consultationId : consultationId // ignore: cast_nullable_to_non_nullable
-as String,section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
-as String,transcription: freezed == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
+section: freezed == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
+as String?,transcription: freezed == transcription ? _self.transcription : transcription // ignore: cast_nullable_to_non_nullable
 as String?,suggestedText: freezed == suggestedText ? _self.suggestedText : suggestedText // ignore: cast_nullable_to_non_nullable
 as String?,aiSuggested: freezed == aiSuggested ? _self._aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
-as Map<String, dynamic>?,audioPath: freezed == audioPath ? _self.audioPath : audioPath // ignore: cast_nullable_to_non_nullable
-as String?,
+as Map<String, dynamic>?,
   ));
 }
 

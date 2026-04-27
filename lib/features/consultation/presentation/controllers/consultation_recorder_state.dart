@@ -8,11 +8,8 @@ sealed class ConsultationRecorderState with _$ConsultationRecorderState {
   const factory ConsultationRecorderState.idle() = RecorderIdle;
 
   const factory ConsultationRecorderState.recording({
+    required ConsultationSection section,
     required Duration elapsed,
     required double amplitude,
   }) = RecorderRecording;
-
-  const factory ConsultationRecorderState.uploading({
-    required ConsultationSection section,
-  }) = RecorderUploading;
 }
