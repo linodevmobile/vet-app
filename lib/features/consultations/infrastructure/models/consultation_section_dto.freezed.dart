@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ConsultationSectionDto {
 
- String get section; String? get text; Map<String, dynamic>? get aiSuggested;
+ String get section; String? get text; Map<String, dynamic>? get content; Map<String, dynamic>? get aiSuggested;
 /// Create a copy of ConsultationSectionDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ConsultationSectionDtoCopyWith<ConsultationSectionDto> get copyWith => _$Consul
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationSectionDto&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text)&&const DeepCollectionEquality().equals(other.aiSuggested, aiSuggested));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationSectionDto&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text)&&const DeepCollectionEquality().equals(other.content, content)&&const DeepCollectionEquality().equals(other.aiSuggested, aiSuggested));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,section,text,const DeepCollectionEquality().hash(aiSuggested));
+int get hashCode => Object.hash(runtimeType,section,text,const DeepCollectionEquality().hash(content),const DeepCollectionEquality().hash(aiSuggested));
 
 @override
 String toString() {
-  return 'ConsultationSectionDto(section: $section, text: $text, aiSuggested: $aiSuggested)';
+  return 'ConsultationSectionDto(section: $section, text: $text, content: $content, aiSuggested: $aiSuggested)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ConsultationSectionDtoCopyWith<$Res>  {
   factory $ConsultationSectionDtoCopyWith(ConsultationSectionDto value, $Res Function(ConsultationSectionDto) _then) = _$ConsultationSectionDtoCopyWithImpl;
 @useResult
 $Res call({
- String section, String? text, Map<String, dynamic>? aiSuggested
+ String section, String? text, Map<String, dynamic>? content, Map<String, dynamic>? aiSuggested
 });
 
 
@@ -65,11 +65,12 @@ class _$ConsultationSectionDtoCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationSectionDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? section = null,Object? text = freezed,Object? aiSuggested = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? section = null,Object? text = freezed,Object? content = freezed,Object? aiSuggested = freezed,}) {
   return _then(_self.copyWith(
 section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
 as String,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String?,aiSuggested: freezed == aiSuggested ? _self.aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
+as String?,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,aiSuggested: freezed == aiSuggested ? _self.aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,
   ));
 }
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String section,  String? text,  Map<String, dynamic>? aiSuggested)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String section,  String? text,  Map<String, dynamic>? content,  Map<String, dynamic>? aiSuggested)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ConsultationSectionDto() when $default != null:
-return $default(_that.section,_that.text,_that.aiSuggested);case _:
+return $default(_that.section,_that.text,_that.content,_that.aiSuggested);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.section,_that.text,_that.aiSuggested);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String section,  String? text,  Map<String, dynamic>? aiSuggested)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String section,  String? text,  Map<String, dynamic>? content,  Map<String, dynamic>? aiSuggested)  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationSectionDto():
-return $default(_that.section,_that.text,_that.aiSuggested);case _:
+return $default(_that.section,_that.text,_that.content,_that.aiSuggested);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.section,_that.text,_that.aiSuggested);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String section,  String? text,  Map<String, dynamic>? aiSuggested)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String section,  String? text,  Map<String, dynamic>? content,  Map<String, dynamic>? aiSuggested)?  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationSectionDto() when $default != null:
-return $default(_that.section,_that.text,_that.aiSuggested);case _:
+return $default(_that.section,_that.text,_that.content,_that.aiSuggested);case _:
   return null;
 
 }
@@ -211,11 +212,20 @@ return $default(_that.section,_that.text,_that.aiSuggested);case _:
 @JsonSerializable()
 
 class _ConsultationSectionDto implements ConsultationSectionDto {
-  const _ConsultationSectionDto({required this.section, this.text, final  Map<String, dynamic>? aiSuggested}): _aiSuggested = aiSuggested;
+  const _ConsultationSectionDto({required this.section, this.text, final  Map<String, dynamic>? content, final  Map<String, dynamic>? aiSuggested}): _content = content,_aiSuggested = aiSuggested;
   factory _ConsultationSectionDto.fromJson(Map<String, dynamic> json) => _$ConsultationSectionDtoFromJson(json);
 
 @override final  String section;
 @override final  String? text;
+ final  Map<String, dynamic>? _content;
+@override Map<String, dynamic>? get content {
+  final value = _content;
+  if (value == null) return null;
+  if (_content is EqualUnmodifiableMapView) return _content;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
  final  Map<String, dynamic>? _aiSuggested;
 @override Map<String, dynamic>? get aiSuggested {
   final value = _aiSuggested;
@@ -239,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationSectionDto&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text)&&const DeepCollectionEquality().equals(other._aiSuggested, _aiSuggested));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationSectionDto&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text)&&const DeepCollectionEquality().equals(other._content, _content)&&const DeepCollectionEquality().equals(other._aiSuggested, _aiSuggested));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,section,text,const DeepCollectionEquality().hash(_aiSuggested));
+int get hashCode => Object.hash(runtimeType,section,text,const DeepCollectionEquality().hash(_content),const DeepCollectionEquality().hash(_aiSuggested));
 
 @override
 String toString() {
-  return 'ConsultationSectionDto(section: $section, text: $text, aiSuggested: $aiSuggested)';
+  return 'ConsultationSectionDto(section: $section, text: $text, content: $content, aiSuggested: $aiSuggested)';
 }
 
 
@@ -259,7 +269,7 @@ abstract mixin class _$ConsultationSectionDtoCopyWith<$Res> implements $Consulta
   factory _$ConsultationSectionDtoCopyWith(_ConsultationSectionDto value, $Res Function(_ConsultationSectionDto) _then) = __$ConsultationSectionDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String section, String? text, Map<String, dynamic>? aiSuggested
+ String section, String? text, Map<String, dynamic>? content, Map<String, dynamic>? aiSuggested
 });
 
 
@@ -276,11 +286,12 @@ class __$ConsultationSectionDtoCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationSectionDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? section = null,Object? text = freezed,Object? aiSuggested = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? section = null,Object? text = freezed,Object? content = freezed,Object? aiSuggested = freezed,}) {
   return _then(_ConsultationSectionDto(
 section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
 as String,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String?,aiSuggested: freezed == aiSuggested ? _self._aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
+as String?,content: freezed == content ? _self._content : content // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,aiSuggested: freezed == aiSuggested ? _self._aiSuggested : aiSuggested // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,
   ));
 }

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ConsultationSectionContent {
 
- ConsultationSection get section; String? get text;
+ ConsultationSection get section; String? get text; Map<String, dynamic>? get content;
 /// Create a copy of ConsultationSectionContent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ConsultationSectionContentCopyWith<ConsultationSectionContent> get copyWith => 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationSectionContent&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConsultationSectionContent&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text)&&const DeepCollectionEquality().equals(other.content, content));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,section,text);
+int get hashCode => Object.hash(runtimeType,section,text,const DeepCollectionEquality().hash(content));
 
 @override
 String toString() {
-  return 'ConsultationSectionContent(section: $section, text: $text)';
+  return 'ConsultationSectionContent(section: $section, text: $text, content: $content)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ConsultationSectionContentCopyWith<$Res>  {
   factory $ConsultationSectionContentCopyWith(ConsultationSectionContent value, $Res Function(ConsultationSectionContent) _then) = _$ConsultationSectionContentCopyWithImpl;
 @useResult
 $Res call({
- ConsultationSection section, String? text
+ ConsultationSection section, String? text, Map<String, dynamic>? content
 });
 
 
@@ -62,11 +62,12 @@ class _$ConsultationSectionContentCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationSectionContent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? section = null,Object? text = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? section = null,Object? text = freezed,Object? content = freezed,}) {
   return _then(_self.copyWith(
 section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
 as ConsultationSection,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
   ));
 }
 
@@ -151,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ConsultationSection section,  String? text)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ConsultationSection section,  String? text,  Map<String, dynamic>? content)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ConsultationSectionContent() when $default != null:
-return $default(_that.section,_that.text);case _:
+return $default(_that.section,_that.text,_that.content);case _:
   return orElse();
 
 }
@@ -172,10 +173,10 @@ return $default(_that.section,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ConsultationSection section,  String? text)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ConsultationSection section,  String? text,  Map<String, dynamic>? content)  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationSectionContent():
-return $default(_that.section,_that.text);case _:
+return $default(_that.section,_that.text,_that.content);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +193,10 @@ return $default(_that.section,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ConsultationSection section,  String? text)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ConsultationSection section,  String? text,  Map<String, dynamic>? content)?  $default,) {final _that = this;
 switch (_that) {
 case _ConsultationSectionContent() when $default != null:
-return $default(_that.section,_that.text);case _:
+return $default(_that.section,_that.text,_that.content);case _:
   return null;
 
 }
@@ -207,11 +208,20 @@ return $default(_that.section,_that.text);case _:
 
 
 class _ConsultationSectionContent implements ConsultationSectionContent {
-  const _ConsultationSectionContent({required this.section, this.text});
+  const _ConsultationSectionContent({required this.section, this.text, final  Map<String, dynamic>? content}): _content = content;
   
 
 @override final  ConsultationSection section;
 @override final  String? text;
+ final  Map<String, dynamic>? _content;
+@override Map<String, dynamic>? get content {
+  final value = _content;
+  if (value == null) return null;
+  if (_content is EqualUnmodifiableMapView) return _content;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
 
 /// Create a copy of ConsultationSectionContent
 /// with the given fields replaced by the non-null parameter values.
@@ -223,16 +233,16 @@ _$ConsultationSectionContentCopyWith<_ConsultationSectionContent> get copyWith =
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationSectionContent&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConsultationSectionContent&&(identical(other.section, section) || other.section == section)&&(identical(other.text, text) || other.text == text)&&const DeepCollectionEquality().equals(other._content, _content));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,section,text);
+int get hashCode => Object.hash(runtimeType,section,text,const DeepCollectionEquality().hash(_content));
 
 @override
 String toString() {
-  return 'ConsultationSectionContent(section: $section, text: $text)';
+  return 'ConsultationSectionContent(section: $section, text: $text, content: $content)';
 }
 
 
@@ -243,7 +253,7 @@ abstract mixin class _$ConsultationSectionContentCopyWith<$Res> implements $Cons
   factory _$ConsultationSectionContentCopyWith(_ConsultationSectionContent value, $Res Function(_ConsultationSectionContent) _then) = __$ConsultationSectionContentCopyWithImpl;
 @override @useResult
 $Res call({
- ConsultationSection section, String? text
+ ConsultationSection section, String? text, Map<String, dynamic>? content
 });
 
 
@@ -260,11 +270,12 @@ class __$ConsultationSectionContentCopyWithImpl<$Res>
 
 /// Create a copy of ConsultationSectionContent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? section = null,Object? text = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? section = null,Object? text = freezed,Object? content = freezed,}) {
   return _then(_ConsultationSectionContent(
 section: null == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
 as ConsultationSection,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,content: freezed == content ? _self._content : content // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
   ));
 }
 

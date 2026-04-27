@@ -8,6 +8,7 @@ abstract class ConsultationSectionDto with _$ConsultationSectionDto {
   const factory ConsultationSectionDto({
     required String section,
     String? text,
+    Map<String, dynamic>? content,
     Map<String, dynamic>? aiSuggested,
   }) = _ConsultationSectionDto;
 

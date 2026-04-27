@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +15,6 @@ import 'package:vet_app/features/auth/presentation/controllers/current_user.dart
 import 'package:vet_app/features/consultation/domain/entities/consultation.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_section.dart';
-import 'package:vet_app/features/consultation/infrastructure/models/consultation_section_wire.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/active_consultation.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_detail_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_form_controller.dart';
@@ -91,11 +92,26 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     for (final s in _allTextBearingSections) {
-      _textCtrls[s] = TextEditingController()..addListener(_redraw);
+      final ctrl = TextEditingController()..addListener(_redraw);
+      // signature queda fuera del bridge: local-only, persiste solo al firmar.
+      if (s != ConsultationSection.signature) {
+        ctrl.addListener(() => _bridgeText(s, ctrl.text));
+      }
+      _textCtrls[s] = ctrl;
     }
     for (final c in _miniCtrls) {
       c.addListener(_redraw);
     }
+    _tempCtrl.addListener(() => _formNotifier.setTemperatureC(_tempCtrl.text));
+    _fcCtrl.addListener(() => _formNotifier.setHeartRateBpm(_fcCtrl.text));
+    _frCtrl.addListener(
+      () => _formNotifier.setRespiratoryRateRpm(_frCtrl.text),
+    );
+    _weightCtrl.addListener(
+      () => _formNotifier.setWeightKg(_weightCtrl.text),
+    );
+    _tllcCtrl.addListener(() => _formNotifier.setTllcSeconds(_tllcCtrl.text));
+    _trcpCtrl.addListener(() => _formNotifier.setTrcpSeconds(_trcpCtrl.text));
     // Modo nueva consulta: arranca con todas las secciones colapsadas excepto
     // Motivo (la primera). En resume se abren todas para revisión.
     if (widget.patient != null) {
@@ -131,6 +147,8 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
       ref.read(consultationRecorderControllerProvider.notifier).stop();
+      // Best-effort: si el OS mata la app, la request ya salió.
+      _formNotifier.flushAll();
     }
   }
 
@@ -145,6 +163,22 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
 
   void _redraw() {
     if (mounted) setState(() {});
+  }
+
+  // Resuelto fresco en cada uso para no quedar con notifier rancio si el
+  // provider se invalidara entre callbacks.
+  ConsultationFormController get _formNotifier => ref.read(
+    consultationFormControllerProvider(widget.consultationId).notifier,
+  );
+
+  // Bridge de texto: para `exam` el contenido del FieldWithMic es el sub-campo
+  // `systems_affected`, no un payload de texto plano de la sección.
+  void _bridgeText(ConsultationSection section, String text) {
+    if (section == ConsultationSection.exam) {
+      _formNotifier.setSystemsAffected(text);
+    } else {
+      _formNotifier.setText(section, text);
+    }
   }
 
   String get _patientName =>
@@ -205,22 +239,6 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         .toggle(section: section);
   }
 
-  /// No-op si la sección es UI-only o la consulta no fue creada todavía.
-  void _syncSectionText(ConsultationSection section) {
-    final consultationId = ref.read(activeConsultationProvider);
-    if (consultationId == null) return;
-    if (ConsultationSectionWire.wireFor(section) == null) return;
-    final text = _textCtrls[section]?.text;
-    if (text == null) return;
-    ref
-        .read(consultationSyncControllerProvider.notifier)
-        .syncSection(
-          consultationId: consultationId,
-          section: section,
-          text: text,
-        );
-  }
-
   Future<void> _openCompliance() {
     final form = ref.read(
       consultationFormControllerProvider(widget.consultationId),
@@ -246,12 +264,22 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     );
   }
 
-  void _confirmPause(ConsultationPauseReason reason, String? note) {
+  Future<void> _confirmPause(
+    ConsultationPauseReason reason,
+    String? note,
+  ) async {
     final consultationId = ref.read(activeConsultationProvider);
     if (consultationId == null) return;
-    ref
-        .read(pauseConsultationControllerProvider.notifier)
-        .pause(consultationId: consultationId, reason: reason, note: note);
+    // Drena el debounce antes de pausar: si no, el PATCH /pause puede llegar
+    // antes que el último cambio del doc.
+    await _formNotifier.flushAll();
+    if (!mounted) return;
+    // El estado del pause lo observa la View vía ref.listen.
+    unawaited(
+      ref
+          .read(pauseConsultationControllerProvider.notifier)
+          .pause(consultationId: consultationId, reason: reason, note: note),
+    );
   }
 
   Future<void> _onSign() async {
@@ -269,15 +297,22 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       patientName: _patientName,
       initialSummary:
           _textCtrls[ConsultationSection.signature]?.text.trim() ?? '',
-      onConfirm: (result, summary, diagnosis) {
-        ref
-            .read(signConsultationControllerProvider.notifier)
-            .sign(
-              consultationId: consultationId,
-              result: result,
-              summary: summary,
-              primaryDiagnosis: diagnosis,
-            );
+      onConfirm: (result, summary, diagnosis) async {
+        // La consulta queda inmutable tras firmar — drenamos antes para que
+        // ninguna edición pendiente del debounce se pierda.
+        await _formNotifier.flushAll();
+        if (!mounted) return;
+        // El estado del sign lo observa la View vía ref.listen.
+        unawaited(
+          ref
+              .read(signConsultationControllerProvider.notifier)
+              .sign(
+                consultationId: consultationId,
+                result: result,
+                summary: summary,
+                primaryDiagnosis: diagnosis,
+              ),
+        );
       },
     );
   }
@@ -337,9 +372,31 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
 
   void _hydrateFromConsultation(Consultation c) {
     if (_hydrated) return;
-    for (final sc in c.sections) {
-      _textCtrls[sc.section]?.text = sc.text ?? '';
+    // Form state es la fuente de verdad; primero lo llenamos desde backend.
+    _formNotifier.hydrate(c);
+    final form = ref.read(
+      consultationFormControllerProvider(widget.consultationId),
+    );
+    // Luego volcamos los TextEditingController desde el form (no desde
+    // sc.text directo, porque para `exam` ese campo es el render, no lo que
+    // el doc edita en el FieldWithMic). Las listeners de los controllers
+    // disparan setters pero los guards idempotentes los hacen no-op.
+    for (final s in _allTextBearingSections) {
+      if (s == ConsultationSection.exam) {
+        _textCtrls[s]?.text = form.systemsAffected ?? '';
+      } else if (s == ConsultationSection.signature) {
+        // Local-only: backend no devuelve esta sección.
+        continue;
+      } else {
+        _textCtrls[s]?.text = form.texts[s] ?? '';
+      }
     }
+    _tempCtrl.text = form.temperatureC ?? '';
+    _fcCtrl.text = form.heartRateBpm ?? '';
+    _frCtrl.text = form.respiratoryRateRpm ?? '';
+    _weightCtrl.text = form.weightKg ?? '';
+    _tllcCtrl.text = form.tllcSeconds ?? '';
+    _trcpCtrl.text = form.trcpSeconds ?? '';
     ref.read(activeConsultationProvider.notifier).setId(c.id);
     setState(() {
       _resumedFrom = c;
@@ -376,8 +433,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         final ctrl = _textCtrls[sug.section];
         if (ctrl == null) return;
         ctrl.text = sug.outcome.suggestedText;
-        // Push del texto sugerido al backend para audit trail.
-        _syncSectionText(sug.section);
+        // El listener del controller ya bridgeó al form state; flush para
+        // mandar inmediato y no esperar el debounce.
+        _formNotifier.flushSection(sug.section);
       },
     );
   }
@@ -580,7 +638,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
             ? recorderState.elapsed
             : null;
     void onMic() => _toggleRecording(s);
-    void onBlur() => _syncSectionText(s);
+    void onBlur() => _formNotifier.flushSection(s);
 
     if (_audioTextSections.contains(s)) {
       return FieldWithMic(
