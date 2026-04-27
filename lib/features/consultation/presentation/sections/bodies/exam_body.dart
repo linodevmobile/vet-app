@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vet_app/design_system/atoms/ds_dropdown.dart';
 import 'package:vet_app/design_system/atoms/ds_mini_input.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_form_controller.dart';
 import 'package:vet_app/features/consultation/presentation/sections/bodies/section_options.dart';
 import 'package:vet_app/features/consultation/presentation/widgets/dehydration_slider.dart';
 import 'package:vet_app/features/consultation/presentation/widgets/field_with_mic.dart';
 
-class ExamBody extends StatelessWidget {
+class ExamBody extends ConsumerWidget {
   const ExamBody({
-    required this.mucosa,
-    required this.onMucosaChanged,
-    required this.dehydration,
-    required this.onDehydrationChanged,
-    required this.bcs,
-    required this.onBcsChanged,
-    required this.attitudeOwner,
-    required this.onAttitudeOwnerChanged,
-    required this.attitudeVet,
-    required this.onAttitudeVetChanged,
+    required this.consultationId,
     required this.systemsCtrl,
     required this.systemsRecording,
     required this.systemsMicEnabled,
@@ -24,23 +17,12 @@ class ExamBody extends StatelessWidget {
     required this.onSystemsBlur,
     required this.tllc,
     required this.trcp,
-    required this.pulse,
-    required this.onPulseChanged,
     this.systemsProcessing = false,
     this.systemsRecordingElapsed,
     super.key,
   });
 
-  final String? mucosa;
-  final ValueChanged<String> onMucosaChanged;
-  final double dehydration;
-  final ValueChanged<double> onDehydrationChanged;
-  final String? bcs;
-  final ValueChanged<String> onBcsChanged;
-  final String? attitudeOwner;
-  final ValueChanged<String> onAttitudeOwnerChanged;
-  final String? attitudeVet;
-  final ValueChanged<String> onAttitudeVetChanged;
+  final String consultationId;
   final TextEditingController systemsCtrl;
   final bool systemsRecording;
   final bool systemsMicEnabled;
@@ -50,49 +32,52 @@ class ExamBody extends StatelessWidget {
   final VoidCallback onSystemsBlur;
   final TextEditingController tllc;
   final TextEditingController trcp;
-  final String? pulse;
-  final ValueChanged<String> onPulseChanged;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final form = ref.watch(consultationFormControllerProvider(consultationId));
+    final notifier = ref.read(
+      consultationFormControllerProvider(consultationId).notifier,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DsDropdown<String>(
           label: 'Mucosas',
           hint: 'Seleccionar…',
-          value: mucosa,
+          value: form.mucosa,
           options: SectionOptions.mucosa,
-          onChanged: onMucosaChanged,
+          onChanged: notifier.setMucosa,
         ),
         const SizedBox(height: 12),
         DehydrationSlider(
-          value: dehydration,
-          onChanged: onDehydrationChanged,
+          value: form.dehydration,
+          onChanged: notifier.setDehydration,
         ),
         const SizedBox(height: 12),
         DsDropdown<String>(
           label: 'Condición corporal (WSAVA)',
           hint: 'Seleccionar…',
-          value: bcs,
+          value: form.bcs,
           options: SectionOptions.bcs,
-          onChanged: onBcsChanged,
+          onChanged: notifier.setBcs,
         ),
         const SizedBox(height: 12),
         DsDropdown<String>(
           label: 'Actitud con el propietario',
           hint: 'Seleccionar…',
-          value: attitudeOwner,
+          value: form.attitudeOwner,
           options: SectionOptions.attitude,
-          onChanged: onAttitudeOwnerChanged,
+          onChanged: notifier.setAttitudeOwner,
         ),
         const SizedBox(height: 12),
         DsDropdown<String>(
           label: 'Actitud con el doctor',
           hint: 'Seleccionar…',
-          value: attitudeVet,
+          value: form.attitudeVet,
           options: SectionOptions.attitude,
-          onChanged: onAttitudeVetChanged,
+          onChanged: notifier.setAttitudeVet,
         ),
         const SizedBox(height: 12),
         FieldWithMic(
@@ -121,9 +106,9 @@ class ExamBody extends StatelessWidget {
         DsDropdown<String>(
           label: 'Pulso',
           hint: 'Seleccionar…',
-          value: pulse,
+          value: form.pulse,
           options: SectionOptions.pulse,
-          onChanged: onPulseChanged,
+          onChanged: notifier.setPulse,
         ),
       ],
     );

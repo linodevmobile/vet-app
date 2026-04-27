@@ -16,6 +16,8 @@ import 'package:vet_app/features/consultation/domain/entities/consultation_secti
 import 'package:vet_app/features/consultation/infrastructure/models/consultation_section_wire.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/active_consultation.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_detail_controller.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_form_controller.dart';
+import 'package:vet_app/features/consultation/presentation/controllers/consultation_form_state.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_process_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_processing_section.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/consultation_recorder_controller.dart';
@@ -60,14 +62,10 @@ const _allTextBearingSections = <ConsultationSection>{
 };
 
 class ConsultationView extends ConsumerStatefulWidget {
-  const ConsultationView({this.patient, this.consultationId, super.key})
-    : assert(
-        patient != null || consultationId != null,
-        'ConsultationView requiere patient o consultationId',
-      );
+  const ConsultationView({required this.consultationId, this.patient, super.key});
 
   final Patient? patient;
-  final String? consultationId;
+  final String consultationId;
 
   @override
   ConsumerState<ConsultationView> createState() => _ConsultationViewState();
@@ -82,15 +80,6 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
   final TextEditingController _weightCtrl = TextEditingController();
   final TextEditingController _tllcCtrl = TextEditingController();
   final TextEditingController _trcpCtrl = TextEditingController();
-
-  String? _food;
-  String? _mucosa;
-  String? _bcs;
-  String? _attitudeOwner;
-  String? _attitudeVet;
-  String? _pulse;
-  String? _treatment;
-  double _dehydration = 0;
 
   final Set<ConsultationSection> _collapsed = {};
 
@@ -114,13 +103,12 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         if (s != ConsultationSection.reason) _collapsed.add(s);
       }
       // El provider es auto-dispose y nadie lo watcheó durante la navegación.
-      final id = widget.consultationId;
-      if (id != null) {
-        Future.microtask(() {
-          if (!mounted) return;
-          ref.read(activeConsultationProvider.notifier).setId(id);
-        });
-      }
+      Future.microtask(() {
+        if (!mounted) return;
+        ref
+            .read(activeConsultationProvider.notifier)
+            .setId(widget.consultationId);
+      });
     }
   }
 
@@ -178,12 +166,12 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     return PatientFormatters.identificationLineFromSummary(r);
   }
 
-  bool _isFilled(ConsultationSection s) {
+  bool _isFilled(ConsultationSection s, ConsultationFormState form) {
     switch (s) {
       case ConsultationSection.identification:
         return _patientName.isNotEmpty;
       case ConsultationSection.food:
-        return _food != null;
+        return form.food != null;
       case ConsultationSection.vitals:
         return _tempCtrl.text.isNotEmpty &&
             _fcCtrl.text.isNotEmpty &&
@@ -191,9 +179,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
             _weightCtrl.text.isNotEmpty;
       case ConsultationSection.exam:
         // Per design: filled cuando los 3 dropdowns clave tienen valor.
-        return _mucosa != null && _bcs != null && _pulse != null;
+        return form.mucosa != null && form.bcs != null && form.pulse != null;
       case ConsultationSection.treatment:
-        return _treatment != null;
+        return form.treatment != null;
       // Resto: secciones de texto libre — filled si el textarea tiene algo.
       // ignore: no_default_cases
       default:
@@ -201,7 +189,8 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     }
   }
 
-  int get _completedCount => ConsultationSection.values.where(_isFilled).length;
+  int _completedCount(ConsultationFormState form) =>
+      ConsultationSection.values.where((s) => _isFilled(s, form)).length;
   int get _totalSections => ConsultationSection.values.length;
 
   void _toggle(ConsultationSection s) {
@@ -232,20 +221,30 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         );
   }
 
-  Future<void> _openCompliance() => showConsultationComplianceSheet(
-        context,
-        sections: ConsultationSection.values,
-        isFilled: _isFilled,
-        onJump: (s) => setState(() => _collapsed.remove(s)),
-      );
+  Future<void> _openCompliance() {
+    final form = ref.read(
+      consultationFormControllerProvider(widget.consultationId),
+    );
+    return showConsultationComplianceSheet(
+      context,
+      sections: ConsultationSection.values,
+      isFilled: (s) => _isFilled(s, form),
+      onJump: (s) => setState(() => _collapsed.remove(s)),
+    );
+  }
 
-  Future<void> _openPauseSheet() => showPauseConsultationSheet(
-        context,
-        patientName: _patientName,
-        sectionsCompleted: _completedCount,
-        sectionsTotal: _totalSections,
-        onConfirm: _confirmPause,
-      );
+  Future<void> _openPauseSheet() {
+    final form = ref.read(
+      consultationFormControllerProvider(widget.consultationId),
+    );
+    return showPauseConsultationSheet(
+      context,
+      patientName: _patientName,
+      sectionsCompleted: _completedCount(form),
+      sectionsTotal: _totalSections,
+      onConfirm: _confirmPause,
+    );
+  }
 
   void _confirmPause(ConsultationPauseReason reason, String? note) {
     final consultationId = ref.read(activeConsultationProvider);
@@ -321,10 +320,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         consultationSyncControllerProvider,
         _onSyncChange,
       );
-    final resumeId = widget.consultationId;
-    if (resumeId != null && widget.patient == null) {
+    if (widget.patient == null) {
       ref.listen<AsyncValue<Consultation>>(
-        consultationDetailControllerProvider(resumeId),
+        consultationDetailControllerProvider(widget.consultationId),
         _onConsultationDetailChange,
       );
     }
@@ -447,9 +445,10 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     final activeConsultationId = ref.watch(activeConsultationProvider);
     final hasActiveConsultation = activeConsultationId != null;
 
-    final resumeId = widget.consultationId;
-    if (resumeId != null && widget.patient == null && !_hydrated) {
-      final detail = ref.watch(consultationDetailControllerProvider(resumeId));
+    if (widget.patient == null && !_hydrated) {
+      final detail = ref.watch(
+        consultationDetailControllerProvider(widget.consultationId),
+      );
       if (detail.hasError) {
         return Scaffold(
           backgroundColor: DsColors.bg,
@@ -457,7 +456,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
             child: DsErrorView(
               message: 'No se pudo cargar la consulta: ${detail.error}',
               onRetry: () => ref.invalidate(
-                consultationDetailControllerProvider(resumeId),
+                consultationDetailControllerProvider(widget.consultationId),
               ),
             ),
           ),
@@ -469,6 +468,10 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       );
     }
 
+    final form = ref.watch(
+      consultationFormControllerProvider(widget.consultationId),
+    );
+    final completedCount = _completedCount(form);
     final busy =
         ref.watch(pauseConsultationControllerProvider).isLoading ||
         ref.watch(signConsultationControllerProvider).isLoading;
@@ -495,7 +498,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
                     species: _species,
                     patientName: _patientName,
                     patientSubtitle: _patientSubtitle,
-                    completed: _completedCount,
+                    completed: completedCount,
                     total: _totalSections,
                     onBack: _back,
                     onOpenChecklist: _openCompliance,
@@ -518,7 +521,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
                               n: s.n,
                               title: s.title,
                               hint: s.hint,
-                              filled: _isFilled(s),
+                              filled: _isFilled(s, form),
                               expanded: !_collapsed.contains(s),
                               onToggle: () => _toggle(s),
                               child: _buildBody(
@@ -539,7 +542,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
                   right: 0,
                   bottom: 0,
                   child: ConsultationSignBar(
-                    completed: _completedCount,
+                    completed: completedCount,
                     total: _totalSections,
                     onOpenCompliance: _openCompliance,
                     onSign: _onSign,
@@ -596,10 +599,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       case ConsultationSection.identification:
         return IdentificationBody(summary: _identificationSummary);
       case ConsultationSection.food:
-        return FoodBody(
-          value: _food,
-          onChanged: (v) => setState(() => _food = v),
-        );
+        return FoodBody(consultationId: widget.consultationId);
       case ConsultationSection.vitals:
         return VitalsBody(
           temp: _tempCtrl,
@@ -609,16 +609,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         );
       case ConsultationSection.exam:
         return ExamBody(
-          mucosa: _mucosa,
-          onMucosaChanged: (v) => setState(() => _mucosa = v),
-          dehydration: _dehydration,
-          onDehydrationChanged: (v) => setState(() => _dehydration = v),
-          bcs: _bcs,
-          onBcsChanged: (v) => setState(() => _bcs = v),
-          attitudeOwner: _attitudeOwner,
-          onAttitudeOwnerChanged: (v) => setState(() => _attitudeOwner = v),
-          attitudeVet: _attitudeVet,
-          onAttitudeVetChanged: (v) => setState(() => _attitudeVet = v),
+          consultationId: widget.consultationId,
           systemsCtrl: _textCtrls[ConsultationSection.exam]!,
           systemsRecording: isRecordingThis,
           systemsProcessing: isProcessingThis,
@@ -628,8 +619,6 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
           onSystemsBlur: onBlur,
           tllc: _tllcCtrl,
           trcp: _trcpCtrl,
-          pulse: _pulse,
-          onPulseChanged: (v) => setState(() => _pulse = v),
         );
       case ConsultationSection.labs:
         return LabsBody(
@@ -649,10 +638,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
           },
         );
       case ConsultationSection.treatment:
-        return TreatmentBody(
-          value: _treatment,
-          onChanged: (v) => setState(() => _treatment = v),
-        );
+        return TreatmentBody(consultationId: widget.consultationId);
       case ConsultationSection.signature:
         final user = ref.watch(currentUserProvider).value;
         return SignatureBody(
