@@ -1,9 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vet_app/design_system/tokens/tokens.dart';
+import 'package:vet_app/features/health/presentation/providers/warmup_server_provider.dart';
 
-class SplashView extends StatelessWidget {
+class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
+
+  @override
+  ConsumerState<SplashView> createState() => _SplashViewState();
+}
+
+class _SplashViewState extends ConsumerState<SplashView> {
+  @override
+  void initState() {
+    super.initState();
+    // Fire-and-forget para despertar Render mientras el user llega a login.
+    Future.microtask(() {
+      if (!mounted) return;
+      ref.read(warmupServerUseCaseProvider)();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
