@@ -61,7 +61,7 @@ final class ConsultationFormControllerProvider
 }
 
 String _$consultationFormControllerHash() =>
-    r'f046b6e8a6722535f09c847dd0eb1615564d8b48';
+    r'6094d8ff1e0f243dfebd349dd2272cfe98ccfe15';
 
 final class ConsultationFormControllerFamily extends $Family
     with

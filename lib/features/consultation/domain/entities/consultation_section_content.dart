@@ -8,5 +8,6 @@ abstract class ConsultationSectionContent with _$ConsultationSectionContent {
   const factory ConsultationSectionContent({
     required ConsultationSection section,
     String? text,
+    Map<String, dynamic>? content,
   }) = _ConsultationSectionContent;
 }

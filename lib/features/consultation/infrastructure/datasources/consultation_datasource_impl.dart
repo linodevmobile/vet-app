@@ -174,7 +174,11 @@ class ConsultationDatasourceImpl implements IConsultationDatasource {
   ) {
     final section = ConsultationSectionWire.sectionForWire(dto.section);
     if (section == null) return null;
-    return ConsultationSectionContent(section: section, text: dto.text);
+    return ConsultationSectionContent(
+      section: section,
+      text: dto.text,
+      content: dto.content,
+    );
   }
 
   static PatientSummary _summary(ConsultationPatientDto p) => PatientSummary(
