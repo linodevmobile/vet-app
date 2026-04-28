@@ -25,6 +25,10 @@ class AuthController extends _$AuthController {
 
   Future<void> logout() async {
     await ref.read(authRepositoryProvider).logout();
-    ref.invalidateSelf();
+    state = const AsyncData(false);
   }
+
+  // Salida lateral del flujo: tras un login exitoso, el repository ya guardó el
+  // token. Setear state evita re-ejecutar build() y pagar el _minSplashDuration.
+  void markAuthenticated() => state = const AsyncData(true);
 }

@@ -18,7 +18,7 @@ class LoginAction extends _$LoginAction {
     });
     if (!ref.mounted) return;
     if (!state.hasError) {
-      ref.invalidate(authControllerProvider);
+      ref.read(authControllerProvider.notifier).markAuthenticated();
     }
   }
 }
