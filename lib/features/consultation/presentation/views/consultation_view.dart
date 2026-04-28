@@ -507,6 +507,13 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
     final activeConsultationId = ref.watch(activeConsultationProvider);
     final hasActiveConsultation = activeConsultationId != null;
 
+    // Watch incondicional: el provider es auto-dispose, y si solo se tocaba
+    // vía ref.read durante hydrate(), quedaba sin watchers y se recreaba
+    // vacío en el próximo build — perdiendo los dropdowns hidratados.
+    final form = ref.watch(
+      consultationFormControllerProvider(widget.consultationId),
+    );
+
     if (widget.patient == null && !_hydrated) {
       final detail = ref.watch(
         consultationDetailControllerProvider(widget.consultationId),
@@ -529,10 +536,6 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         body: SafeArea(child: Center(child: DsLoadingView())),
       );
     }
-
-    final form = ref.watch(
-      consultationFormControllerProvider(widget.consultationId),
-    );
     final completedCount = _completedCount(form);
     final busy =
         ref.watch(pauseConsultationControllerProvider).isLoading ||
