@@ -53,7 +53,14 @@ abstract final class ApiExceptionHandler {
 
   static String? _extractMessage(Object? data) {
     if (data is Map<String, dynamic>) {
-      final m = data['message'] ?? data['error'] ?? data['detail'];
+      // Envelope backend: { data, meta, error: { code, message } }
+      final error = data['error'];
+      if (error is Map<String, dynamic>) {
+        final m = error['message'];
+        if (m is String && m.isNotEmpty) return m;
+      }
+      // Fallbacks para payloads sin envelope (o mientras backend transiciona).
+      final m = data['message'] ?? data['detail'];
       if (m is String && m.isNotEmpty) return m;
     }
     return null;

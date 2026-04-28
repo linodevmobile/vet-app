@@ -9,12 +9,59 @@ part of 'all_patients.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(allPatients)
+@ProviderFor(listPatientsUseCase)
+final listPatientsUseCaseProvider = ListPatientsUseCaseProvider._();
+
+final class ListPatientsUseCaseProvider
+    extends
+        $FunctionalProvider<
+          ListPatientsUseCase,
+          ListPatientsUseCase,
+          ListPatientsUseCase
+        >
+    with $Provider<ListPatientsUseCase> {
+  ListPatientsUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'listPatientsUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$listPatientsUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<ListPatientsUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ListPatientsUseCase create(Ref ref) {
+    return listPatientsUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ListPatientsUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ListPatientsUseCase>(value),
+    );
+  }
+}
+
+String _$listPatientsUseCaseHash() =>
+    r'f2e34fbfc78bfd9bc080940bd00bab6e97de9f7c';
+
+@ProviderFor(AllPatients)
 final allPatientsProvider = AllPatientsProvider._();
 
 final class AllPatientsProvider
-    extends $FunctionalProvider<List<Patient>, List<Patient>, List<Patient>>
-    with $Provider<List<Patient>> {
+    extends $AsyncNotifierProvider<AllPatients, List<Patient>> {
   AllPatientsProvider._()
     : super(
         from: null,
@@ -31,21 +78,25 @@ final class AllPatientsProvider
 
   @$internal
   @override
-  $ProviderElement<List<Patient>> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  List<Patient> create(Ref ref) {
-    return allPatients(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<Patient> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<List<Patient>>(value),
-    );
-  }
+  AllPatients create() => AllPatients();
 }
 
-String _$allPatientsHash() => r'7f0e24a3d375264c419238be377a2494d5bc9d85';
+String _$allPatientsHash() => r'88d7a7255d45f5f0ab0382a98f051dd839b3e08e';
+
+abstract class _$AllPatients extends $AsyncNotifier<List<Patient>> {
+  FutureOr<List<Patient>> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<List<Patient>>, List<Patient>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Patient>>, List<Patient>>,
+              AsyncValue<List<Patient>>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Appointment {
 
- String get id; DateTime get scheduledAt; PatientSummary get patient; String get reason; bool get urgent; AppointmentStatus get status;
+ String get id; DateTime get scheduledAt; PatientSummary get patient; String get reason; bool get urgent; AppointmentStatus get status; String? get consultationId;
 /// Create a copy of Appointment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AppointmentCopyWith<Appointment> get copyWith => _$AppointmentCopyWithImpl<Appo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Appointment&&(identical(other.id, id) || other.id == id)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.urgent, urgent) || other.urgent == urgent)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Appointment&&(identical(other.id, id) || other.id == id)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.urgent, urgent) || other.urgent == urgent)&&(identical(other.status, status) || other.status == status)&&(identical(other.consultationId, consultationId) || other.consultationId == consultationId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,scheduledAt,patient,reason,urgent,status);
+int get hashCode => Object.hash(runtimeType,id,scheduledAt,patient,reason,urgent,status,consultationId);
 
 @override
 String toString() {
-  return 'Appointment(id: $id, scheduledAt: $scheduledAt, patient: $patient, reason: $reason, urgent: $urgent, status: $status)';
+  return 'Appointment(id: $id, scheduledAt: $scheduledAt, patient: $patient, reason: $reason, urgent: $urgent, status: $status, consultationId: $consultationId)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $AppointmentCopyWith<$Res>  {
   factory $AppointmentCopyWith(Appointment value, $Res Function(Appointment) _then) = _$AppointmentCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime scheduledAt, PatientSummary patient, String reason, bool urgent, AppointmentStatus status
+ String id, DateTime scheduledAt, PatientSummary patient, String reason, bool urgent, AppointmentStatus status, String? consultationId
 });
 
 
@@ -62,7 +62,7 @@ class _$AppointmentCopyWithImpl<$Res>
 
 /// Create a copy of Appointment
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? scheduledAt = null,Object? patient = null,Object? reason = null,Object? urgent = null,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? scheduledAt = null,Object? patient = null,Object? reason = null,Object? urgent = null,Object? status = null,Object? consultationId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,scheduledAt: null == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
@@ -70,7 +70,8 @@ as DateTime,patient: null == patient ? _self.patient : patient // ignore: cast_n
 as PatientSummary,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,urgent: null == urgent ? _self.urgent : urgent // ignore: cast_nullable_to_non_nullable
 as bool,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as AppointmentStatus,
+as AppointmentStatus,consultationId: freezed == consultationId ? _self.consultationId : consultationId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of Appointment
@@ -164,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime scheduledAt,  PatientSummary patient,  String reason,  bool urgent,  AppointmentStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime scheduledAt,  PatientSummary patient,  String reason,  bool urgent,  AppointmentStatus status,  String? consultationId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Appointment() when $default != null:
-return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urgent,_that.status);case _:
+return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urgent,_that.status,_that.consultationId);case _:
   return orElse();
 
 }
@@ -185,10 +186,10 @@ return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urge
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime scheduledAt,  PatientSummary patient,  String reason,  bool urgent,  AppointmentStatus status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime scheduledAt,  PatientSummary patient,  String reason,  bool urgent,  AppointmentStatus status,  String? consultationId)  $default,) {final _that = this;
 switch (_that) {
 case _Appointment():
-return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urgent,_that.status);case _:
+return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urgent,_that.status,_that.consultationId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +206,10 @@ return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urge
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime scheduledAt,  PatientSummary patient,  String reason,  bool urgent,  AppointmentStatus status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime scheduledAt,  PatientSummary patient,  String reason,  bool urgent,  AppointmentStatus status,  String? consultationId)?  $default,) {final _that = this;
 switch (_that) {
 case _Appointment() when $default != null:
-return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urgent,_that.status);case _:
+return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urgent,_that.status,_that.consultationId);case _:
   return null;
 
 }
@@ -220,7 +221,7 @@ return $default(_that.id,_that.scheduledAt,_that.patient,_that.reason,_that.urge
 
 
 class _Appointment implements Appointment {
-  const _Appointment({required this.id, required this.scheduledAt, required this.patient, required this.reason, this.urgent = false, this.status = AppointmentStatus.scheduled});
+  const _Appointment({required this.id, required this.scheduledAt, required this.patient, required this.reason, this.urgent = false, this.status = AppointmentStatus.scheduled, this.consultationId});
   
 
 @override final  String id;
@@ -229,6 +230,7 @@ class _Appointment implements Appointment {
 @override final  String reason;
 @override@JsonKey() final  bool urgent;
 @override@JsonKey() final  AppointmentStatus status;
+@override final  String? consultationId;
 
 /// Create a copy of Appointment
 /// with the given fields replaced by the non-null parameter values.
@@ -240,16 +242,16 @@ _$AppointmentCopyWith<_Appointment> get copyWith => __$AppointmentCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Appointment&&(identical(other.id, id) || other.id == id)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.urgent, urgent) || other.urgent == urgent)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Appointment&&(identical(other.id, id) || other.id == id)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.urgent, urgent) || other.urgent == urgent)&&(identical(other.status, status) || other.status == status)&&(identical(other.consultationId, consultationId) || other.consultationId == consultationId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,scheduledAt,patient,reason,urgent,status);
+int get hashCode => Object.hash(runtimeType,id,scheduledAt,patient,reason,urgent,status,consultationId);
 
 @override
 String toString() {
-  return 'Appointment(id: $id, scheduledAt: $scheduledAt, patient: $patient, reason: $reason, urgent: $urgent, status: $status)';
+  return 'Appointment(id: $id, scheduledAt: $scheduledAt, patient: $patient, reason: $reason, urgent: $urgent, status: $status, consultationId: $consultationId)';
 }
 
 
@@ -260,7 +262,7 @@ abstract mixin class _$AppointmentCopyWith<$Res> implements $AppointmentCopyWith
   factory _$AppointmentCopyWith(_Appointment value, $Res Function(_Appointment) _then) = __$AppointmentCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime scheduledAt, PatientSummary patient, String reason, bool urgent, AppointmentStatus status
+ String id, DateTime scheduledAt, PatientSummary patient, String reason, bool urgent, AppointmentStatus status, String? consultationId
 });
 
 
@@ -277,7 +279,7 @@ class __$AppointmentCopyWithImpl<$Res>
 
 /// Create a copy of Appointment
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? scheduledAt = null,Object? patient = null,Object? reason = null,Object? urgent = null,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? scheduledAt = null,Object? patient = null,Object? reason = null,Object? urgent = null,Object? status = null,Object? consultationId = freezed,}) {
   return _then(_Appointment(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,scheduledAt: null == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
@@ -285,7 +287,8 @@ as DateTime,patient: null == patient ? _self.patient : patient // ignore: cast_n
 as PatientSummary,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,urgent: null == urgent ? _self.urgent : urgent // ignore: cast_nullable_to_non_nullable
 as bool,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as AppointmentStatus,
+as AppointmentStatus,consultationId: freezed == consultationId ? _self.consultationId : consultationId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

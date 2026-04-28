@@ -38,6 +38,11 @@ class ApiService {
     final response = await _dio.post<dynamic>(path, data: data);
     return response.data;
   }
+
+  Future<dynamic> patchMultipart(String path, FormData data) async {
+    final response = await _dio.patch<dynamic>(path, data: data);
+    return response.data;
+  }
 }
 
 @riverpod

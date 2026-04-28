@@ -41,7 +41,7 @@ final class LoginActionProvider
   }
 }
 
-String _$loginActionHash() => r'03e53c6d24ddc30f06076ef692bc1ab98562eb8d';
+String _$loginActionHash() => r'88e91277b67f8594118478fd37082c23384c39d1';
 
 abstract class _$LoginAction extends $Notifier<AsyncValue<void>> {
   AsyncValue<void> build();

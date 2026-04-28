@@ -39,9 +39,43 @@ final class ServerFailure extends Failure {
   final int statusCode;
 }
 
+/// Error lógico reportado por el backend en el envelope (`error.code` / `error.message`)
+/// con HTTP 2xx. Distinto de `ServerFailure`, que representa fallo de transporte/5xx.
+final class ApiFailure extends Failure {
+  const ApiFailure({
+    required super.message,
+    this.code,
+    super.cause,
+  });
+
+  final String? code;
+}
+
 final class UnknownFailure extends Failure {
   const UnknownFailure({
     super.message = 'Ocurrió un error inesperado.',
+    super.cause,
+  });
+}
+
+/// Permiso de micrófono no concedido. `permanent = true` indica que el usuario
+/// marcó "no volver a preguntar" (Android) o denegó dos veces (iOS) — en ese
+/// caso el prompt nativo ya no aparece y hay que enviarlo a Ajustes.
+final class MicPermissionFailure extends Failure {
+  const MicPermissionFailure({
+    super.message = 'Necesitamos acceso al micrófono para grabar.',
+    this.permanent = false,
+    super.cause,
+  });
+
+  final bool permanent;
+}
+
+/// Falla de captura de audio: codec no soportado, storage lleno, device sin
+/// micrófono, o error interno del paquete `record`.
+final class AudioRecordingFailure extends Failure {
+  const AudioRecordingFailure({
+    super.message = 'No se pudo grabar audio.',
     super.cause,
   });
 }

@@ -24,17 +24,8 @@ class AuthRepositoryImpl implements IAuthRepository {
     required String email,
     required String password,
   }) async {
-    // TODO(api): API en construcción — restaurar llamada real cuando el endpoint esté listo.
     try {
-      // final session = await _datasource.login(email: email, password: password);
-      const session = AuthSession(
-        veterinarian: Veterinarian(
-          id: 'mock-id',
-          email: 'mock@dev.local',
-          fullName: 'Mock Dev',
-        ),
-        accessToken: 'mock-token-dev',
-      );
+      final session = await _datasource.login(email: email, password: password);
       await _storage.saveAccessToken(session.accessToken);
       return session;
     } catch (e) {
@@ -56,6 +47,15 @@ class AuthRepositoryImpl implements IAuthRepository {
     try {
       final token = await _storage.readAccessToken();
       return token != null && token.isNotEmpty;
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<Veterinarian> getCurrentVeterinarian() async {
+    try {
+      return await _datasource.fetchMe();
     } catch (e) {
       throw ApiExceptionHandler.handle(e);
     }

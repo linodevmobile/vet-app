@@ -49,4 +49,4 @@ final class DashboardHeaderProvider
   }
 }
 
-String _$dashboardHeaderHash() => r'5c64a2cca1d694a29cc3b04cc24d4b01b720e742';
+String _$dashboardHeaderHash() => r'f78836a73010ff606014c1df07095b8ffcdfbfcd';

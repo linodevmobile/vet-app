@@ -10,5 +10,6 @@ abstract class Veterinarian with _$Veterinarian {
     required String fullName,
     String? licenseNumber,
     String? phone,
+    String? salutation,
   }) = _Veterinarian;
 }

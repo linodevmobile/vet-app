@@ -25,21 +25,23 @@ class DashboardAgendaSection extends StatelessWidget {
           meta: '${rows.length} consultas',
           onSeeAll: onSeeAll,
         ),
-        const SizedBox(height: DsSpacing.md),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: List.generate(rows.length, (i) {
-              final row = rows[i];
-              return AppointmentRowTile(
-                time: row.time,
-                appointment: row.appointment,
-                onTap: row.onTap,
-                showDivider: i < rows.length - 1,
-              );
-            }),
+        if (rows.isNotEmpty) ...[
+          const SizedBox(height: DsSpacing.md),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: List.generate(rows.length, (i) {
+                final row = rows[i];
+                return AppointmentRowTile(
+                  time: row.time,
+                  appointment: row.appointment,
+                  onTap: row.onTap,
+                  showDivider: i < rows.length - 1,
+                );
+              }),
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

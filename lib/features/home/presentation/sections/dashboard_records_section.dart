@@ -17,25 +17,28 @@ class DashboardRecordsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const DashboardSectionHeader(
+        DashboardSectionHeader(
           kicker: 'REGISTROS',
           title: 'Recientes',
+          meta: '${rows.length}',
         ),
-        const SizedBox(height: DsSpacing.md),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: List.generate(rows.length, (i) {
-              final row = rows[i];
-              return ConsultationRecordRow(
-                record: row.record,
-                whenLabel: row.whenLabel,
-                onTap: row.onTap,
-                showDivider: i < rows.length - 1,
-              );
-            }),
+        if (rows.isNotEmpty) ...[
+          const SizedBox(height: DsSpacing.md),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: List.generate(rows.length, (i) {
+                final row = rows[i];
+                return ConsultationRecordRow(
+                  record: row.record,
+                  whenLabel: row.whenLabel,
+                  onTap: row.onTap,
+                  showDivider: i < rows.length - 1,
+                );
+              }),
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

@@ -13,8 +13,13 @@ part of 'filtered_patients.dart';
 final filteredPatientsProvider = FilteredPatientsProvider._();
 
 final class FilteredPatientsProvider
-    extends $FunctionalProvider<List<Patient>, List<Patient>, List<Patient>>
-    with $Provider<List<Patient>> {
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Patient>>,
+          AsyncValue<List<Patient>>,
+          AsyncValue<List<Patient>>
+        >
+    with $Provider<AsyncValue<List<Patient>>> {
   FilteredPatientsProvider._()
     : super(
         from: null,
@@ -31,21 +36,22 @@ final class FilteredPatientsProvider
 
   @$internal
   @override
-  $ProviderElement<List<Patient>> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AsyncValue<List<Patient>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  List<Patient> create(Ref ref) {
+  AsyncValue<List<Patient>> create(Ref ref) {
     return filteredPatients(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<Patient> value) {
+  Override overrideWithValue(AsyncValue<List<Patient>> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<List<Patient>>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<List<Patient>>>(value),
     );
   }
 }
 
-String _$filteredPatientsHash() => r'5f73eb684dabc6b82b0104e5e207a89aed4ae8f5';
+String _$filteredPatientsHash() => r'c9b399132c58f59367a3245819027cf493c39cff';
