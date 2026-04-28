@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vet_app/core/network/api_envelope.dart';
 import 'package:vet_app/core/network/api_service.dart';
 import 'package:vet_app/features/consultation/domain/entities/consultation_pause_reason.dart';
+import 'package:vet_app/features/consultation/domain/entities/in_progress_consultation.dart';
 import 'package:vet_app/features/consultation/domain/entities/paused_consultation.dart';
 import 'package:vet_app/features/consultations/domain/datasources/consultations_datasource.dart';
 import 'package:vet_app/features/consultations/domain/entities/consultation_record.dart';
@@ -38,15 +39,20 @@ class ConsultationsDatasourceImpl implements IConsultationsDatasource {
   }
 
   @override
-  Future<List<PausedConsultation>> fetchPaused() async {
+  Future<List<PausedConsultation>> fetchPaused() async =>
+      (await _fetchByStatus('paused')).map(_toPaused).toList();
+
+  @override
+  Future<List<InProgressConsultation>> fetchInProgress() async =>
+      (await _fetchByStatus('in_progress')).map(_toInProgress).toList();
+
+  Future<List<ConsultationDto>> _fetchByStatus(String status) async {
     final raw = await _api.get(
       ConsultationsApi.base,
-      queryParameters: {'status': 'paused'},
+      queryParameters: {'status': status},
     );
-    final data = ApiEnvelope.unwrapList(raw);
-    return data
+    return ApiEnvelope.unwrapList(raw)
         .map((e) => ConsultationDto.fromJson(e as Map<String, dynamic>))
-        .map(_toPaused)
         .toList();
   }
 
@@ -74,6 +80,13 @@ class ConsultationsDatasourceImpl implements IConsultationsDatasource {
         pausedAt: dto.pausedAt ?? dto.createdAt,
         sectionsCompleted: _countCompleted(dto.sections),
         sectionsTotal: _totalSections,
+      );
+
+  static InProgressConsultation _toInProgress(ConsultationDto dto) =>
+      InProgressConsultation(
+        id: dto.id,
+        patientId: dto.patient.id,
+        createdAt: dto.createdAt,
       );
 
   // `text` viene cuando el vet editó manualmente; `ai_suggested` cuando solo

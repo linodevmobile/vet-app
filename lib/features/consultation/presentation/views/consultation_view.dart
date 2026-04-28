@@ -40,6 +40,7 @@ import 'package:vet_app/features/consultation/presentation/sections/pause_consul
 import 'package:vet_app/features/consultation/presentation/sections/sign_consultation_sheet.dart';
 import 'package:vet_app/features/consultation/presentation/widgets/consultation_section_card.dart';
 import 'package:vet_app/features/consultation/presentation/widgets/field_with_mic.dart';
+import 'package:vet_app/features/consultations/presentation/controllers/in_progress_consultations.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/recent_consultations.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
@@ -401,7 +402,9 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
       ),
       data: (_) {
         if (prev is AsyncLoading) {
-          ref.invalidate(pausedConsultationsProvider);
+          ref
+            ..invalidate(pausedConsultationsProvider)
+            ..invalidate(inProgressConsultationsProvider);
           DsToast.show(
             context,
             message: 'Consulta pausada',
@@ -424,6 +427,7 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
         if (prev is AsyncLoading) {
           ref
             ..invalidate(pausedConsultationsProvider)
+            ..invalidate(inProgressConsultationsProvider)
             ..invalidate(recentConsultationsProvider);
           DsToast.show(
             context,

@@ -13,6 +13,7 @@ import 'package:vet_app/design_system/tokens/tokens.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/create_consultation_controller.dart';
 import 'package:vet_app/features/consultation/presentation/controllers/resume_consultation_controller.dart';
 import 'package:vet_app/features/consultation/presentation/sections/resume_consultation_sheet.dart';
+import 'package:vet_app/features/consultations/presentation/controllers/in_progress_consultations.dart';
 import 'package:vet_app/features/consultations/presentation/controllers/paused_consultations.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 import 'package:vet_app/features/patients/presentation/controllers/all_patients.dart';
@@ -31,6 +32,9 @@ class PatientsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final results = ref.watch(filteredPatientsProvider);
     final query = ref.watch(patientSearchQueryProvider);
+    // Watch dispara la carga del provider en el primer build; el tap consume
+    // luego con `ref.read(...).value` y cae a "crear nueva" si aún no resolvió.
+    ref.watch(inProgressConsultationsProvider);
 
     void openRegister() => context.push(AppRoutes.newPatient);
     Future<void> refresh() =>
@@ -119,9 +123,13 @@ class PatientsView extends ConsumerWidget {
     return PatientResultsSection(tiles: tiles);
   }
 
-  // Si el paciente tiene una consulta pausada, abrimos el sheet de reanudar
-  // (mismo flujo que el dashboard) en vez de crear una nueva. La navegación
-  // post-resume la maneja el listener en HomeView (vivo en el IndexedStack).
+  // Tres caminos según estado previo del paciente:
+  //  - paused → sheet con motivo/nota (resume vía controller).
+  //  - in_progress huérfana → push directo a la existente (sin POST nuevo,
+  //    sin sheet: no hay info de pausa que mostrar).
+  //  - nada → POST de creación + push.
+  // La navegación post-resume del branch paused la maneja el listener en
+  // HomeView (vivo en el IndexedStack).
   Future<void> _onPatientTap(
     BuildContext context,
     WidgetRef ref,
@@ -145,6 +153,25 @@ class PatientsView extends ConsumerWidget {
           onConfirm: () => ref
               .read(resumeConsultationControllerProvider.notifier)
               .resume(paused.id),
+        ),
+      );
+      return;
+    }
+
+    // Si hay >1 in_progress para el mismo paciente (residuos de errores
+    // previos), tomamos la más reciente para que al menos arranque desde
+    // el último intento del vet.
+    final inProgress =
+        (ref.read(inProgressConsultationsProvider).value ?? const [])
+            .where((c) => c.patientId == p.id)
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    if (inProgress.isNotEmpty) {
+      unawaited(
+        context.push(
+          AppRoutes.consultationNew,
+          extra: (patient: p, consultationId: inProgress.first.id),
         ),
       );
       return;

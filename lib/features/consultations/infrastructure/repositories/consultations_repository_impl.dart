@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vet_app/core/errors/api_exception_handler.dart';
+import 'package:vet_app/features/consultation/domain/entities/in_progress_consultation.dart';
 import 'package:vet_app/features/consultation/domain/entities/paused_consultation.dart';
 import 'package:vet_app/features/consultations/domain/datasources/consultations_datasource.dart';
 import 'package:vet_app/features/consultations/domain/entities/consultation_record.dart';
@@ -26,6 +27,15 @@ class ConsultationsRepositoryImpl implements IConsultationsRepository {
   Future<List<PausedConsultation>> fetchPaused() async {
     try {
       return await _datasource.fetchPaused();
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<List<InProgressConsultation>> fetchInProgress() async {
+    try {
+      return await _datasource.fetchInProgress();
     } catch (e) {
       throw ApiExceptionHandler.handle(e);
     }
