@@ -10,6 +10,7 @@ import 'package:vet_app/features/home/presentation/views/home_view.dart';
 import 'package:vet_app/features/hospitalization/presentation/views/hospital_view.dart';
 import 'package:vet_app/features/patients/domain/entities/patient.dart';
 import 'package:vet_app/features/patients/presentation/views/add_patient_view.dart';
+import 'package:vet_app/features/patients/presentation/views/patient_detail_view.dart';
 import 'package:vet_app/features/patients/presentation/views/patients_view.dart';
 import 'package:vet_app/features/profile/presentation/views/profile_view.dart';
 import 'package:vet_app/features/splash/presentation/views/splash_view.dart';
@@ -72,6 +73,16 @@ GoRouter appRouter(Ref ref) {
             return const _MissingConsultationFallback();
           }
           return ConsultationView(consultationId: id);
+        },
+      ),
+      GoRoute(
+        path: '/patient/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id'];
+          if (id == null || id.isEmpty) {
+            return const _MissingConsultationFallback();
+          }
+          return PatientDetailView(patientId: id);
         },
       ),
       StatefulShellRoute.indexedStack(

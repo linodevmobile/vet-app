@@ -40,6 +40,15 @@ class PatientsRepositoryImpl implements IPatientsRepository {
       throw ApiExceptionHandler.handle(e);
     }
   }
+
+  @override
+  Future<Patient> getById(String id) async {
+    try {
+      return await _datasource.getById(id);
+    } catch (e) {
+      throw ApiExceptionHandler.handle(e);
+    }
+  }
 }
 
 @riverpod

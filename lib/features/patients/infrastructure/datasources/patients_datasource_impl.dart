@@ -41,6 +41,13 @@ class PatientsDatasourceImpl implements IPatientsDatasource {
   }
 
   @override
+  Future<Patient> getById(String id) async {
+    final raw = await _api.get(PatientsApi.byId(id));
+    final data = ApiEnvelope.unwrapMap(raw);
+    return _toEntity(PatientDto.fromJson(data));
+  }
+
+  @override
   Future<Patient> create(Patient draft) async {
     final body = CreatePatientRequestDto(
       name: draft.name,

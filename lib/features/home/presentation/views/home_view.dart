@@ -72,9 +72,7 @@ class HomeView extends ConsumerWidget {
           (r) => RecordRow(
             record: r,
             whenLabel: DateFormatters.relativeShort(r.performedAt),
-            onTap: () {
-              // TODO(consultations): abrir detalle del registro.
-            },
+            onTap: () => context.push(AppRoutes.patientById(r.patient.id)),
           ),
         )
         .toList();

@@ -10,4 +10,6 @@ abstract interface class IPatientsRepository {
   });
 
   Future<Patient> create(Patient draft);
+
+  Future<Patient> getById(String id);
 }

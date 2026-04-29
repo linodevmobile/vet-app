@@ -9,4 +9,5 @@ abstract final class AppRoutes {
   static const String consultationNew = '/consultation/new';
 
   static String consultationById(String id) => '/consultation/$id';
+  static String patientById(String id) => '/patient/$id';
 }
