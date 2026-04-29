@@ -531,9 +531,24 @@ class _ConsultationViewState extends ConsumerState<ConsultationView>
           ),
         );
       }
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: DsColors.bg,
-        body: SafeArea(child: Center(child: DsLoadingView())),
+        body: SafeArea(
+          child: Column(
+            children: [
+              ConsultationHeaderSection(
+                species: _species,
+                patientName: _patientName,
+                patientSubtitle: _patientSubtitle,
+                completed: 0,
+                total: _totalSections,
+                onBack: _back,
+                isUrgent: _isUrgent,
+              ),
+              const Expanded(child: Center(child: DsLoadingView())),
+            ],
+          ),
+        ),
       );
     }
     final completedCount = _completedCount(form);
