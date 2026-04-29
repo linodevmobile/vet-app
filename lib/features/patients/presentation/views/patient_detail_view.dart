@@ -29,7 +29,13 @@ class PatientDetailView extends ConsumerWidget {
       backgroundColor: DsColors.bg,
       body: SafeArea(
         child: detail.when(
-          loading: () => const Center(child: DsLoadingView()),
+          loading: () => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              PatientDetailHeaderSection(onBack: () => _back(context)),
+              const Expanded(child: Center(child: DsLoadingView())),
+            ],
+          ),
           error: (e, _) => DsErrorView(
             message: 'No se pudo cargar el paciente: $e',
             onRetry: () => ref.invalidate(
@@ -40,6 +46,14 @@ class PatientDetailView extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+void _back(BuildContext context) {
+  if (context.canPop()) {
+    context.pop();
+  } else {
+    context.go(AppRoutes.today);
   }
 }
 
@@ -92,13 +106,5 @@ class _Body extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  static void _back(BuildContext context) {
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.go(AppRoutes.today);
-    }
   }
 }
