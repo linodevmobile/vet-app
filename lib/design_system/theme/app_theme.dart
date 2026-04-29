@@ -81,7 +81,7 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: DsColors.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(DsSpacing.buttonLg),
+          minimumSize: const Size.fromHeight(DsSpacing.buttonMd),
           textStyle: DsTypography.button,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DsRadii.r2),
